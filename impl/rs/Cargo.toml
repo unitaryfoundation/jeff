@@ -1,7 +1,7 @@
 [package]
 name = "jeff-format"
 version = "0.1.0"
-description = ""
+description = "Rust bindings for the jeff exchange format"
 keywords = ["Quantum"]
 categories = ["compilers"]
 documentation = "https://docs.rs/jeff-format"
