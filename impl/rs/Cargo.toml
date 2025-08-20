@@ -1,0 +1,40 @@
+[package]
+name = "jeff-format"
+version = "0.1.0"
+description = ""
+keywords = ["Quantum"]
+categories = ["compilers"]
+documentation = "https://docs.rs/jeff-format"
+readme = "README.md"
+
+rust-version.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "jeff"
+bench = false
+path = "src/lib.rs"
+
+[dependencies]
+capnp = { workspace = true }
+derive_more = { workspace = true, features = ["display", "error", "from"] }
+itertools = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true, features = ["html_reports"] }
+iai-callgrind = { workspace = true }
+rstest = { workspace = true }
+
+[[bench]]
+name = "criterion"
+harness = false
+
+[[bench]]
+name = "iai"
+harness = false

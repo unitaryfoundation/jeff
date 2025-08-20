@@ -1,0 +1,106 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [27, 29],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (int = (const32 = 0)) ),
+            ( inputs = [],
+              outputs = [1],
+              instruction = (int = (const32 = 0)) ),
+            ( inputs = [],
+              outputs = [2],
+              instruction = (int = (const32 = 2)) ),
+            ( inputs = [2],
+              outputs = [3],
+              instruction = (qureg = (alloc = void)) ),
+            ( inputs = [3, 0],
+              outputs = [4, 5],
+              instruction = (
+                qureg = (extractIndex = void) ) ),
+            ( inputs = [4, 1],
+              outputs = [6, 7],
+              instruction = (
+                qureg = (extractIndex = void) ) ),
+            ( inputs = [5, 7],
+              outputs = [8, 9],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 1, numQubits = 2, numParams = 0) ) ) ) ),
+            ( inputs = [9],
+              outputs = [10],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 2, numQubits = 1, numParams = 0) ) ) ) ),
+            ( inputs = [8, 10],
+              outputs = [11, 12],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 3, numQubits = 2, numParams = 0) ) ) ) ),
+            ( inputs = [],
+              outputs = [13],
+              instruction = (int = (const32 = 0)) ),
+            ( inputs = [],
+              outputs = [14],
+              instruction = (int = (const32 = 3)) ),
+            ( inputs = [],
+              outputs = [15],
+              instruction = (int = (const32 = 1)) ),
+            ( inputs = [14, 11, 12],
+              outputs = [21, 22],
+              instruction = (
+                scf = (
+                  for = (
+                    sources = [16, 17, 18],
+                    targets = [19, 20],
+                    operations = [
+                      ( inputs = [17, 18],
+                        outputs = [19, 20],
+                        instruction = (
+                          qubit = (
+                            gate = (
+                              custom = (name = 4, numQubits = 2, numParams = 0) ) ) ) ) ] ) ) ) ),
+            ( inputs = [21, 22],
+              outputs = [23, 24],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 5, numQubits = 2, numParams = 0) ) ) ) ),
+            ( inputs = [24],
+              outputs = [25],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 6, numQubits = 1, numParams = 0) ) ) ) ),
+            ( inputs = [23],
+              outputs = [26, 27],
+              instruction = (
+                qubit = (measureNd = void) ) ),
+            ( inputs = [25],
+              outputs = [28, 29],
+              instruction = (
+                qubit = (measureNd = void) ) ),
+            ( inputs = [6, 26, 0],
+              outputs = [30],
+              instruction = (
+                qureg = (insertIndex = void) ) ),
+            ( inputs = [30, 28, 1],
+              outputs = [31],
+              instruction = (
+                qureg = (insertIndex = void) ) ),
+            ( inputs = [31],
+              outputs = [],
+              instruction = (qureg = (free = void)) ) ] ),
+        values = [(type = (int = 64)), (type = (int = 64)), (type = (int = 64)), (type = (qureg = void)), (type = (qureg = void)), (type = (qubit = void)), (type = (qureg = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 1)), (type = (qubit = void)), (type = (int = 1)), (type = (qureg = void)), (type = (qureg = void))]
+      ),
+    ),
+  ],
+  strings = ["optimize_me", "CX", "T", "CX", "SWAP", "CX", "T"]
+)

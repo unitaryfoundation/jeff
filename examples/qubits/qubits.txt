@@ -1,0 +1,36 @@
+(version = 0,
+    functions = [
+        (
+            name = 3,
+            definition = (
+                body = (
+                    sources = [0, 1],
+                    targets = [2, 3, 4],
+                    operations = [
+                        (outputs = [5], instruction = (qubit = (alloc = void))),
+                        (inputs = [0], outputs = [6], instruction = (qubit = (gate = (custom = (name = 1, numQubits = 1))))),
+                        (inputs = [1], outputs = [7], instruction = (qubit = (gate = (custom = (name = 0, numQubits = 1))))),
+                        (inputs = [5, 6], outputs = [8, 9], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (inputs = [7, 8], outputs = [3, 4], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (inputs = [9, 10], outputs = [2], instruction = (qubit = (gate = (custom = (name = 4, numQubits = 1, numParams = 1))))),
+                        (outputs = [10], instruction = (float = (const64 = 0.5))),
+                    ]
+                ),
+                values = [
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (float = float64)),
+                ]
+            ),
+        ),
+    ],
+    strings = ["H", "X", "CX", "Circuit", "Rx"]
+)

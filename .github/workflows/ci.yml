@@ -1,0 +1,244 @@
+name: Continuous integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch: {}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  CI: true # insta snapshots behave differently on ci
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+  CAPNPROTO_VERSION: "1.1.0"
+
+jobs:
+  # Check if changes were made to the relevant files.
+  # Always returns true if running on the default branch, to ensure all changes are thoroughly checked.
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      contents: read
+      pull-requests: read
+    # Set job outputs to values from filter step
+    # These outputs are always true when running after a merge to main, or if the PR has a `run-ci-checks` label.
+    outputs:
+      schema: ${{ steps.filter.outputs.schema == 'true' || steps.override.outputs.out == 'true' }}
+      rust: ${{ steps.filter.outputs.rust == 'true' || steps.override.outputs.out == 'true' }}
+      python: ${{ steps.filter.outputs.python == 'true' || steps.override.outputs.out == 'true' }}
+    steps:
+    - uses: actions/checkout@v5
+    - name: Override label
+      id: override
+      run: |
+        echo "Label contains run-ci-checks: $OVERRIDE_LABEL"
+        if [ "$OVERRIDE_LABEL" == "true" ]; then
+          echo "Overriding due to label 'run-ci-checks'"
+          echo "out=true" >> $GITHUB_OUTPUT
+        elif [ "$DEFAULT_BRANCH" == "true" ]; then
+          echo "Overriding due to running on the default branch"
+          echo "out=true" >> $GITHUB_OUTPUT
+        fi
+      env:
+        OVERRIDE_LABEL: ${{ github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'run-ci-checks') }}
+        DEFAULT_BRANCH: ${{ github.ref_name == github.event.repository.default_branch }}
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: .github/change-filters.yml
+
+  rs-check:
+    name: 🦀 Check lints
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Check formatting
+        run: cargo fmt -- --check
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features --workspace -- -D warnings
+      - name: Build docs
+        run: cargo doc --no-deps --all-features --workspace
+        env:
+          RUSTDOCFLAGS: "-Dwarnings"
+
+  rs-benches:
+    name: 🦀 Build Rust benchmarks 🏋️
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' && github.event_name != 'merge_group' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build benchmarks with all features
+        run: cargo bench --verbose --no-run  --all-features
+
+  # Run tests on Rust stable with all features
+  rs-tests-stable-all-features:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    runs-on: ubuntu-latest
+    name: 🦀 tests (Rust stable, all features)
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - id: toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "stable"
+      - name: Configure default rust toolchain
+        run: rustup override set ${{steps.toolchain.outputs.name}}
+      - name: Build with all features
+        run: cargo test --verbose  --all-features --no-run
+      - name: Tests with all features
+        run: cargo test --verbose  --all-features
+
+  # Run tests on other toolchains
+  rs-tests-other:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' && github.event_name != 'merge_group' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        # Stable is covered by `tests-stable-all-features`
+        # Nightly is covered by `tests-nightly-coverage`
+        rust: ["1.85", beta]
+    name: 🦀 tests (Rust ${{ matrix.rust }})
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - id: toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+      - name: Configure default rust toolchain
+        run: rustup override set ${{steps.toolchain.outputs.name}}
+      - name: Build with all features
+        run: cargo test --verbose  --all-features --no-run
+      - name: Tests with all features
+        run: cargo test --verbose  --all-features
+
+  # Run tests on nightly and upload test coverage
+  rs-tests-nightly-coverage:
+    needs: changes
+    # Run only if there are changes in the relevant files
+    if: ${{ needs.changes.outputs.rust == 'true' && github.event_name != 'merge_group' }}
+    runs-on: ubuntu-latest
+    name: 🦀 tests (Rust nightly, coverage)
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          # Nightly is required to count doctests coverage
+          toolchain: "nightly"
+          components: llvm-tools-preview
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Run tests with coverage instrumentation
+        run: |
+          cargo llvm-cov clean --workspace
+          cargo llvm-cov --no-report --all-features --doctests
+      - name: Generate coverage report
+        run: cargo llvm-cov --all-features report --codecov --output-path coverage.json
+      - name: Upload coverage to codecov.io
+        # TODO: Setup Covecov.io coverage reporting
+        if: false
+        uses: codecov/codecov-action@v5
+        with:
+          files: impl/coverage.json
+          name: rust
+          flags: rust
+          #token: ${{ secrets.CODECOV_TOKEN }}
+
+  # Ensure that the generated capnp implementations are up to date
+  #
+  # Run `just update-capnp` to update the generated code.
+  capnp-schema:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.schema == 'true' && github.event_name != 'merge_group' }}
+    name: Keep the capnp generated code up-to-date with the schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install CapnProto
+        run: |
+          curl -O https://capnproto.org/capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
+          tar zxf capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
+          cd capnproto-c++-${CAPNPROTO_VERSION}
+          ./configure
+          make -j6 check
+          sudo make install
+      - name: Get cargo binstall
+        uses: cargo-bins/cargo-binstall@main
+      - name: Install capnproto-rust plugin
+        run: cargo binstall capnpc
+      - name: Regenerate the Rust capnp code
+        run: |
+          capnp compile \
+            -orust:impl/rs/src \
+            --src-prefix=impl \
+            impl/capnp/jeff.capnp
+      - name: Regenerate the C++ capnp code
+        run: |
+          patch -p0 < impl/capnp/cpp_namespace.patch
+          capnp compile \
+            -oc++:impl/cpp/src \
+            --src-prefix=impl \
+            impl/capnp/jeff.capnp
+          patch -p0 -R < impl/capnp/cpp_namespace.patch
+      - name: Re-encode the test .jeff files
+        run: ./examples/encode_examples.sh
+      - name: Check if the generated capnproto code is up to date
+        run: |
+          git diff --exit-code impl/rs/src/capnp/ impl/cpp/src/capnp/ examples/
+          if [ $? -ne 0 ]; then
+            echo "The capnp generated code is not up to date"
+            echo "Please run 'just update-capnp' and commit the changes"
+            exit 1
+          fi
+
+  # This is a meta job to mark successful completion of the required checks,
+  # even if they are skipped due to no changes in the relevant files.
+  required-checks:
+    name: Required checks
+    needs:
+      [
+        changes,
+        rs-check,
+        rs-tests-stable-all-features,
+        # We don't include `capnp-schema` as a required check, since it takes a while to install the latest capnp system lib
+      ]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if required checks failed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "Required checks failed"
+          echo "Please check the logs for more information"
+          exit 1
+      - name: Pass if all required checks passed
+        run: |
+          echo "All required checks passed"

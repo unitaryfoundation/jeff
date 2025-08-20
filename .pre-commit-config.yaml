@@ -1,0 +1,102 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0 # Use the ref you want to point at
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+            impl/rs/.*/.*_capnp\.rs|
+            impl/cpp/.*/capnp/jeff\.capnp\.(h|c\+\+)|
+            .*\.snap|
+            .*\.snap\.new|
+            .*\.ambr|
+            impl/.release-please-manifest.json
+          )$
+      - id: trailing-whitespace
+        exclude: |
+          (?x)^(
+            impl/rs/.*/.*_capnp\.rs|
+            impl/cpp/.*/capnp/jeff\.capnp\.(h|c\+\+)|
+            .*\.snap|
+            .*\.ambr|
+            .*\.snap\.new
+          )$
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+      # Python-specific
+      - id: check-ast
+      - id: check-docstring-first
+      - id: debug-statements
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        description: Format python code with `ruff`.
+        entry: sh -c 'cd impl && uv run ruff format'
+        language: system
+        files: \.py$
+        pass_filenames: false
+      - id: ruff-check
+        name: ruff
+        description: Check python code with `ruff`.
+        entry: sh -c 'cd impl && uv run ruff check --fix --exit-non-zero-on-fix'
+        language: system
+        files: \.py$
+        pass_filenames: false
+      - id: mypy-check
+        name: mypy
+        description: Check python code with `mypy`.
+        entry: sh -c 'cd impl && uv run mypy .'
+        language: system
+        files: \.py$
+        pass_filenames: false
+      - id: cargo-fmt
+        name: cargo format
+        description: Format rust code with `cargo fmt`.
+        entry: sh -c 'cd impl && cargo fmt --all'
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: cargo-check
+        name: cargo check
+        description: Check rust code with `cargo check`.
+        entry: sh -c 'cd impl && cargo check --all --all-features --workspace'
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: cargo-test
+        name: cargo test
+        description: Run tests with `cargo test`.
+        entry: sh -c 'cd impl && cargo test --all-features --workspace'
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: cargo-clippy
+        name: cargo clippy
+        description: Run clippy lints with `cargo clippy`.
+        entry: sh -c 'cd impl && cargo clippy --all-targets --all-features --workspace -- -D warnings'
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: cargo-doc
+        name: cargo doc
+        description: Generate documentation with `cargo doc`.
+        entry: sh -c "cd impl && RUSTDOCFLAGS=-Dwarnings cargo doc --no-deps --all-features --workspace"
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: py-test
+        name: pytest
+        description: Run python tests
+        entry: sh -c 'cd impl && uv run pytest'
+        language: system
+        files: \.py$
+        pass_filenames: false

@@ -1,0 +1,2 @@
+*.bin linguist-generated=true
+*.jeff linguist-language=Cap'n Proto

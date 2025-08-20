@@ -1,0 +1,68 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [9],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (int = (const32 = 0)) ),
+            ( inputs = [],
+              outputs = [1],
+              instruction = (int = (const32 = 5)) ),
+            ( inputs = [],
+              outputs = [2],
+              instruction = (float = (const64 = 0.1)) ),
+            ( inputs = [1],
+              outputs = [3],
+              instruction = (qureg = (alloc = void)) ),
+            ( inputs = [3, 0],
+              outputs = [4, 5],
+              instruction = (
+                qureg = (extractIndex = void) ) ),
+            ( inputs = [5],
+              outputs = [6],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 1, numQubits = 1, numParams = 0) ) ) ) ),
+            ( inputs = [6, 2],
+              outputs = [7],
+              instruction = (
+                qubit = (
+                  gate = (
+                    custom = (name = 2, numQubits = 1, numParams = 1) ) ) ) ),
+            ( inputs = [7],
+              outputs = [8, 9],
+              instruction = (
+                qubit = (measureNd = void) ) ),
+            ( inputs = [4, 8, 0],
+              outputs = [10],
+              instruction = (
+                qureg = (insertIndex = void) ) ),
+            ( inputs = [10],
+              outputs = [],
+              instruction = (qureg = (free = void)) ) ] ),
+        values = [
+          (type = (int = 64)),
+          (type = (int = 64)),
+          (type = (float = float64)),
+          (type = (qureg = void)),
+          (type = (qureg = void)),
+          (type = (qubit = void)),
+          (type = (qubit = void)),
+          (type = (qubit = void)),
+          (type = (qubit = void)),
+          (type = (int = 1)),
+          (type = (qureg = void)) ]
+      ),
+    ),
+    ( name = 3,
+      definition = (
+        body = (sources = [], targets = [], operations = []),
+        values = [] )
+    ),
+  ],
+  strings = ["hello", "Hadamard", "RY", "world"] )

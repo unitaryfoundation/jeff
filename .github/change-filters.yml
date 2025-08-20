@@ -1,0 +1,21 @@
+# Filters used by [dorny/path-filters](https://github.com/dorny/paths-filter)
+# to detect changes in each subproject, and only run the corresponding jobs.
+
+schema: &schema
+  - "impl/capnp/**"
+  - "impl/fbs/**"
+  - "examples/**.txt"
+
+rust: &rust
+  - *schema
+  - ".github/workflows/ci.yml"
+  - "impl/rs/**"
+  - "impl/Cargo.toml"
+  - "impl/Cargo.lock"
+
+python: &python
+  - *schema
+  - ".github/workflows/ci.yml"
+  - "impl/py/**"
+  - "impl/pyproject.toml"
+  - "impl/uv.lock"

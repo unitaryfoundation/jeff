@@ -1,0 +1,132 @@
+(
+    version = 0,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    sources = [],
+                    targets = [49],
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 1))),
+                        (outputs = [1], instruction = (qubit = (alloc = void))),
+                        (outputs = [2], instruction = (qubit = (alloc = void))),
+                        (outputs = [3], instruction = (qubit = (alloc = void))),
+                        (outputs = [4], instruction = (qubit = (alloc = void))),
+                        (outputs = [5], instruction = (qubit = (alloc = void))),
+                        (inputs = [1], outputs = [6], instruction = (qubit = (gate = (custom = (name = 4, numQubits = 1))))),
+                        (inputs = [6, 2], outputs = [7, 8], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
+                        (inputs = [8, 3], outputs = [9, 10], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
+                        (inputs = [10, 4], outputs = [11, 12], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
+                        (inputs = [12, 5], outputs = [13, 14], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
+                        (outputs = [15], instruction = (intArray = (const8 = [0, 0, 0, 0, 0]))),
+                        (inputs = [7], outputs = [16], instruction = (qubit = (measure = void))),
+                        (outputs = [17], instruction = (int = (const32 = 0))),
+                        (inputs = [15, 17, 16], outputs = [18], instruction = (intArray = (setIndex = void))),
+                        (inputs = [9], outputs = [19], instruction = (qubit = (measure = void))),
+                        (outputs = [20], instruction = (int = (const32 = 1))),
+                        (inputs = [18, 20, 19], outputs = [21], instruction = (intArray = (setIndex = void))),
+                        (inputs = [11], outputs = [22], instruction = (qubit = (measure = void))),
+                        (outputs = [23], instruction = (int = (const32 = 2))),
+                        (inputs = [21, 23, 22], outputs = [24], instruction = (intArray = (setIndex = void))),
+                        (inputs = [13], outputs = [25], instruction = (qubit = (measure = void))),
+                        (outputs = [26], instruction = (int = (const32 = 3))),
+                        (inputs = [24, 26, 25], outputs = [27], instruction = (intArray = (setIndex = void))),
+                        (inputs = [14], outputs = [28], instruction = (qubit = (measure = void))),
+                        (outputs = [29], instruction = (int = (const32 = 4))),
+                        (inputs = [27, 29, 28], outputs = [30], instruction = (intArray = (setIndex = void))),
+                        (outputs = [31], instruction = (int = (const32 = 0))),
+                        (inputs = [30, 31], outputs = [32], instruction = (intArray = (getIndex = void))),
+                        (inputs = [32, 0], outputs = [33], instruction = (int = (shl = void))),
+                        (outputs = [34], instruction = (int = (const32 = 1))),
+                        (inputs = [30, 34], outputs = [35], instruction = (intArray = (getIndex = void))),
+                        (inputs = [33, 35], outputs = [36], instruction = (int = (add = void))),
+                        (inputs = [36, 0], outputs = [37], instruction = (int = (shl = void))),
+                        (outputs = [38], instruction = (int = (const32 = 2))),
+                        (inputs = [30, 38], outputs = [39], instruction = (intArray = (getIndex = void))),
+                        (inputs = [37, 39], outputs = [40], instruction = (int = (add = void))),
+                        (inputs = [40, 0], outputs = [41], instruction = (int = (shl = void))),
+                        (outputs = [42], instruction = (int = (const32 = 3))),
+                        (inputs = [30, 42], outputs = [43], instruction = (intArray = (getIndex = void))),
+                        (inputs = [41, 43], outputs = [44], instruction = (int = (add = void))),
+                        (inputs = [44, 0], outputs = [45], instruction = (int = (shl = void))),
+                        (outputs = [46], instruction = (int = (const32 = 4))),
+                        (inputs = [30, 46], outputs = [47], instruction = (intArray = (getIndex = void))),
+                        (inputs = [45, 47], outputs = [48], instruction = (int = (add = void))),
+                        (inputs = [48, 0], outputs = [49], instruction = (int = (shl = void)))
+                    ]
+                ),
+                values = [
+                    (type = (int = 8)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (intArray = 8)), (type = (int = 1)), (type = (int = 8)),
+                    (type = (intArray = 8)), (type = (int = 1)), (type = (int = 8)),
+                    (type = (intArray = 8)), (type = (int = 1)), (type = (int = 8)),
+                    (type = (intArray = 8)), (type = (int = 1)), (type = (int = 8)),
+                    (type = (intArray = 8)), (type = (int = 1)), (type = (int = 8)),
+                    (type = (intArray = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
+                    (type = (int = 8))
+                ]
+            ),
+        ),
+        (
+            name = 1,
+            definition = (
+                body = (
+                    sources = [],
+                    targets = [],
+                    operations = [
+                        (outputs = [0], instruction = (func = (funcCall = 0)))
+                    ]
+                ),
+                values = [
+                    (type = (int = 8))
+                ]
+            ),
+        ),
+        (
+            name = 2,
+            definition = (
+                body = (
+                    sources = [],
+                    targets = [0],
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 0)))
+                    ]
+                ),
+                values = [
+                    (type = (int = 8))
+                ]
+            ),
+        ),
+        (
+            name = 3,
+            definition = (
+                body = (
+                    sources = [0],
+                    targets = [],
+                    operations = []
+                ),
+                values = [
+                    (type = (int = 8))
+                ]
+            ),
+        ),
+    ],
+    strings = [
+        "__nvqpp__mlirgen__function_sample._Z6samplev",
+        "__nvqpp__mlirgen__ghz",
+        "_Z6samplev",
+        "_ZN3ghzclEv",
+        "H",
+        "X"
+    ]
+)

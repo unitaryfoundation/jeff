@@ -1,0 +1,53 @@
+(
+    version = 0,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (qubit = (alloc = void))),
+                        (outputs = [1], instruction = (qubit = (alloc = void))),
+                        (outputs = [2], instruction = (qubit = (alloc = void))),
+                        (outputs = [3], instruction = (qubit = (alloc = void))),
+                        (outputs = [4], instruction = (qubit = (alloc = void))),
+                        (inputs = [0], outputs = [5], instruction = (qubit = (gate = (custom = (name = 1, numQubits = 1))))),
+                        (inputs = [5, 1], outputs = [6, 7], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (inputs = [7, 2], outputs = [8, 9], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (inputs = [9, 3], outputs = [10, 11], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (inputs = [11, 4], outputs = [12, 13], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 2))))),
+                        (outputs = [14], instruction = (intArray = (const8 = [0, 0, 0, 0, 0]))),
+                        (inputs = [6], outputs = [15], instruction = (qubit = (measure = void))),
+                        (outputs = [16], instruction = (int = (const32 = 0))),
+                        (inputs = [14, 16, 15], outputs = [17], instruction = (intArray = (setIndex = void))),
+                        (inputs = [8], outputs = [18], instruction = (qubit = (measure = void))),
+                        (outputs = [19], instruction = (int = (const32 = 1))),
+                        (inputs = [17, 19, 18], outputs = [20], instruction = (intArray = (setIndex = void))),
+                        (inputs = [10], outputs = [21], instruction = (qubit = (measure = void))),
+                        (outputs = [22], instruction = (int = (const32 = 2))),
+                        (inputs = [20, 22, 21], outputs = [23], instruction = (intArray = (setIndex = void))),
+                        (inputs = [12], outputs = [24], instruction = (qubit = (measure = void))),
+                        (outputs = [25], instruction = (int = (const32 = 3))),
+                        (inputs = [23, 25, 24], outputs = [26], instruction = (intArray = (setIndex = void))),
+                        (inputs = [13], outputs = [27], instruction = (qubit = (measure = void))),
+                        (outputs = [28], instruction = (int = (const32 = 4))),
+                        (inputs = [26, 28, 27], outputs = [29], instruction = (intArray = (setIndex = void)))
+                    ]
+                ),
+                values = [
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8))
+                ]
+            ),
+        )
+    ],
+    strings = ["qarray", "H", "X"]
+)

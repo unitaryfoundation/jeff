@@ -1,0 +1,16 @@
+[tool.uv.workspace]
+members = []
+
+[tool.uv]
+
+dev-dependencies = [
+    "pre-commit >=4.1,<5",
+    "pytest >=8.3.4,<9",
+    "pytest-cov >=6.0.0,<7",
+    "mypy >=1.15.0,<2",
+    "ruff >=0.9.6,<0.10",
+]
+
+
+[tool.mypy]
+strict = true
