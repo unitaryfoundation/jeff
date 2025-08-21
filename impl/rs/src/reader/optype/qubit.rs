@@ -1,4 +1,22 @@
 //! Qubit operations
+//!
+//! The main [`QubitOp`] enum contains quantum operations, including
+//! - non-unitary operations like measurements and resets
+//! - unitary _gates_
+//!
+//! The [`GateOp`]s in turn are divided between
+//! - A set of [`WellKnownGate`]s with well-defined semantics
+//! - [`PauliString`] rotation gates.
+//! - Arbitrary custom gates, with a name and a number of qubits and parameters
+//!   defined by the users. See [`GateOpType::Custom`].
+//!
+//! These gates can also be controlled, made adjoint, and exponentiated.
+
+mod pauli;
+mod well_known;
+
+pub use pauli::{Pauli, PauliString};
+pub use well_known::WellKnownGate;
 
 use crate::jeff_capnp;
 use crate::reader::string_table::StringTable;
@@ -85,9 +103,10 @@ pub struct GateOp<'a> {
 }
 
 /// The type of gate operation.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, derive_more::Display)]
 pub enum GateOpType<'a> {
     /// A custom gate.
+    #[display("Custom({name}, {num_qubits}, {num_params})")]
     Custom {
         /// The name of the gate.
         name: &'a str,
@@ -110,53 +129,10 @@ pub enum GateOpType<'a> {
     },
 }
 
-/// A Pauli operator.
-#[derive(Clone, Copy, Debug)]
-pub enum Pauli {
-    /// Pauli-X operator.
-    X,
-    /// Pauli-Y operator.
-    Y,
-    /// Pauli-Z operator.
-    Z,
-    /// Identity operator.
-    I,
-}
-
-/// A Pauli string, composed of a list of [Pauli] operators.
-#[derive(Clone, Copy, Debug)]
-pub struct PauliString<'a> {
-    /// List reader over the Pauli operators.
-    paulis: capnp::enum_list::Reader<'a, jeff_capnp::Pauli>,
-}
-
-/// Well-known quantum gates.
-#[derive(Clone, Copy, Debug)]
-pub enum WellKnownGate {
-    /// Pauli-X gate.
-    X,
-    /// Pauli-Y gate.
-    Y,
-    /// Pauli-Z gate.
-    Z,
-    /// S gate.
-    S,
-    /// T gate.
-    T,
-    /// R1 gate.
-    R1,
-    /// Rx gate.
-    Rx,
-    /// Ry gate.
-    Ry,
-    /// Rz gate.
-    Rz,
-    /// Hadamard gate.
-    H,
-    /// U gate.
-    U,
-    /// Swap gate.
-    Swap,
+impl<'a> Default for GateOpType<'a> {
+    fn default() -> Self {
+        GateOpType::WellKnown(WellKnownGate::I)
+    }
 }
 
 impl<'a> QubitOp<'a> {
@@ -265,75 +241,53 @@ impl<'a> GateOp<'a> {
             power,
         })
     }
-}
 
-impl Pauli {
-    /// Create a new well-known gate type from a capnp reader.
-    pub(self) fn read_capnp(pauli: jeff_capnp::Pauli) -> Self {
-        match pauli {
-            jeff_capnp::Pauli::X => Self::X,
-            jeff_capnp::Pauli::Y => Self::Y,
-            jeff_capnp::Pauli::Z => Self::Z,
-            jeff_capnp::Pauli::I => Self::I,
-            #[allow(unreachable_patterns)]
-            _ => unimplemented!(),
+    /// Returns the number of qubits that the gate acts on.
+    pub fn num_qubits(&self) -> usize {
+        let gate_qubits = match self.gate_type {
+            GateOpType::Custom { num_qubits, .. } => num_qubits as usize,
+            GateOpType::WellKnown(wk) => wk.num_qubits(),
+            GateOpType::PauliProdRotation { pauli_string } => pauli_string.num_qubits(),
+        };
+
+        gate_qubits + self.control_qubits as usize
+    }
+
+    /// Returns the number of floating point parameters that the gate takes as inputs.
+    pub fn num_params(&self) -> usize {
+        match self.gate_type {
+            GateOpType::Custom { num_params, .. } => num_params as usize,
+            GateOpType::WellKnown(wk) => wk.num_params(),
+            GateOpType::PauliProdRotation { pauli_string } => pauli_string.num_params(),
         }
     }
 }
 
-impl<'a> PauliString<'a> {
-    /// Create a new Pauli string from a capnp reader.
-    pub(self) fn read_capnp(pauli_string: capnp::enum_list::Reader<'a, jeff_capnp::Pauli>) -> Self {
+impl<'a> Default for GateOp<'a> {
+    fn default() -> Self {
         Self {
-            paulis: pauli_string,
+            gate_type: Default::default(),
+            control_qubits: 0,
+            adjoint: false,
+            power: 1,
         }
-    }
-
-    /// Returns the number of Pauli operators in this string.
-    pub fn len(&self) -> usize {
-        self.paulis.len() as usize
-    }
-
-    /// Returns `true` if this string is empty.
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    /// Returns the `n`-th Pauli operator in this string.
-    pub fn get(&self, n: usize) -> Pauli {
-        let pauli = self
-            .paulis
-            .get(n as u32)
-            .expect("Pauli operator should be present");
-        Pauli::read_capnp(pauli)
-    }
-
-    /// Returns an iterator over the Pauli operators in this string.
-    pub fn iter(&self) -> impl Iterator<Item = Pauli> + 'a {
-        self.paulis
-            .iter()
-            .map(|p| Pauli::read_capnp(p.expect("Invalid Pauli operator")))
     }
 }
 
-impl WellKnownGate {
-    /// Create a new well-known gate type from a capnp reader.
-    pub(self) fn read_capnp(well_known: jeff_capnp::WellKnownGate) -> Self {
-        match well_known {
-            jeff_capnp::WellKnownGate::X => Self::X,
-            jeff_capnp::WellKnownGate::Y => Self::Y,
-            jeff_capnp::WellKnownGate::Z => Self::Z,
-            jeff_capnp::WellKnownGate::S => Self::S,
-            jeff_capnp::WellKnownGate::T => Self::T,
-            jeff_capnp::WellKnownGate::R1 => Self::R1,
-            jeff_capnp::WellKnownGate::Rx => Self::Rx,
-            jeff_capnp::WellKnownGate::Ry => Self::Ry,
-            jeff_capnp::WellKnownGate::Rz => Self::Rz,
-            jeff_capnp::WellKnownGate::H => Self::H,
-            jeff_capnp::WellKnownGate::U => Self::U,
-            jeff_capnp::WellKnownGate::Swap => Self::Swap,
-            #[allow(unreachable_patterns)]
-            _ => unimplemented!(),
-        }
+#[cfg(test)]
+mod tests {
+    use rstest::rstest;
+
+    use super::*;
+
+    #[rstest]
+    #[case::id(GateOp { gate_type: GateOpType::WellKnown(WellKnownGate::I), ..Default::default() }, 1, 0)]
+    #[case::custom(GateOp { gate_type: GateOpType::Custom { name: "custom", num_qubits: 2, num_params: 1 }, ..Default::default() }, 2, 1)]
+    #[case::control(GateOp { gate_type: GateOpType::WellKnown(WellKnownGate::Swap), control_qubits: 1, ..Default::default() }, 3, 0)]
+    #[case::power(GateOp { gate_type: GateOpType::WellKnown(WellKnownGate::Rz), power: 42, ..Default::default() }, 1, 1)]
+    #[case::adjoint(GateOp { gate_type: GateOpType::WellKnown(WellKnownGate::U), adjoint: true, ..Default::default() }, 1, 3)]
+    fn test_num_qubits(#[case] gate: GateOp, #[case] num_qubits: usize, #[case] num_params: usize) {
+        assert_eq!(gate.num_qubits(), num_qubits);
+        assert_eq!(gate.num_params(), num_params);
     }
 }
