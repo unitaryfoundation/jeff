@@ -1,5 +1,6 @@
 //! Node operation definitions.
 
+use crate::reader::value::{ValueTable, WireValue};
 use crate::types::Type;
 use crate::{jeff_capnp, Direction};
 
@@ -7,7 +8,7 @@ use super::metadata::sealed::HasMetadataSealed;
 use super::optype::OpType;
 use super::string_table::StringTable;
 use super::value::ValueId;
-use super::{ReadError, Value, ValueTable};
+use super::ReadError;
 
 /// Operation in a dataflow graph.
 #[derive(Clone, Copy, Debug)]
@@ -47,7 +48,7 @@ impl<'a> Operation<'a> {
     pub fn boundary(
         &self,
         direction: Direction,
-    ) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    ) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         let value_table = self.values;
         let values = match direction {
             Direction::Incoming => self.op.get_inputs(),
@@ -62,7 +63,7 @@ impl<'a> Operation<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if an encoded value references an invalid index in the value table.
-    pub fn inputs(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    pub fn inputs(&self) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         self.boundary(Direction::Incoming)
     }
 
@@ -71,7 +72,7 @@ impl<'a> Operation<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if an encoded value references an invalid index in the value table.
-    pub fn outputs(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    pub fn outputs(&self) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         self.boundary(Direction::Outgoing)
     }
 
@@ -105,7 +106,7 @@ impl<'a> Operation<'a> {
         &self,
         direction: Direction,
         idx: usize,
-    ) -> Option<Result<Value<'a>, ReadError>> {
+    ) -> Option<Result<WireValue<'a>, ReadError>> {
         let values = match direction {
             Direction::Incoming => self.op.get_inputs(),
             Direction::Outgoing => self.op.get_outputs(),
@@ -124,7 +125,7 @@ impl<'a> Operation<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if the encoded value references an invalid index in the value table.
-    pub fn input(&self, idx: usize) -> Option<Result<Value<'a>, ReadError>> {
+    pub fn input(&self, idx: usize) -> Option<Result<WireValue<'a>, ReadError>> {
         self.boundary_value(Direction::Incoming, idx)
     }
 
@@ -134,7 +135,7 @@ impl<'a> Operation<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if the encoded value references an invalid index in the value table.
-    pub fn output(&self, idx: usize) -> Option<Result<Value<'a>, ReadError>> {
+    pub fn output(&self, idx: usize) -> Option<Result<WireValue<'a>, ReadError>> {
         self.boundary_value(Direction::Outgoing, idx)
     }
 

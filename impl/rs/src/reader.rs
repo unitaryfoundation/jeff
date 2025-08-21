@@ -8,7 +8,7 @@ mod module;
 mod op;
 mod region;
 mod string_table;
-mod value;
+pub mod value;
 
 pub mod optype;
 
@@ -17,7 +17,6 @@ pub use metadata::{HasMetadata, Metadata};
 pub use module::Module;
 pub use op::Operation;
 pub use region::Region;
-pub use value::{Value, ValueId, ValueTable};
 
 use derive_more::derive::{Display, Error, From};
 

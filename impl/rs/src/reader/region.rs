@@ -1,12 +1,13 @@
 //! Dataflow region definition in a jeff program.
 use crate::capnp::jeff_capnp;
+use crate::reader::value::{ValueTable, WireValue};
 use crate::Direction;
 
 use super::metadata::sealed::HasMetadataSealed;
 use super::op::Operation;
 use super::string_table::StringTable;
 use super::value::ValueId;
-use super::{ReadError, Value, ValueTable};
+use super::ReadError;
 
 /// Dataflow region defined in a jeff module.
 #[derive(Clone, Copy, Debug)]
@@ -41,7 +42,7 @@ impl<'a> Region<'a> {
     pub fn boundary(
         &self,
         direction: Direction,
-    ) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    ) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         let value_table = self.values;
         let values = match direction {
             Direction::Incoming => self.region.get_sources(),
@@ -56,7 +57,7 @@ impl<'a> Region<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if an encoded value references an invalid index in the value table.
-    pub fn sources(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    pub fn sources(&self) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         self.boundary(Direction::Incoming)
     }
 
@@ -65,7 +66,7 @@ impl<'a> Region<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if an encoded value references an invalid index in the value table.
-    pub fn targets(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> {
+    pub fn targets(&self) -> impl Iterator<Item = Result<WireValue<'a>, ReadError>> {
         self.boundary(Direction::Outgoing)
     }
 
@@ -99,7 +100,7 @@ impl<'a> Region<'a> {
         &self,
         direction: Direction,
         idx: usize,
-    ) -> Option<Result<Value<'a>, ReadError>> {
+    ) -> Option<Result<WireValue<'a>, ReadError>> {
         let values = match direction {
             Direction::Incoming => self.region.get_sources(),
             Direction::Outgoing => self.region.get_targets(),
@@ -117,7 +118,7 @@ impl<'a> Region<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if the encoded value references an invalid index in the value table.
-    pub fn source(&self, idx: usize) -> Option<Result<Value<'a>, ReadError>> {
+    pub fn source(&self, idx: usize) -> Option<Result<WireValue<'a>, ReadError>> {
         self.boundary_value(Direction::Incoming, idx)
     }
 
@@ -127,7 +128,7 @@ impl<'a> Region<'a> {
     /// # Errors
     ///
     /// - [`ReadError::ValueOutOfBounds`] if the encoded value references an invalid index in the value table.
-    pub fn target(&self, idx: usize) -> Option<Result<Value<'a>, ReadError>> {
+    pub fn target(&self, idx: usize) -> Option<Result<WireValue<'a>, ReadError>> {
         self.boundary_value(Direction::Outgoing, idx)
     }
 

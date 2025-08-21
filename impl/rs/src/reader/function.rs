@@ -1,10 +1,10 @@
 //! Function definition in a jeff program.
 use crate::capnp::jeff_capnp;
-use crate::reader::Value;
+use crate::reader::value::{FunctionIOValue, ValueTable};
 
 use super::metadata::sealed::HasMetadataSealed;
 use super::string_table::StringTable;
-use super::{ReadError, Region, ValueTable};
+use super::{ReadError, Region};
 
 /// Function index into the module's function table.
 pub type FunctionId = u32;
@@ -92,7 +92,7 @@ impl<'a> Function<'a> {
     }
 
     /// Returns the input types of this function.
-    pub fn input_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + '_ {
+    pub fn input_types(&self) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + '_ {
         match self {
             Function::Declaration(decl) => itertools::Either::Left(decl.input_types()),
             Function::Definition(def) => itertools::Either::Right(def.input_types()),
@@ -100,7 +100,9 @@ impl<'a> Function<'a> {
     }
 
     /// Returns the output types of this function.
-    pub fn output_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + '_ {
+    pub fn output_types(
+        &self,
+    ) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + '_ {
         match self {
             Function::Declaration(decl) => itertools::Either::Left(decl.output_types()),
             Function::Definition(def) => itertools::Either::Right(def.output_types()),
@@ -131,13 +133,15 @@ impl<'a> FunctionDefinition<'a> {
     }
 
     /// Returns the input types of this function.
-    pub fn input_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + 'a {
-        self.body().sources()
+    pub fn input_types(&self) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + 'a {
+        self.body().sources().map(|v| Ok(v?.into()))
     }
 
     /// Returns the output types of this function.
-    pub fn output_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + 'a {
-        self.body().targets()
+    pub fn output_types(
+        &self,
+    ) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + 'a {
+        self.body().targets().map(|v| Ok(v?.into()))
     }
 }
 
@@ -154,17 +158,19 @@ impl<'a> FunctionDeclaration<'a> {
     }
 
     /// Returns the input types of this function.
-    pub fn input_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + '_ {
+    pub fn input_types(&self) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + '_ {
         self.inputs
             .iter()
-            .map(move |value| Ok(Value::read_capnp(None, value, self.strings)))
+            .map(move |value| Ok(FunctionIOValue::read_capnp(value, self.strings)))
     }
 
     /// Returns the output types of this function.
-    pub fn output_types(&self) -> impl Iterator<Item = Result<Value<'a>, ReadError>> + '_ {
+    pub fn output_types(
+        &self,
+    ) -> impl Iterator<Item = Result<FunctionIOValue<'a>, ReadError>> + '_ {
         self.outputs
             .iter()
-            .map(move |value| Ok(Value::read_capnp(None, value, self.strings)))
+            .map(move |value| Ok(FunctionIOValue::read_capnp(value, self.strings)))
     }
 }
 
