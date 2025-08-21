@@ -1,7 +1,7 @@
 //! Control-flow operations.
 
 use crate::reader::string_table::StringTable;
-use crate::reader::ValueTable;
+use crate::reader::value::ValueTable;
 use crate::{jeff_capnp, reader};
 
 /// A structured control-flow operation.

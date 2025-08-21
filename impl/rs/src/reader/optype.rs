@@ -13,9 +13,9 @@ pub use int::{IntArrayOp, IntOp};
 pub use qubit::{GateOp, GateOpType, QubitOp, QubitRegisterOp, WellKnownGate};
 
 use crate::jeff_capnp;
+use crate::reader::value::ValueTable;
 
 use super::string_table::StringTable;
-use super::ValueTable;
 
 /// The type of an operation.
 #[derive(Clone, Debug)]
