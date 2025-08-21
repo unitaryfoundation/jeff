@@ -4,7 +4,7 @@ mod const_val;
 mod control_flow;
 mod float;
 mod int;
-mod qubit;
+pub mod qubit;
 
 pub use const_val::ConstArray;
 pub use control_flow::{ControlFlowOp, FuncOp, SwitchOp};
