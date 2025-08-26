@@ -4,9 +4,10 @@
 //! definition and each port contains an index into this array.
 
 use crate::capnp::jeff_capnp;
+use derive_more::Display;
 
 /// Value type.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Display)]
 pub enum Type {
     /// Quantum bit.
     ///
@@ -28,6 +29,7 @@ pub enum Type {
     /// Signed integers are represented using two's complement.
     ///
     /// Integers of bitwidth 1 can be used as classical bits or boolean values.
+    #[display("Int{}", bits)]
     Int {
         /// Bitwidth of the integer.
         bits: u8,
@@ -37,11 +39,13 @@ pub enum Type {
     /// The length of the array is not known at compile time, but fixed at runtime.
     ///
     /// Arrays of integers of bitwidth 1 can be used as classical bit arrays.
+    #[display("IntArray{}", bits)]
     IntArray {
         /// Bitwidth of the integers.
         bits: u8,
     },
     /// Floating point numbers.
+    #[display("Float{}", precision.bits())]
     Float {
         /// Precision of the floating point number.
         precision: FloatPrecision,
@@ -49,6 +53,7 @@ pub enum Type {
     /// Array of floating point numbers.
     ///
     /// The length of the array is not known at compile time, but fixed at runtime.
+    #[display("FloatArray{}", precision.bits())]
     FloatArray {
         /// Precision of the floating point numbers.
         precision: FloatPrecision,
@@ -120,7 +125,7 @@ impl Type {
 }
 
 /// Precision of floating point number.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Display)]
 pub enum FloatPrecision {
     /// 32-bit floating point number.
     Float32,
