@@ -21,9 +21,11 @@ import textwrap
 from abc import ABC, abstractmethod
 from typing import Any, Iterable
 
-from .capnp import load_schema
+# from .capnp import load_schema
 
-schema = load_schema()
+# TODO: Temporarily disabled
+# schema = load_schema()
+schema = None
 
 # TODO: add remaining op instructions
 # TODO: add methods to convert read-only data to cached (builder) instances, remove '_update_cache'
@@ -481,7 +483,7 @@ class JeffOp:
 
         if outputs := self.outputs:
             string += ", ".join(str(out) for out in outputs)
-            string += f" = "
+            string += " = "
 
         string += f"{self.instruction_name} "
 
@@ -653,12 +655,12 @@ class JeffRegion:
         string += "  in :"
         if sources := self.sources:
             string += f" {', '.join(str(src) for src in sources)}"
-        string += f"\n"
+        string += "\n"
 
         for op in self:
             string += f"{textwrap.indent(str(op), '    ')}\n"
 
-        string += f"  out:"
+        string += "  out:"
         if targets := self.targets:
             string += f" {', '.join(str(tgt) for tgt in targets)}"
         string += ""
@@ -737,7 +739,7 @@ class JeffFunc(ABC):
 
         string = f"func @{self.name}"
         string += f"({', '.join(str(ty) for ty in input_types)})"
-        string += f" -> "
+        string += " -> "
         string += f"({', '.join(str(ty) for ty in output_types)})"
 
         if isinstance(self, FunctionDef):
@@ -1256,7 +1258,7 @@ class JeffGate(ABC):
         if num_controls := self.num_controls:
             string += f"numControls={num_controls}, "
         if self.adjoint:
-            string += f"adjoint, "
+            string += "adjoint, "
         if (power := self.power) != 1:
             string += f"power={power}, "
         return string
@@ -1503,7 +1505,7 @@ class PPRGate(JeffGate):
     # Python integration
 
     def __str__(self):
-        string = f"(PPR, "
+        string = "(PPR, "
         string += f"pauliString={self.pauli_string}, "
         string += super().__str__()
         string = string[:-2] + ")"
@@ -1634,8 +1636,8 @@ class SwitchSCF(JeffSCF):
             string += f"{textwrap.indent(str(branch), '  ')}"
 
         if branch := self.default:
-            string += f"\n"
-            string += f"  default:\n"
+            string += "\n"
+            string += "  default:\n"
             string += f"{textwrap.indent(str(branch), '  ')}"
 
         return string
@@ -1694,7 +1696,7 @@ class ForSCF(JeffSCF):
 
     def __str__(self):
         string = "\n"
-        string += f"  body:\n"
+        string += "  body:\n"
         string += f"{textwrap.indent(str(self.body), '  ')}"
         return string
 
@@ -1776,9 +1778,9 @@ class WhileSCF(JeffSCF):
 
     def __str__(self):
         string = "\n"
-        string += f"  while:\n"
+        string += "  while:\n"
         string += f"{textwrap.indent(str(self.condition), '  ')}"
-        string += f"  do:\n"
+        string += "  do:\n"
         string += f"{textwrap.indent(str(self.body), '  ')}"
         return string
 
@@ -1855,9 +1857,9 @@ class DoWhileSCF(JeffSCF):
 
     def __str__(self):
         string = "\n"
-        string += f"  do:\n"
+        string += "  do:\n"
         string += f"{textwrap.indent(str(self.body), '  ')}"
-        string += f"  while:\n"
+        string += "  while:\n"
         string += f"{textwrap.indent(str(self.condition), '  ')}"
         return string
 

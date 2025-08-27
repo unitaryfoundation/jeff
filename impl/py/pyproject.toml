@@ -26,7 +26,10 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 
-dependencies = ["pycapnp ~= 2.0.0"]
+dependencies = [
+    # TODO: Temporarily disabled
+    # "pycapnp ~= 2.0.0"
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/jeff"]
