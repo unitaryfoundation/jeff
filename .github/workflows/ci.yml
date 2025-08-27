@@ -210,9 +210,15 @@ jobs:
           patch -p0 -R < impl/capnp/cpp_namespace.patch
       - name: Re-encode the test .jeff files
         run: ./examples/encode_examples.sh
+      - name: Copy the latest capnp schema to the python package
+        run: cp impl/capnp/jeff.capnp impl/py/src/jeff-format/data/jeff.capnp
       - name: Check if the generated capnproto code is up to date
         run: |
-          git diff --exit-code impl/rs/src/capnp/ impl/cpp/src/capnp/ examples/
+          git diff --exit-code \
+            impl/rs/src/capnp/ \
+            impl/cpp/src/capnp/ \
+            examples/ \
+            impl/py/src/jeff-format/data/jeff.capnp
           if [ $? -ne 0 ]; then
             echo "The capnp generated code is not up to date"
             echo "Please run 'just update-capnp' and commit the changes"

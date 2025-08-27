@@ -17,19 +17,13 @@ All classes come with pretty-print string representation. Note that parsing is a
 
 from __future__ import annotations
 
-import os
 import textwrap
 from abc import ABC, abstractmethod
 from typing import Any, Iterable
 
-import capnp
+from .capnp import load_schema
 
-# capnp warns about this environment variable being set
-if "PWD" in os.environ:
-    del os.environ["PWD"]
-
-capnp.remove_import_hook()
-schema = capnp.load("impl/capnp/jeff.capnp")
+schema = load_schema()
 
 # TODO: add remaining op instructions
 # TODO: add methods to convert read-only data to cached (builder) instances, remove '_update_cache'
@@ -45,7 +39,22 @@ FloatPrecisions = (32, 64)
 
 Paulis = ("i", "x", "y", "z")
 
-KnownGates = ("gphase", "i", "x", "y", "z", "s", "t", "r1", "rx", "ry", "rz", "h", "u", "swap")
+KnownGates = (
+    "gphase",
+    "i",
+    "x",
+    "y",
+    "z",
+    "s",
+    "t",
+    "r1",
+    "rx",
+    "ry",
+    "rz",
+    "h",
+    "u",
+    "swap",
+)
 
 ################
 # Core classes #
@@ -397,7 +406,9 @@ class JeffOp:
         if self._inputs is not _Empty:
             return self._inputs
 
-        return [JeffValue.from_encoding(inp, self._func) for inp in self._raw_data.inputs]
+        return [
+            JeffValue.from_encoding(inp, self._func) for inp in self._raw_data.inputs
+        ]
 
     @inputs.setter
     def inputs(self, inputs: list[JeffValue]):
@@ -409,7 +420,9 @@ class JeffOp:
         if self._outputs is not _Empty:
             return self._outputs
 
-        return [JeffValue.from_encoding(out, self._func) for out in self._raw_data.outputs]
+        return [
+            JeffValue.from_encoding(out, self._func) for out in self._raw_data.outputs
+        ]
 
     @outputs.setter
     def outputs(self, outputs: list[JeffValue]):
@@ -494,7 +507,10 @@ class JeffRegion:
     _operations: list[JeffOp] = _Empty
 
     def __init__(
-        self, sources: list[JeffValue], targets: list[JeffValue], operations: list[JeffOp]
+        self,
+        sources: list[JeffValue],
+        targets: list[JeffValue],
+        operations: list[JeffOp],
     ):
         self._sources = sources
         self._targets = targets
@@ -569,7 +585,8 @@ class JeffRegion:
             return self._sources
 
         return [
-            JeffValue.from_encoding(source, self.parent_func) for source in self._raw_data.sources
+            JeffValue.from_encoding(source, self.parent_func)
+            for source in self._raw_data.sources
         ]
 
     @sources.setter
@@ -583,7 +600,8 @@ class JeffRegion:
             return self._targets
 
         return [
-            JeffValue.from_encoding(target, self.parent_func) for target in self._raw_data.targets
+            JeffValue.from_encoding(target, self.parent_func)
+            for target in self._raw_data.targets
         ]
 
     @targets.setter
@@ -597,7 +615,10 @@ class JeffRegion:
         if self._operations is not _Empty:
             return self._operations
 
-        return [JeffOp.from_encoding(op, self.parent_func) for op in self._raw_data.operations]
+        return [
+            JeffOp.from_encoding(op, self.parent_func)
+            for op in self._raw_data.operations
+        ]
 
     @operations.setter
     def operations(self, operations: list[JeffOp]):
@@ -850,7 +871,9 @@ class FunctionDef(JeffFunc):
         if self._body is not _Empty:
             return self._body[idx]
 
-        return JeffOp.from_encoding(self._raw_data.definition.body.operations[idx], self)
+        return JeffOp.from_encoding(
+            self._raw_data.definition.body.operations[idx], self
+        )
 
 
 class FunctionDecl(JeffFunc):
@@ -903,7 +926,10 @@ class FunctionDecl(JeffFunc):
         if self._inputs is not _Empty:
             return self._inputs
 
-        return [JeffType.from_encoding(inp.type) for inp in self._raw_data.declaration.inputs]
+        return [
+            JeffType.from_encoding(inp.type)
+            for inp in self._raw_data.declaration.inputs
+        ]
 
     @inputs.setter
     def inputs(self, inputs: list[JeffType]):
@@ -915,7 +941,10 @@ class FunctionDecl(JeffFunc):
         if self._outputs is not _Empty:
             return self._outputs
 
-        return [JeffType.from_encoding(out.type) for out in self._raw_data.declaration.outputs]
+        return [
+            JeffType.from_encoding(out.type)
+            for out in self._raw_data.declaration.outputs
+        ]
 
     @outputs.setter
     def outputs(self, outputs: list[JeffType]):
@@ -1128,7 +1157,7 @@ class JeffModule:
         string += "\n\n"
 
         for i, func in enumerate(self):
-            string += f"{'[entry] 'if i == self.entrypoint else ''}{func}\n"
+            string += f"{'[entry] ' if i == self.entrypoint else ''}{func}\n"
 
         return string
 
@@ -1151,7 +1180,9 @@ class JeffGate(ABC):
     _power: int = _Empty
 
     def from_encoding(gate: schema.QubitGate, op: JeffOp):
-        cls = {"custom": CustomGate, "wellKnown": WellKnowGate, "ppr": PPRGate}[str(gate.which)]
+        cls = {"custom": CustomGate, "wellKnown": WellKnowGate, "ppr": PPRGate}[
+            str(gate.which)
+        ]
         obj = cls.__new__(cls)
         obj._raw_data = gate
         obj._op = op
@@ -1279,7 +1310,20 @@ class WellKnowGate(JeffGate):
         match self.kind:
             case "gphase":
                 return 0
-            case "i" | "x" | "y" | "z" | "s" | "t" | "r1" | "rx" | "ry" | "rz" | "h" | "u":
+            case (
+                "i"
+                | "x"
+                | "y"
+                | "z"
+                | "s"
+                | "t"
+                | "r1"
+                | "rx"
+                | "ry"
+                | "rz"
+                | "h"
+                | "u"
+            ):
                 return 1
             case "swap":
                 return 2
@@ -1359,7 +1403,9 @@ class CustomGate(JeffGate):
         if self._name is not _Empty:
             return self._name
 
-        assert (func := self._op._func) and (mod := func._module) and not mod.is_dirty, (
+        assert (
+            (func := self._op._func) and (mod := func._module) and not mod.is_dirty
+        ), (
             "The parent module is not present or dirty, and no name has been cached. "
             "Please call `refresh` on the module to access this attribute."
         )
@@ -1414,7 +1460,9 @@ class PPRGate(JeffGate):
 
     _pauli_string: list[str] = _Empty
 
-    def __init__(self, pauli_string: list[str], num_controls: int, adjoint: bool, power: int):
+    def __init__(
+        self, pauli_string: list[str], num_controls: int, adjoint: bool, power: int
+    ):
         self._pauli_string = pauli_string
         self._num_controls = num_controls
         self._adjoint = adjoint
@@ -1548,7 +1596,10 @@ class SwitchSCF(JeffSCF):
         if self._branches is not _Empty:
             return self._branches
 
-        return [JeffRegion.from_encoding(branch, self) for branch in self._raw_data.switch.branches]
+        return [
+            JeffRegion.from_encoding(branch, self)
+            for branch in self._raw_data.switch.branches
+        ]
 
     @branches.setter
     def branches(self, branches: list[JeffRegion]):
@@ -1696,7 +1747,9 @@ class WhileSCF(JeffSCF):
         if self._condition is not _Empty:
             return self._condition
 
-        return JeffRegion.from_encoding(getattr(self._raw_data, "while").condition, self)
+        return JeffRegion.from_encoding(
+            getattr(self._raw_data, "while").condition, self
+        )
 
     @condition.setter
     def condition(self, condition: JeffRegion):
@@ -1856,7 +1909,9 @@ def quantum_gate(
     if name in KnownGates:
         gate = WellKnowGate(name, len(control_qubits), adjoint, power)
     else:
-        gate = CustomGate(name, len(qubits), len(params), len(control_qubits), adjoint, power)
+        gate = CustomGate(
+            name, len(qubits), len(params), len(control_qubits), adjoint, power
+        )
     qubit_inputs = qubits + control_qubits
     inputs = qubit_inputs + params
     outputs = [JeffValue(QubitType()) for _ in qubit_inputs]
@@ -1898,21 +1953,21 @@ def switch_case(
 ):
     """Instantiate a switch-case operation. Cases run from 0 to len(branches)-1."""
     for branch in branches + [default] if default else branches:
-        assert len(branch.sources) == len(
-            branches[0].sources
-        ), "all branches require the same number of sources"
+        assert len(branch.sources) == len(branches[0].sources), (
+            "all branches require the same number of sources"
+        )
         assert all(
             map(lambda x, y: x.type == y.type, branch.sources, branches[0].sources)
         ), "all branches require the same source type signature"
-        assert len(branch.targets) == len(
-            branches[0].targets
-        ), "all branches require the same number of targets"
+        assert len(branch.targets) == len(branches[0].targets), (
+            "all branches require the same number of targets"
+        )
         assert all(
             map(lambda x, y: x.type == y.type, branch.targets, branches[0].targets)
         ), "all branches require the same target type signature"
-    assert all(
-        map(lambda x, y: x.type == y.type, region_args, branches[0].sources)
-    ), "the initial region_args must match the source type signature of the branches"
+    assert all(map(lambda x, y: x.type == y.type, region_args, branches[0].sources)), (
+        "the initial region_args must match the source type signature of the branches"
+    )
 
     scf = SwitchSCF(branches, default)
     inputs = [index] + region_args
