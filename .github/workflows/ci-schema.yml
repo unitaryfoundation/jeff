@@ -1,0 +1,108 @@
+name: Continuous integration 📜
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch: {}
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  CAPNPROTO_VERSION: "1.1.0"
+
+jobs:
+  # Check if changes were made to the relevant files.
+  # Always returns true if running on the default branch, to ensure all changes are thoroughly checked.
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      schema: ${{ steps.filter.outputs.schema }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/check-changes
+        id: filter
+
+  # Ensure that the generated capnp implementations are up to date
+  #
+  # Run `just update-capnp` to update the generated code.
+  capnp-schema:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.schema == 'true' && github.event_name != 'merge_group' }}
+    name: Keep the capnp generated code up-to-date with the schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install CapnProto
+        run: |
+          curl -O https://capnproto.org/capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
+          tar zxf capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
+          cd capnproto-c++-${CAPNPROTO_VERSION}
+          ./configure
+          make -j6 check
+          sudo make install
+      - name: Get cargo binstall
+        uses: cargo-bins/cargo-binstall@main
+      - name: Install capnproto-rust plugin
+        run: cargo binstall capnpc
+      - name: Regenerate the Rust capnp code
+        run: |
+          capnp compile \
+            -orust:impl/rs/src \
+            --src-prefix=impl \
+            impl/capnp/jeff.capnp
+      - name: Regenerate the C++ capnp code
+        run: |
+          patch -p0 < impl/capnp/cpp_namespace.patch
+          capnp compile \
+            -oc++:impl/cpp/src \
+            --src-prefix=impl \
+            impl/capnp/jeff.capnp
+          patch -p0 -R < impl/capnp/cpp_namespace.patch
+      - name: Re-encode the test .jeff files
+        run: ./examples/encode_examples.sh
+      - name: Copy the latest capnp schema to the python package
+        run: cp impl/capnp/jeff.capnp impl/py/src/jeff-format/data/jeff.capnp
+      - name: Check if the generated capnproto code is up to date
+        run: |
+          git diff --exit-code \
+            impl/rs/src/capnp/ \
+            impl/cpp/src/capnp/ \
+            examples/ \
+            impl/py/src/jeff-format/data/jeff.capnp
+          if [ $? -ne 0 ]; then
+            echo "The capnp generated code is not up to date"
+            echo "Please run 'just update-capnp' and commit the changes"
+            exit 1
+          fi
+
+  # This is a meta job to mark successful completion of the required checks,
+  # even if they are skipped due to no changes in the relevant files.
+  required-checks:
+    name: Required checks
+    needs: [
+      changes,
+      capnp-schema,
+    ]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if required checks failed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "Required checks failed"
+          echo "Please check the logs for more information"
+          exit 1
+      - name: Pass if all required checks passed
+        run: |
+          echo "All required checks passed"

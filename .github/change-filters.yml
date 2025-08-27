@@ -10,12 +10,12 @@ rust: &rust
   - *schema
   - ".github/workflows/ci.yml"
   - "impl/rs/**"
-  - "impl/Cargo.toml"
-  - "impl/Cargo.lock"
+  - "Cargo.toml"
+  - "Cargo.lock"
 
 python: &python
   - *schema
   - ".github/workflows/ci.yml"
   - "impl/py/**"
-  - "impl/pyproject.toml"
-  - "impl/uv.lock"
+  - "pyproject.toml"
+  - "uv.lock"
