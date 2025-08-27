@@ -102,6 +102,66 @@ pub struct GateOp<'a> {
     pub power: u8,
 }
 
+impl GateOp<'_> {
+    /// If this gate has a custom identifier, try to convert it to a well-known
+    /// gate and return the new gate operation.
+    pub fn normalize(self) -> Self {
+        let GateOpType::Custom {
+            name,
+            num_qubits,
+            num_params,
+        } = self.gate_type
+        else {
+            return self;
+        };
+        let name = name.to_ascii_lowercase();
+
+        // We recognize a few special cases for controlled gates.
+        match (name.as_str(), num_qubits, num_params) {
+            ("cx", 2, 0) | ("cnot", 2, 0) => {
+                return Self {
+                    gate_type: GateOpType::WellKnown(WellKnownGate::X),
+                    control_qubits: self.control_qubits + 1,
+                    adjoint: self.adjoint,
+                    power: self.power,
+                }
+            }
+            ("cy", 2, 0) => {
+                return Self {
+                    gate_type: GateOpType::WellKnown(WellKnownGate::Y),
+                    control_qubits: self.control_qubits + 1,
+                    adjoint: self.adjoint,
+                    power: self.power,
+                }
+            }
+            ("cz", 2, 0) => {
+                return Self {
+                    gate_type: GateOpType::WellKnown(WellKnownGate::Z),
+                    control_qubits: self.control_qubits + 1,
+                    adjoint: self.adjoint,
+                    power: self.power,
+                }
+            }
+            _ => {}
+        };
+
+        // Look for direct matches between the custom gate and a well-known gate.
+        if let Some(gate) = WellKnownGate::from_name(&name) {
+            if gate.num_qubits() == num_qubits as usize || gate.num_params() == num_params as usize
+            {
+                return Self {
+                    gate_type: GateOpType::WellKnown(gate),
+                    control_qubits: self.control_qubits,
+                    adjoint: self.adjoint,
+                    power: self.power,
+                };
+            }
+        }
+
+        self
+    }
+}
+
 /// The type of gate operation.
 #[derive(Clone, Copy, Debug, derive_more::Display)]
 pub enum GateOpType<'a> {
@@ -206,7 +266,6 @@ impl<'a> GateOp<'a> {
     ) -> Result<Self, ReadError> {
         let control_qubits = gate.get_control_qubits();
         let adjoint = gate.get_adjoint();
-        let power = gate.get_power();
         let gate_type = match gate.which().expect("Gate type should be present") {
             jeff_capnp::qubit_gate::Which::WellKnown(well_known) => {
                 let well_known =
@@ -233,6 +292,12 @@ impl<'a> GateOp<'a> {
                 }
             }
         };
+
+        // Power defaults to 1 if not present
+        let mut power = gate.get_power();
+        if power == 0 {
+            power = 1;
+        }
 
         Ok(Self {
             gate_type,

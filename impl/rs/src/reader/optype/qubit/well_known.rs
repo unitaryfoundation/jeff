@@ -245,4 +245,26 @@ impl WellKnownGate {
             U => 3,
         }
     }
+
+    /// Returns the well known gate corresponding to the given name.
+    pub fn from_name(name: &str) -> Option<Self> {
+        let gate = match name.to_ascii_lowercase().as_str() {
+            "gphase" => Self::GPhase,
+            "i" => Self::I,
+            "x" => Self::X,
+            "y" => Self::Y,
+            "z" => Self::Z,
+            "s" => Self::S,
+            "t" => Self::T,
+            "r1" => Self::R1,
+            "rx" => Self::Rx,
+            "ry" => Self::Ry,
+            "rz" => Self::Rz,
+            "h" | "hadamard" => Self::H,
+            "u" => Self::U,
+            "swap" => Self::Swap,
+            _ => return None,
+        };
+        Some(gate)
+    }
 }
