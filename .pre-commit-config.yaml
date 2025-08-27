@@ -51,14 +51,13 @@ repos:
         language: system
         files: \.py$
         pass_filenames: false
-      # TODO: Fix lints and re-enable
-      #- id: mypy-check
-      #  name: mypy
-      #  description: Check python code with `mypy`.
-      #  entry: uv run mypy .
-      #  language: system
-      #  files: \.py$
-      #  pass_filenames: false
+      - id: mypy-check
+        name: mypy
+        description: Check python code with `mypy`.
+        entry: uv run mypy .
+        language: system
+        files: \.py$
+        pass_filenames: false
       - id: cargo-fmt
         name: cargo format
         description: Format rust code with `cargo fmt`.
