@@ -33,12 +33,28 @@ There are two main reasons:
 - Because we *need* to (not all algorithmic primitives, an example being repeat-until-success, can
   be represented without structure!), and
 
-- Even when we don't *need* to, preserving structure improves scalability.
+- Even when we don't *need* to, preserving structure is necessary for scalability.
 
 Quantum algorithms naturally have structure, even if we aren't used to thinking of them that way.
 For example, consider Shor's algorithm: when coded up in Python, we will instinctively use
 structure such as if statements, for loops, etc., rather than writing out the finalized list of
-gates to be applied. This structure results in a *compressed* program representation compared to 
+gates to be applied. This structure results in a *compressed* program representation compared to
+the unrolled list of quantum instructions, so ideally we should design compiler passes to act on
+such compressed representations.
+
+In extreme cases, if the program representation does not increase in size as the program scales,
+[compilation may be constant-time](https://arxiv.org/abs/2504.12449).
+
+There is still a lot of work to do when it comes to compiling structured programs:
+
+- Often, porting known state-of-the-art compilation techniques to apply to structured programs can
+  be highly non-trivial.
+
+- There is tension between maximal optimization and compact program representation. There are still
+  a lot of questions we need to consider and resolve when it comes to compiling dynamic, structured
+  programs. For example, the more compact the program representation (which is great for
+  compilation scalability!) the less information we potentially have up-front to maximally optimize
+  programs at compile time. How do we deal with such scenarios?
 
 ## How did you decide what goes into the schema?
 
