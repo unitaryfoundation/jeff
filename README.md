@@ -13,22 +13,22 @@ for compilers to communicate.
 
 ## Features
 
-* Structured representation: First class support for hybrid, structured, and dynamic quantum
+* **Structured representation**: First class support for hybrid, structured, and dynamic quantum
   programs. Share the logical intent of a program, not just a low-level gate sequence.
 
-* Efficient: *Jeff* is built to be a high-performant, compact, in-memory representation, making it
+* **Efficient**: *Jeff* is built to be a high-performant, compact, in-memory representation, making it
   fast and easy for compilers to load, transform, and export.
 
-* Extensible by design: The *Jeff* schema is designed to allow maximum extensibility --- it can be
+* **Extensible by design**: The *Jeff* schema is designed to allow maximum extensibility --- it can be
   easily extended with new features or metadata, ensuring it can grow with the field.
 
-* Bring your own compiler framework: *Jeff* provides a neutral ground for different quantum
+* **Bring your own compiler framework**: *Jeff* provides a neutral ground for different quantum
   compilers (such as Catalyst, TKET, UCC, and others) to share passes, interoperate seamlessly
   on a single workflow.
 
 ## Motivation
 
-The quantum software field is at a critical juncture --- as quantum algorithms become increasingly
+The quantum software field is at a critical juncture — as quantum algorithms become increasingly
 sophisticated, quantum program representation is evolving from low-level, gate-centric approaches
 to more complex representations that incorporate classical processing, structure, and dynamism.
 
@@ -37,7 +37,7 @@ In particular,
 - There are some algorithmic patterns we cannot represent without structure and dynamism
   (for example, repeat-until-success and quantum error correction).
 
-- Algorithms inherently contain structure --- by preserving this structure during optimization,
+- Algorithms inherently contain structure — by preserving this structure during optimization,
   we can massively improve scalability.
 
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
