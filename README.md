@@ -47,8 +47,8 @@ however current de-facto interchange formats (such as QIR, and OpenQASM) either 
 structure needed for advanced, high-level optimizations, or was not designed for program
 optimization.
 
-**This creates a bottleneck for collaboration and makes it difficult to develop and share
-sophisticated compiler passes.**
+***This creates a bottleneck for collaboration and makes it difficult to develop and share
+sophisticated compiler passes.***
 
 Unlike other common quantum program formats, *Jeff* is not a human-readable source language or a
 low-level intermediate representation. It's an in-memory representation designed for
