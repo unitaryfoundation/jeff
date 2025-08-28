@@ -4,8 +4,8 @@
 
 ## Better interdisciplinary support.
 
-We need to be able to compile large, complex, quantum algorithms, and this is an interdisciplinary
-effort.
+**We need to be able to compile large, complex, quantum algorithms, and this is an interdisciplinary
+effort.**
 
 Compilation is an incredibly important component of quantum computing infrastructure. The inability
 to optimize large algorithms for future fault-tolerant hardware will extend(or block!) timelines
@@ -64,4 +64,28 @@ toolchains such as LLVM and MLIR, the [overhead to contributing novel compilatio
 significantly](https://arxiv.org/abs/2411.18682). **We need to reduce this overhead while still
 allowing use of such tooling**.
 
-## Better visibility and debugging
+## Better visibility into software compilation.
+
+**We need to be able to visualize and debug our programs as they are modified by software compilers**.
+
+As compilers become more complex (using tooling such as Rust, or LLVM, as well as producing
+complicated program structures), it is becoming more and more difficult to debug compilation, or
+even *visualize* how our programs are changing.
+
+There is a huge need for improved visualization and debugging tooling for software compilers, but
+this is a highly non-trivial matter! As such, an exchange format that allows compiler frameworks to
+share (or dispatch to) visualization and debugging tools allows us to work together and build up
+common abstractions and visualizations.
+
+## There is still so much uncertainty.
+
+**We need to move fast, without slowing down development of new ideas.**
+
+The danger of introducing new exchange formats or standards is that they themselves may slow down
+development — perhaps because of a governance structure with too much process and/or stakeholders,
+or simply because the format is too rigid and doesn't permit extensibility for new ideas.
+
+This is something we wish to avoid — Jeff is *not* a standard, but an exchange format, designed to
+be easily extensible. Additional information for program representation and compilation can be added
+directly, and will be taken into account by software frameworks that understand the direction.
+Further, development will happen out in the open, on GitHub.
