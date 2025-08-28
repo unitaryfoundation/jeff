@@ -26,8 +26,6 @@ for compilers to communicate.
   compilers (such as Catalyst, TKET, UCC, and others) to share passes, interoperate seamlessly
   on a single workflow.
 
-* Development
-
 ## Motivation
 
 The quantum software field is at a critical juncture --- as quantum algorithms become increasingly
