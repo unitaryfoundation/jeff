@@ -30,7 +30,7 @@ algorithmic research, and quantum software developers.
 circuits is holding us back**.
 
 This is already recognized and built into common quantum software
-libraries (Qiskit, CUDA-Q, PennyLane, UCC, Guppy, TKET, etc.) and formats(QIR, OpenQASM3, etc.),
+libraries (Qiskit, CUDA-Q, PennyLane, UCC, Guppy, TKET, etc.) and formats (QIR, OpenQASM3, etc.),
 but introduces complexity into the compilation pipeline.
 
 - While we are starting to see [exceptions](https://arxiv.org/abs/2410.23493), most theoretical
