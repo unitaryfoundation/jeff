@@ -3,7 +3,7 @@
 ## Is *Jeff* meant to be an intermediate format that quantum software packages to manipulate?
 
 No. *Jeff* is designed purely to be an exchange format. It is expected that consuming software
-frameworks map **Jeff** input to their own intermediate representations for internal maniupation.
+frameworks map **Jeff** input to their own intermediate representations for internal manipulation.
 
 ## Why design a non-human readable format?
 
@@ -93,7 +93,7 @@ format:
 ### Why not QIR?
 
 [QIR](https://www.qir-alliance.org/) was originally designed as a low-level, hardware-facing IR for optimization, for example using
-the QIR Adaptor Tool (QAT). However, QIR today is used less for quantum optimization as it is quite
+the QIR Adapter Tool (QAT). However, QIR today is used less for quantum optimization as it is quite
 low-level (missing a lot of the higher-level abstractions we would like to preserve during
 compilation), and is predominantly used as a low-level interchange format between software
 frameworks and hardware providers.
