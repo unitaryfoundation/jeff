@@ -43,15 +43,14 @@ In particular,
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
-however current de-facto interchange formats (such as QIR, and OpenQASM) either lacks the explicit
-structure needed for advanced, high-level optimizations, or was not designed for program
-optimization.
+however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for quantum optimization — lacking the explicit
+structure needed for advanced high-level optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like LLVM.
 
 ***This creates a bottleneck for collaboration and makes it difficult to develop and share
 sophisticated compiler passes.***
 
 Unlike other common quantum program formats, *Jeff* is not a human-readable source language or a
-low-level intermediate representation. It's an in-memory representation designed for
+low-level intermediate representation. It's an in-memory and serialized representation designed for
 high-performance compiler tools.
 
 Finally, the quantum software, compilation, and hardware development is evolving *rapidly*, and
