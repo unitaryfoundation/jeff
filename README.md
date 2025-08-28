@@ -43,8 +43,10 @@ In particular,
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
-however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for quantum optimization — lacking the explicit
-structure needed for advanced high-level optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like LLVM.
+however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for
+quantum optimization — lacking the explicit structure needed for advanced high-level
+optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like
+LLVM.
 
 ***This creates a bottleneck for collaboration and makes it difficult to develop and share
 sophisticated compiler passes.***
@@ -63,7 +65,7 @@ here, on GitHub, and guided by the needs of quantum software and compilation.
 
 The serialization schema is defined using the
 [Cap'n Proto](https://capnproto.org) serialization protocol. The current version
-is defined in [`impl/capnp/jeff.capnp`][capnp].
+is defined in [`impl/capnp/jeff.capnp`](https://github.com/unitaryfoundation/jeff/tree/main/impl/capnp/jeff.capnp).
 
 ### Protocol implementations
 
@@ -77,7 +79,7 @@ programs:
 ## Contributions
 
 *Jeff* is hosted by the [Unitary Foundation](https://unitary.foundation/) and is a collaboration between developers at
-[Quantinuum](https://www.quantinuum.com), and [Xanadu](https://www.xanadu.ai).
+[Quantinuum](https://www.quantinuum.com) and [Xanadu](https://www.xanadu.ai).
 
 Your contributions help improve the tool for everyone! There are many ways you can contribute, such as:
 
@@ -91,4 +93,4 @@ Check out the [DEVELOPMENT](https://github.com/unitaryfoundation/jeff/blob/main/
 
 ## License
 
-The Jeff project is **free** and **open source**, released under the Apache License, Version 2.0.
+The *Jeff* project is **free** and **open source**, released under the Apache License, Version 2.0.
