@@ -16,8 +16,8 @@ for compilers to communicate.
 * Structured representation: First class support for hybrid, structured, and dynamic quantum
   programs. Share the logical intent of a program, not just a low-level gate sequence.
 
-* Efficient: *Jeff* is built to be a high-performance in-memory representation, making it
-  fast and easy for compilers to parse, transform, and export.
+* Efficient: *Jeff* is built to be a high-performant, compact, in-memory representation, making it
+  fast and easy for compilers to load, transform, and export.
 
 * Extensible by design: The *Jeff* schema is designed to allow maximum extensibility --- it can be
   easily extended with new features or metadata, ensuring it can grow with the field.
@@ -35,7 +35,7 @@ to more complex representations that incorporate classical processing, structure
 In particular,
 
 - There are some algorithmic patterns we cannot represent without structure and dynamism
-  (for example, repeat-until-success).
+  (for example, repeat-until-success and quantum error correction).
 
 - Algorithms inherently contain structure --- by preserving this structure during optimization,
   we can massively improve scalability.
@@ -69,7 +69,11 @@ is defined in [`impl/capnp/jeff.capnp`][capnp].
 ### Protocol implementations
 
 We provide implementations in various languages for reading and writing *jeff*
-programs. See the [`impl`][impl] directory for more information.
+programs:
+
+- 🦀 [`jeff-format`](https://crates.io/crates/jeff-format) library on crates.io
+- 🐍 [`jeff-format`](https://pypi.org/project/jeff-format) library on pypi
+- C++ headers available in [`impl/cpp`](https://github.com/unitaryfoundation/jeff/tree/main/impl/cpp)
 
 ## Contributions
 
@@ -84,6 +88,7 @@ Your contributions help improve the tool for everyone! There are many ways you c
 - Helping us build up a library of interoperable next-gen compiler passes.
 
 If you have questions about contributing, please ask on the Unitary Foundation Discord.
+Check out the [DEVELOPMENT](https://github.com/unitaryfoundation/jeff/blob/main/DEVELOPMENT.md) guide for instructions on setting up the environment.
 
 ## License
 
