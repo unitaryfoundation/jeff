@@ -38,7 +38,7 @@ two major reason why they might make less sense going forward:
 
 ### Why not OpenQASM2?
 
-OpenQASM2 has become the de-facto interchange format in quantum software, but the biggest drawback
+[OpenQASM2](https://arxiv.org/abs/1707.03429) has become the de-facto interchange format in quantum software, but the biggest drawback
 has been the lack of program structure — something that we *need* to be a first-class citizen in a
 compiler exchange format.
 
@@ -47,15 +47,15 @@ compilation of structured programs by default.
 
 ### Why not OpenQASM3?
 
-OpenQASM3 brings program structure to OpenQASM2, however has not yet seen adoption in the ecosystem
-to the extent as OpenQASM2. In addition, OpenQASM3 maintains a focus on human readability, and is
-not designed first and foremost for quantum optimization.
+[OpenQASM3](https://arxiv.org/abs/2104.14722) brings program structure to OpenQASM2, however has not yet seen adoption or tooling
+maturity in the ecosystem to the extent as OpenQASM2. In addition, OpenQASM3 maintains a focus on
+human readability, and is not designed first and foremost for quantum optimization.
 
-In addition, OpenQASM3 has a few quirks that limit its general usability as a compiler exchange
+Moreover, OpenQASM3 has a few quirks that limit its general usability as a compiler exchange
 format:
 
 - Lack of extensibility without evolving the specification (a `#pragma` directive is provided, but
-  does not easily provide for including general structured information).
+  does not easily allow for including general structured information).
 
 - You can only index into arrays using compile-time constants, not dynamic values that may only been
   known at runtime.
@@ -64,15 +64,15 @@ format:
 
 ### Why not QIR?
 
-QIR was originally designed as a low-level, hardware-facing IR for optimization, for example using
+[QIR](https://www.qir-alliance.org/) was originally designed as a low-level, hardware-facing IR for optimization, for example using
 the QIR Adaptor Tool (QAT). However, QIR today is used less for quantum optimization as it is quite
 low-level (missing a lot of the higher-level abstractions we would like to preserve during
 compilation), and is predominantly used as a low-level interchange format between software
 frameworks and hardware providers.
 
 This can be seen by looking at the various software compilers built on top on the QIR stack such as
-CUDA-Q and Catalyst — rather than compiling QIR programs, they instead optimize MLIR, a
-higher-level intermediate representation.
+[CUDA-Q](https://github.com/nvidia/cuda-quantum) and [Catalyst](https://github.com/pennylaneai/catalyst) — rather than compiling QIR programs, they instead
+optimize MLIR, a higher-level intermediate representation.
 
 Furthermore, relying on QIR as a compilation exchange format introduces a big barrier to entry due
 to it depending on the LLVM toolchain — a massive software project that has non-trivial
@@ -80,11 +80,23 @@ compatibility concerns, installation, and learning overhead.
 
 ### Why not MLIR?
 
+[MLIR (Multi-Level Intermediate Representation)](https://en.wikipedia.org/wiki/MLIR_(software)) is a framework that exists on top of QIR/LLVM, and
+permits multiple high-level 'dialects' (IRs tailored to specific domains) to coexist, making it the
+framework of choice for most QIR/LLVM compiler stacks such as CUDA-Q and Catalyst.
+
+However, something to note is that MLIR is a *framework*, not a defined format — different compilers
+define *multiple* internal/custom dialects that altogether are used to represent a quantum program.
+At the moment, there is no clear *shared* set of quantum MLIR dialects that make sense to use more
+broadly.
+
+Finally, as per QIR the software tooling remains a big issue. Not all compilers are using LLVM,
+which MLIR depends upon, and it introduces the same significant barrier to entry as discussed above
+with QIR.
 
 ### Why not HUGR?
 
-HUGR is a hybrid quantum-classical program representation introduced by Quantinuum and used by the
-TKET and Guppy software libraries. While satisfying a lot of our intended criteria, HUGR itself was
+[HUGR](https://github.com/CQCL/hugr) is a hybrid quantum-classical program representation introduced by Quantinuum and used by the
+[TKET](https://github.com/CQCL/tket) and [Guppy](https://github.com/CQCL/guppylang) software libraries. While satisfying a lot of our intended criteria, HUGR itself was
 not designed to be an exchange format, and instead is used as an internal intermediate
 representation. In addition, HUGR contains advanced features such as type structure that has a high
 barrier to entry.
