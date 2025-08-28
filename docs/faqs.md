@@ -26,9 +26,21 @@ two major reason why they might make less sense going forward:
   debug/inspect has often been to simply open and read the file. Improving tooling for debugging
   and visualization should help rectify this.
 
-## How did you decide what goes into the schema?
-
 ## Why do we need program structure?
+
+There are two main reasons:
+
+- Because we *need* to (not all algorithmic primitives, an example being repeat-until-success, can
+  be represented without structure!), and
+
+- Even when we don't *need* to, preserving structure improves scalability.
+
+Quantum algorithms naturally have structure, even if we aren't used to thinking of them that way.
+For example, consider Shor's algorithm: when coded up in Python, we will instinctively use
+structure such as if statements, for loops, etc., rather than writing out the finalized list of
+gates to be applied. This structure results in a *compressed* program representation compared to 
+
+## How did you decide what goes into the schema?
 
 ## Why Cap'n Proto?
 
