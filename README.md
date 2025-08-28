@@ -59,6 +59,8 @@ Finally, the quantum software, compilation, and hardware development is evolving
 there is still a *lot* of uncertainty. We don't want to slow down discovery! Jeff will be developed
 here, on GitHub, and guided by the needs of quantum software and compilation.
 
+For more details, please see [Motivation](docs/motivation.md) and [FAQs](docs/faqs.md).
+
 ## Getting started
 
 ### Schema definition
