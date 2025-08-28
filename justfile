@@ -11,6 +11,15 @@ setup:
 check:
     uv run pre-commit run --all-files
 
+# Run the tests for all the bindings.
+test: test-rs test-py
+# Run the tests for the rust code.
+test-rs *TEST_ARGS:
+    cargo test {{TEST_ARGS}}
+# Run the tests for the python code.
+test-py *TEST_ARGS:
+    uv run pytest {{TEST_ARGS}}
+
 # Auto-fix all lints.
 fix: fix-rs fix-py
 # Auto-fix all the lints in the rust code.
@@ -42,6 +51,8 @@ coverage-py:
 update-capnp:
     # Always use the latest version of capnproto-rust
     cargo install capnpc
+    # Copy the definition to the python package
+    cp impl/capnp/jeff.capnp impl/py/src/jeff-format/data/jeff.capnp
     # Re-generate rust capnp files
     capnp compile -orust:impl/rs/src --src-prefix=impl impl/capnp/jeff.capnp
     # Re-generate c++ capnp files

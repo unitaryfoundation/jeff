@@ -1,0 +1,131 @@
+name: Continuous integration 🐍
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch: {}
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+  # Pinned version for the uv package manager
+  UV_VERSION: "0.8.12"
+  UV_FROZEN: 1
+
+jobs:
+  # Check if changes were made to the relevant files.
+  # Always returns true if running on the default branch, to ensure all changes are thoroughly checked.
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/check-changes
+        id: filter
+
+  check:
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
+
+    name: check python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.13']
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Setup dependencies.
+        run: uv sync --python ${{ matrix.python-version }}
+
+      # TODO: Fix lints and re-enable
+      #- name: Type check with mypy
+      #  run: uv run mypy .
+
+      - name: Check formatting with ruff
+        run: uv run ruff format --check
+
+      - name: Lint with ruff
+        run: uv run ruff check
+
+  test:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.python == 'true' }}
+    name: test python ${{ matrix.python-version.py }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          - { py: '3.10', coverage: false }
+          - { py: '3.13', coverage: true }
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Setup dependencies
+        run: uv sync --python ${{ matrix.python-version.py }}
+
+      - name: Run tests
+        if: github.event_name == 'merge_group' || !matrix.python-version.coverage
+        run: |
+          uv run pytest
+
+      - name: Run python tests with coverage instrumentation
+        if: github.event_name != 'merge_group' && matrix.python-version.coverage
+        run: |
+          uv run pytest --cov=./ --cov-report=xml
+
+      - name: Upload python coverage to codecov.io
+        if: github.event_name != 'merge_group' && matrix.python-version.coverage
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          name: python
+          flags: python
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # This is a meta job to mark successful completion of the required checks,
+  # even if they are skipped due to no changes in the relevant files.
+  required-checks:
+    name: Required checks 🐍
+    needs: [
+      changes,
+      check,
+      test,
+    ]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if required checks failed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "Required checks failed"
+          echo "Please check the logs for more information"
+          exit 1
+      - name: Pass if all required checks passed
+        run: |
+          echo "All required checks passed"

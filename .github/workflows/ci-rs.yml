@@ -1,4 +1,4 @@
-name: Continuous integration
+name: Continuous integration 🦀
 
 on:
   push:
@@ -25,39 +25,17 @@ jobs:
   changes:
     name: Check for changes
     runs-on: ubuntu-latest
-    # Required permissions
     permissions:
-      contents: read
       pull-requests: read
-    # Set job outputs to values from filter step
-    # These outputs are always true when running after a merge to main, or if the PR has a `run-ci-checks` label.
     outputs:
-      schema: ${{ steps.filter.outputs.schema == 'true' || steps.override.outputs.out == 'true' }}
-      rust: ${{ steps.filter.outputs.rust == 'true' || steps.override.outputs.out == 'true' }}
-      python: ${{ steps.filter.outputs.python == 'true' || steps.override.outputs.out == 'true' }}
+      rust: ${{ steps.filter.outputs.rust }}
     steps:
-    - uses: actions/checkout@v5
-    - name: Override label
-      id: override
-      run: |
-        echo "Label contains run-ci-checks: $OVERRIDE_LABEL"
-        if [ "$OVERRIDE_LABEL" == "true" ]; then
-          echo "Overriding due to label 'run-ci-checks'"
-          echo "out=true" >> $GITHUB_OUTPUT
-        elif [ "$DEFAULT_BRANCH" == "true" ]; then
-          echo "Overriding due to running on the default branch"
-          echo "out=true" >> $GITHUB_OUTPUT
-        fi
-      env:
-        OVERRIDE_LABEL: ${{ github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'run-ci-checks') }}
-        DEFAULT_BRANCH: ${{ github.ref_name == github.event.repository.default_branch }}
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: .github/change-filters.yml
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/check-changes
+        id: filter
 
   rs-check:
-    name: 🦀 Check lints
+    name: Check lints
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
@@ -78,7 +56,7 @@ jobs:
           RUSTDOCFLAGS: "-Dwarnings"
 
   rs-benches:
-    name: 🦀 Build Rust benchmarks 🏋️
+    name: Build Rust benchmarks 🏋️
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' && github.event_name != 'merge_group' }}
     runs-on: ubuntu-latest
@@ -95,7 +73,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
-    name: 🦀 tests (Rust stable, all features)
+    name: tests (Rust stable, all features)
     steps:
       - uses: actions/checkout@v5
       - uses: mozilla-actions/sccache-action@v0.0.9
@@ -121,7 +99,7 @@ jobs:
         # Stable is covered by `tests-stable-all-features`
         # Nightly is covered by `tests-nightly-coverage`
         rust: ["1.85", beta]
-    name: 🦀 tests (Rust ${{ matrix.rust }})
+    name: tests (Rust ${{ matrix.rust }})
     steps:
       - uses: actions/checkout@v5
       - uses: mozilla-actions/sccache-action@v0.0.9
@@ -142,7 +120,7 @@ jobs:
     # Run only if there are changes in the relevant files
     if: ${{ needs.changes.outputs.rust == 'true' && github.event_name != 'merge_group' }}
     runs-on: ubuntu-latest
-    name: 🦀 tests (Rust nightly, coverage)
+    name: tests (Rust nightly, coverage)
     steps:
       - uses: actions/checkout@v5
       - uses: mozilla-actions/sccache-action@v0.0.9
@@ -169,67 +147,15 @@ jobs:
           flags: rust
           #token: ${{ secrets.CODECOV_TOKEN }}
 
-  # Ensure that the generated capnp implementations are up to date
-  #
-  # Run `just update-capnp` to update the generated code.
-  capnp-schema:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.schema == 'true' && github.event_name != 'merge_group' }}
-    name: Keep the capnp generated code up-to-date with the schema
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: mozilla-actions/sccache-action@v0.0.9
-      - name: Install stable toolchain
-        uses: dtolnay/rust-toolchain@stable
-      - name: Install CapnProto
-        run: |
-          curl -O https://capnproto.org/capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
-          tar zxf capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
-          cd capnproto-c++-${CAPNPROTO_VERSION}
-          ./configure
-          make -j6 check
-          sudo make install
-      - name: Get cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-      - name: Install capnproto-rust plugin
-        run: cargo binstall capnpc
-      - name: Regenerate the Rust capnp code
-        run: |
-          capnp compile \
-            -orust:impl/rs/src \
-            --src-prefix=impl \
-            impl/capnp/jeff.capnp
-      - name: Regenerate the C++ capnp code
-        run: |
-          patch -p0 < impl/capnp/cpp_namespace.patch
-          capnp compile \
-            -oc++:impl/cpp/src \
-            --src-prefix=impl \
-            impl/capnp/jeff.capnp
-          patch -p0 -R < impl/capnp/cpp_namespace.patch
-      - name: Re-encode the test .jeff files
-        run: ./examples/encode_examples.sh
-      - name: Check if the generated capnproto code is up to date
-        run: |
-          git diff --exit-code impl/rs/src/capnp/ impl/cpp/src/capnp/ examples/
-          if [ $? -ne 0 ]; then
-            echo "The capnp generated code is not up to date"
-            echo "Please run 'just update-capnp' and commit the changes"
-            exit 1
-          fi
-
   # This is a meta job to mark successful completion of the required checks,
   # even if they are skipped due to no changes in the relevant files.
   required-checks:
     name: Required checks
-    needs:
-      [
-        changes,
-        rs-check,
-        rs-tests-stable-all-features,
-        # We don't include `capnp-schema` as a required check, since it takes a while to install the latest capnp system lib
-      ]
+    needs: [
+      changes,
+      rs-check,
+      rs-tests-stable-all-features,
+    ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
