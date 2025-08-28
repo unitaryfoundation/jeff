@@ -42,6 +42,15 @@ In particular,
 
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/images/structured-circuit.png#gh-light-mode-only" width="700px">
+    <!--
+    Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
+    will fail automatically and show nothing.
+    -->
+    <img src="./docs/images/structured-circuit-inverted.png#gh-dark-mode-only" width="700px" onerror="this.style.display='none'" alt=""/>
+</p>
+
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
 however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for quantum optimization — lacking the explicit
 structure needed for advanced high-level optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like LLVM.
