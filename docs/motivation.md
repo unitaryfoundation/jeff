@@ -56,7 +56,7 @@ making it harder to share ideas and knowledge.
 
 Note that some formats have become de-facto exchange formats for compilers (such as OpenQASM), but
 were not designed to be exchange formats for compilers, and as such suffer from quantum
-representations that are not ideal for high-level optimization, lucklustre tooling, and
+representations that are not ideal for high-level optimization, lacklustre tooling, and
 inefficiencies.
 
 Furthermore, as some compiler frameworks become more complex, making use of large classical

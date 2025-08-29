@@ -2,7 +2,7 @@
 
 ## Is *Jeff* meant to be an intermediate format that quantum software packages manipulate?
 
-No. *Jeff* is designed purely to be an exchange format. It is expected that consuming software
+No. *Jeff* is designed purely to be an exchange format. It is expected that software
 frameworks map **Jeff** input to their own intermediate representations for internal manipulation.
 
 ## Why design a non-human readable format?
@@ -11,7 +11,7 @@ The main goal is to design an *efficient* exchange format that best represents t
 needed for quantum optimizations by compilers, and the most efficient approach is a binary,
 non-human readable format.
 
-[Protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers) (and derivatives) are a binary
+[Protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers) (and derivatives such as Cap'n Proto) are a binary
 data format initially developed by Google that has been used for similar problems across the
 classical domain, and was chosen for *Jeff*.
 
@@ -61,7 +61,7 @@ There is still a lot of work to do when it comes to compiling structured program
 
 ## Why Cap'n Proto?
 
-Jeff is a machine-first exchange format, so we looked at existing succh projects.
+While we could have gone with something like JSON or MessagePack - we wanted first-class
 While we could have gone with something like JSON or Messagepack - we wanted first-class
 schema support, efficient binary encoding and tooling in many languages.
 
