@@ -68,7 +68,7 @@ allowing use of such tooling**.
 
 **We need to be able to visualize and debug our programs as they are modified by software compilers**.
 
-As compilers become more complex (using tooling such as Rust, or LLVM, as well as producing
+As compilers become more complex (using tooling such as LLVM, as well as producing
 complicated program structures), it is becoming more and more difficult to debug compilation, or
 even *visualize* how our programs are changing.
 
