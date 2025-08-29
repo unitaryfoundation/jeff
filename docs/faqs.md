@@ -77,6 +77,16 @@ and good language support for common quantum ecosystem languages like Python, C+
 
 ## Isn't this just *another* format standard?
 
+The danger of introducing new exchange formats or standards is that they themselves may slow down
+development — perhaps because of a governance structure with too much process and/or stakeholders,
+or simply because the format is too rigid and doesn't permit extensibility for new ideas.
+
+This is something we wish to avoid — Jeff is *not* a standard we need all stakeholders to adopt, but
+an exchange format localized to compilers, designed to
+be easily extensible. Additional information for program representation and compilation can be added
+directly, and will be taken into account by software frameworks that understand the direction.
+Further, development will happen out in the open, on GitHub.
+
 ## Why not format X?
 
 ### Why not OpenQASM2?
