@@ -51,6 +51,8 @@ In particular,
     <img src="./docs/images/structured-circuit-inverted.png#gh-dark-mode-only" onerror="this.style.display='none'" alt=""/>
 </p>
 
+<p align="center"><em>As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.</em></p>
+
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
 however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for quantum optimization — lacking the explicit
 structure needed for advanced high-level optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like LLVM.
