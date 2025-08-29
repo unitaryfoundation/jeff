@@ -18,7 +18,7 @@ However, there is still a lot of work to do, and a lot of uncertainty. We need t
 - figure out how to make this practical through quantum software.
   
 To do so, we need to bridge the gap between researchers doing fundamental compilation and
-algorithmic research, and quantum software developers.
+algorithmic research, and quantum software developers, and address the following challenges.
 
 - **How can we share results and ideas faster, within a common framework?**
 - **How do we make sure we are speaking a common language, and aware of challenges and approaches
