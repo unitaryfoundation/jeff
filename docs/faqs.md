@@ -1,6 +1,6 @@
 # Frequently asked questions
 
-## Is *Jeff* meant to be an intermediate format that quantum software packages to manipulate?
+## Is *Jeff* meant to be an intermediate format that quantum software packages manipulate?
 
 No. *Jeff* is designed purely to be an exchange format. It is expected that consuming software
 frameworks map **Jeff** input to their own intermediate representations for internal manipulation.
@@ -77,7 +77,7 @@ compilation of structured programs by default.
 
 [OpenQASM3](https://arxiv.org/abs/2104.14722) brings program structure to OpenQASM2, however has not yet seen adoption or tooling
 maturity in the ecosystem to the extent as OpenQASM2. In addition, OpenQASM3 maintains a focus on
-human readability, and is not designed first and foremost for quantum optimization.
+human readability (requiring string generation and parsing), and is not designed first and foremost for quantum optimization.
 
 Moreover, OpenQASM3 has a few quirks that limit its general usability as a compiler exchange
 format:
@@ -124,7 +124,7 @@ with QIR.
 ### Why not HUGR?
 
 [HUGR](https://github.com/CQCL/hugr) is a hybrid quantum-classical program representation introduced by Quantinuum and used by the
-[TKET](https://github.com/CQCL/tket) and [Guppy](https://github.com/CQCL/guppylang) software libraries. While satisfying a lot of our intended criteria, HUGR itself was
+[TKET](https://github.com/CQCL/tket2) and [Guppy](https://github.com/CQCL/guppylang) software libraries. While satisfying a lot of our intended criteria, HUGR itself was
 not designed to be an exchange format, and instead is used as an internal intermediate
 representation. In addition, HUGR contains advanced features such as type structure that has a high
 barrier to entry.

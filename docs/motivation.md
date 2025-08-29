@@ -8,7 +8,7 @@
 effort.**
 
 Compilation is an incredibly important component of quantum computing infrastructure. The inability
-to optimize large algorithms for future fault-tolerant hardware will extend(or block!) timelines
+to optimize large algorithms for future fault-tolerant hardware will extend (or block!) timelines
 for utility-scale quantum computation.
 
 However, there is still a lot of work to do, and a lot of uncertainty. We need to:
@@ -85,7 +85,7 @@ The danger of introducing new exchange formats or standards is that they themsel
 development — perhaps because of a governance structure with too much process and/or stakeholders,
 or simply because the format is too rigid and doesn't permit extensibility for new ideas.
 
-This is something we wish to avoid — Jeff is *not* a standard, but an exchange format, designed to
+This is something we wish to avoid — Jeff is *not* a standard we need all stakeholders to adopt, but an exchange format localized to compilers, designed to
 be easily extensible. Additional information for program representation and compilation can be added
 directly, and will be taken into account by software frameworks that understand the direction.
 Further, development will happen out in the open, on GitHub.
