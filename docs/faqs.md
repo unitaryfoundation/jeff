@@ -39,10 +39,11 @@ Quantum algorithms naturally have structure, even if we aren't used to thinking 
 For example, consider Shor's algorithm: when coded up in Python, we will instinctively use
 structure such as if statements, for loops, etc., rather than writing out the finalized list of
 gates to be applied. This structure results in a *compressed* program representation compared to
-the unrolled list of quantum instructions, so ideally we should design compiler passes to act on
-such compressed representations.
+the unrolled list of quantum instructions, which is both more efficient to compile, and may even
+allow for optimizations which may not be possible when the structure is lost/the program is flattened.
 
-In extreme cases, if the program representation does not increase in size as the program scales,
+So ideally, we should design compiler passes to act on
+such compressed representations! In extreme cases, if the program representation does not increase in size as the program scales,
 [compilation may be constant-time](https://arxiv.org/abs/2504.12449).
 
 There is still a lot of work to do when it comes to compiling structured programs:
