@@ -61,18 +61,16 @@ There is still a lot of work to do when it comes to compiling structured program
 
 ## Why Cap'n Proto?
 
-While we could have gone with something like JSON or MessagePack - we wanted first-class
-While we could have gone with something like JSON or Messagepack - we wanted first-class
-schema support, efficient binary encoding and tooling in many languages.
+We use [Cap'n Proto](https://capnproto.org/) as our data serialization format for Jeff.
 
-The [Protocol buffer](https://en.wikipedia.org/wiki/Protocol_Buffers) family of projects
-fits this description well. This includes the original 
-[Protocol buffer](https://protobuf.dev/) project but also more modern evolutions
-like [Flatbuffers](https://flatbuffers.dev/) and [Cap'n'Proto](https://capnproto.org/).
+**Reasons for choosing Cap'n Proto:**
+- Fast, efficient binary encoding
+- Zero-copy deserialization for high performance
+- Simple and expressive schema language
+- Robust tooling and support for key quantum programming languages (Python, C++, Rust)
 
-They are all quite similar in terms of features, but we chose Cap'n Proto
-because of its speed, zero-copy deserialization, easy to use schema language
-and good language support for common quantum ecosystem languages like Python, C++ and Rust.
+**Alternative serialization formats:**  
+Other models considered include [Protocol Buffers](https://protobuf.dev/), [Flatbuffers](https://flatbuffers.dev/), [MessagePack](https://msgpack.org/), and JSON. While these formats offer similar features, Cap'n Proto provides the best combination of speed, schema support, and language integration for our needs.
 
 
 ## Isn't this just *another* format standard?
