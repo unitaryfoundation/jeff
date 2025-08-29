@@ -60,6 +60,20 @@ There is still a lot of work to do when it comes to compiling structured program
 
 ## Why Cap'n Proto?
 
+Jeff is a machine-first exchange format, so we looked at existing succh projects.
+While we could have gone with something like JSON or Messagepack - we wanted first-class
+schema support, efficient binary encoding and tooling in many languages.
+
+The [Protocol buffer](https://en.wikipedia.org/wiki/Protocol_Buffers) family of projects
+fits this description well. This includes the original 
+[Protocol buffer](https://protobuf.dev/) project but also more modern evolutions
+like [Flatbuffers](https://flatbuffers.dev/) and [Cap'n'Proto](https://capnproto.org/).
+
+They are all quite similar in terms of features, but we chose Cap'n Proto
+because of its speed, zero-copy deserialization, easy to use schema language
+and good language support for common quantum ecosystem languages like Python, C++ and Rust.
+
+
 ## Isn't this just *another* format standard?
 
 ## Why not format X?
@@ -128,4 +142,3 @@ with QIR.
 not designed to be an exchange format, and instead is used as an internal intermediate
 representation. In addition, HUGR contains advanced features such as type structure that has a high
 barrier to entry.
-
