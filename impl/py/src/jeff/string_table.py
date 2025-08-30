@@ -1,7 +1,8 @@
 """An indexed string table."""
 
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING
+from typing_extensions import override
 
 from jeff.capnp import CapnpBuffer, LazyUpdate
 

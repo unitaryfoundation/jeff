@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from typing import Any, override, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+from typing_extensions import override
 
 from .capnp import schema, CapnpBuffer, LazyUpdate
 from .type import JeffType

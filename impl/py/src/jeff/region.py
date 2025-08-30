@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from collections import deque
 import textwrap
-from typing import TYPE_CHECKING, Iterator, override
+from typing import TYPE_CHECKING, Iterator
+from typing_extensions import override
 
 from .capnp import CapnpBuffer, LazyUpdate, schema
 from .string_table import StringTable

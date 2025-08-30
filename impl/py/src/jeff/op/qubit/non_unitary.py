@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import override
+from typing_extensions import override
 
 from jeff.capnp import LazyUpdate, schema
 from jeff.string_table import StringTable
