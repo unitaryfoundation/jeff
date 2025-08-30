@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any
+from typing_extensions import override
 
 from jeff.capnp import CapnpBuffer, LazyUpdate, schema
 from jeff.op.kind import OpKind, OpType
