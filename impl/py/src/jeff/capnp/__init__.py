@@ -1,4 +1,4 @@
-"""Utility functions for tket extensions."""
+"""Capnp schema writer and reader definitions."""
 
 from __future__ import annotations
 
