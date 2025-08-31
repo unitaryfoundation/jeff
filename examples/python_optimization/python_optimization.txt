@@ -1,0 +1,42 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [0],
+          targets = [],
+          operations = [
+            ( inputs = [],
+              outputs = [1],
+              instruction = (qubit = (alloc = void)) ),
+            ( inputs = [1],
+              outputs = [2],
+              instruction = (
+                qubit = (
+                  gate = (wellKnown = h, controlQubits = 0, adjoint = false, power = 1) ) ) ),
+            ( inputs = [0],
+              outputs = [3],
+              instruction = (int = (not = void)) ),
+            ( inputs = [3, 2],
+              outputs = [4],
+              instruction = (
+                scf = (
+                  switch = (
+                    branches = [
+                      ( sources = [5],
+                        targets = [6],
+                        operations = [
+                          ( inputs = [5],
+                            outputs = [6],
+                            instruction = (
+                              qubit = (
+                                gate = (wellKnown = h, controlQubits = 0, adjoint = false, power = 1) ) ) ) ] ) ],
+                    default = (sources = [7], targets = [7], operations = []) ) ) ) ),
+            ( inputs = [4],
+              outputs = [],
+              instruction = (qubit = (free = void)) ) ] ),
+        values = [(type = (int = 1)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 1)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void))] ) ) ],
+  strings = ["main"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "" )
