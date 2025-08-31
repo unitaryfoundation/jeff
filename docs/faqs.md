@@ -12,8 +12,8 @@ needed for quantum optimizations by compilers, and the most efficient approach i
 non-human readable format.
 
 [Protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers) (and derivatives such as Cap'n Proto) are a binary
-data format initially developed by Google that has been used for similar problems across the
-classical domain, and was chosen for *Jeff*.
+data format initially developed by Google that have been used for similar problems across the
+classical domain, and were chosen for *Jeff*.
 
 Human-readable formats have been quite common in the quantum space thus far, but in addition we see
 two major reason why they might make less sense going forward:
@@ -67,7 +67,7 @@ We use [Cap'n Proto](https://capnproto.org/) as our data serialization format fo
 - Fast, efficient binary encoding
 - Zero-copy deserialization for high performance
 - Simple and expressive schema language
-- Robust tooling and support for key quantum programming languages (Python, C++, Rust)
+- Robust tooling and support for key programming languages (Python, C++, Rust)
 
 **Alternative serialization formats:**  
 Other models considered include [Protocol Buffers](https://protobuf.dev/), [Flatbuffers](https://flatbuffers.dev/), [MessagePack](https://msgpack.org/), and JSON. While these formats offer similar features, Cap'n Proto provides the best combination of speed, schema support, and language integration for our needs.
@@ -99,8 +99,12 @@ compilation of structured programs by default.
 ### Why not OpenQASM3?
 
 [OpenQASM3](https://arxiv.org/abs/2104.14722) brings program structure to OpenQASM2, however has not yet seen adoption or tooling
-maturity in the ecosystem to the extent as OpenQASM2. In addition, OpenQASM3 maintains a focus on
-human readability (requiring string generation and parsing), and is not designed first and foremost for quantum optimization.
+maturity in the ecosystem to the extent as OpenQASM2. In addition, we see two disadvantages using OpenQASM3 with compilation tooling:
+
+- OpenQASM3 maintains a focus on
+human readability (requiring string generation and parsing), and
+
+- it is not designed first and foremost for quantum optimization, representing instructions as a linear arrangement of gates rather than an arrangement in a graph.
 
 Moreover, OpenQASM3 has a few quirks that limit its general usability as a compiler exchange
 format:
@@ -111,7 +115,6 @@ format:
 - You can only index into arrays using compile-time constants, not dynamic values that may only been
   known at runtime.
 
-- Registers (TODO).
 
 ### Why not QIR?
 
@@ -131,7 +134,7 @@ compatibility concerns, installation, and learning overhead.
 
 ### Why not MLIR?
 
-[MLIR (Multi-Level Intermediate Representation)](https://en.wikipedia.org/wiki/MLIR_(software)) is a framework that exists on top of QIR/LLVM, and
+[MLIR (Multi-Level Intermediate Representation)](https://en.wikipedia.org/wiki/MLIR_(software)) is a framework that developed by the LLVM project, and
 permits multiple high-level 'dialects' (IRs tailored to specific domains) to coexist, making it the
 framework of choice for most QIR/LLVM compiler stacks such as CUDA-Q and Catalyst.
 
@@ -139,6 +142,10 @@ However, something to note is that MLIR is a *framework*, not a defined format â
 define *multiple* internal/custom dialects that altogether are used to represent a quantum program.
 At the moment, there is no clear *shared* set of quantum MLIR dialects that make sense to use more
 broadly.
+
+Further, even if projects do share the same MLIR dialect, an
+additional difficulty would be maintaining binary compatibility
+between different projects.
 
 Finally, as per QIR the software tooling remains a big issue. Not all compilers are using LLVM,
 which MLIR depends upon, and it introduces the same significant barrier to entry as discussed above

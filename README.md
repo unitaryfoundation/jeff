@@ -43,9 +43,8 @@ In particular,
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
-however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for
-quantum optimization — lacking the explicit structure needed for advanced high-level
-optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like
+however current de-facto interchange formats (such as QIR and OpenQASM) either lack the explicit structure needed for advanced high-level
+quantum optimizations, or are not tool-agnostic, locking developers into particular toolchains like
 LLVM.
 
 ***This creates a bottleneck for collaboration and makes it difficult to develop and share
