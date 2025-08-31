@@ -136,7 +136,7 @@ compatibility concerns, installation, and learning overhead.
 
 [MLIR (Multi-Level Intermediate Representation)](https://en.wikipedia.org/wiki/MLIR_(software)) is a framework that developed by the LLVM project, and
 permits multiple high-level 'dialects' (IRs tailored to specific domains) to coexist, making it the
-framework of choice for most QIR/LLVM compiler stacks such as CUDA-Q and Catalyst.
+framework of choice for most LLVM compiler stacks such as CUDA-Q and Catalyst.
 
 However, something to note is that MLIR is a *framework*, not a defined format — different compilers
 define *multiple* internal/custom dialects that altogether are used to represent a quantum program.
