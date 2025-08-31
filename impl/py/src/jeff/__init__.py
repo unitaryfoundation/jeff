@@ -1050,7 +1050,7 @@ class JeffModule:
         self.refresh()
 
         with open(path, "wb") as f:
-            self._raw_data.write(f)
+            self._raw_data.as_builder().write(f)
 
     # settable fields
 
@@ -1297,7 +1297,7 @@ class WellKnowGate(JeffGate):
         if self._kind is not _Empty:
             return self._kind
 
-        return str(self._raw_data.wellKnown.which)
+        return str(self._raw_data.wellKnown)
 
     @kind.setter
     def kind(self, kind: str):
