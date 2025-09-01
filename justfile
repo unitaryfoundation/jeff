@@ -50,9 +50,9 @@ coverage-py:
 # Update the capnproto definitions.
 update-capnp:
     # Always use the latest version of capnproto-rust
-    cargo install capnpc
+    cargo binstall capnpc || cargo install capnpc
     # Copy the definition to the python package
-    cp impl/capnp/jeff.capnp impl/py/src/jeff-format/data/jeff.capnp
+    cp impl/capnp/jeff.capnp impl/py/src/jeff/data/jeff.capnp
     # Re-generate rust capnp files
     capnp compile -orust:impl/rs/src --src-prefix=impl impl/capnp/jeff.capnp
     # Re-generate c++ capnp files
