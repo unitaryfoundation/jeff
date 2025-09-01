@@ -53,26 +53,12 @@ jobs:
           sudo make install
       - name: Get cargo binstall
         uses: cargo-bins/cargo-binstall@main
-      - name: Install capnproto-rust plugin
-        run: cargo binstall capnpc
-      - name: Regenerate the Rust capnp code
+      - uses: extractions/setup-just@v3
+
+      - name: Regenerate the capnp bindings
         run: |
-          capnp compile \
-            -orust:impl/rs/src \
-            --src-prefix=impl \
-            impl/capnp/jeff.capnp
-      - name: Regenerate the C++ capnp code
-        run: |
-          patch -p0 < impl/capnp/cpp_namespace.patch
-          capnp compile \
-            -oc++:impl/cpp/src \
-            --src-prefix=impl \
-            impl/capnp/jeff.capnp
-          patch -p0 -R < impl/capnp/cpp_namespace.patch
-      - name: Re-encode the test .jeff files
-        run: ./examples/encode_examples.sh
-      - name: Copy the latest capnp schema to the python package
-        run: cp impl/capnp/jeff.capnp impl/py/src/jeff-format/capnp/jeff.capnp
+          just update-capnp
+
       - name: Check if the generated capnproto code is up to date
         run: |
           git diff --exit-code \
