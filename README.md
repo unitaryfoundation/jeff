@@ -43,19 +43,20 @@ In particular,
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/images/structured-circuit.png#gh-light-mode-only" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/structured-circuit.png#gh-light-mode-only" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.">
     <!--
     Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
     will fail automatically and show nothing.
     -->
-    <img src="./docs/images/structured-circuit-inverted.png#gh-dark-mode-only" onerror="this.style.display='none'" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture."/>
+    <img src="./docs/assets/structured-circuit-inverted.png#gh-dark-mode-only" onerror="this.style.display='none'" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture."/>
 </p>
 
 <p align="center"><em>As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.</em></p>
 
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
-however current de-facto interchange formats (such as QIR and OpenQASM) either aren't designed for quantum optimization — lacking the explicit
-structure needed for advanced high-level optimizations — nor tool-agnostic exchange, locking developers into particular toolchains like LLVM.
+however current de-facto interchange formats (such as QIR and OpenQASM) either lack the explicit structure needed for advanced high-level
+quantum optimizations, or are not tool-agnostic, locking developers into particular toolchains like
+LLVM.
 
 ***This creates a bottleneck for collaboration and makes it difficult to develop and share
 sophisticated compiler passes.***
@@ -68,13 +69,15 @@ Finally, the quantum software, compilation, and hardware development is evolving
 there is still a *lot* of uncertainty. We don't want to slow down discovery! Jeff will be developed
 here, on GitHub, and guided by the needs of quantum software and compilation.
 
+For more details, please see [Motivation](docs/motivation.md) and [FAQs](docs/faqs.md).
+
 ## Getting started
 
 ### Schema definition
 
 The serialization schema is defined using the
 [Cap'n Proto](https://capnproto.org) serialization protocol. The current version
-is defined in [`impl/capnp/jeff.capnp`][capnp].
+is defined in [`impl/capnp/jeff.capnp`](https://github.com/unitaryfoundation/jeff/tree/main/impl/capnp/jeff.capnp).
 
 ### Protocol implementations
 
@@ -88,7 +91,7 @@ programs:
 ## Contributions
 
 *Jeff* is hosted by the [Unitary Foundation](https://unitary.foundation/) and is a collaboration between developers at
-[Quantinuum](https://www.quantinuum.com), and [Xanadu](https://www.xanadu.ai).
+[Quantinuum](https://www.quantinuum.com) and [Xanadu](https://www.xanadu.ai).
 
 Your contributions help improve the tool for everyone! There are many ways you can contribute, such as:
 
@@ -102,4 +105,4 @@ Check out the [DEVELOPMENT](https://github.com/unitaryfoundation/jeff/blob/main/
 
 ## License
 
-The Jeff project is **free** and **open source**, released under the Apache License, Version 2.0.
+The *Jeff* project is **free** and **open source**, released under the Apache License, Version 2.0.
