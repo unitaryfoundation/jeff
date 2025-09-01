@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/images/JEFF_github_logo.png#gh-light-mode-only" width="700px">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/JEFF_github_logo.png#gh-light-mode-only" width="700px">
     <!--
     Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
     will fail automatically and show nothing.
     -->
-    <img src="./docs/images/JEFF_github_logo_inverted.png#gh-dark-mode-only" width="700px" onerror="this.style.display='none'" alt=""/>
+    <img src="./docs/assets/JEFF_github_logo_inverted.png#gh-dark-mode-only" width="700px" onerror="this.style.display='none'" alt=""/>
 </p>
 
 *Jeff* is a structured, extensible, and simple interchange format for quantum compilers. Designed
