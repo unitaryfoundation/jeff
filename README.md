@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/images/JEFF_github_logo.png#gh-light-mode-only" width="700px">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/JEFF_github_logo.png#gh-light-mode-only" width="700px">
     <!--
     Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
     will fail automatically and show nothing.
     -->
-    <img src="./docs/images/JEFF_github_logo_inverted.png#gh-dark-mode-only" width="700px" onerror="this.style.display='none'" alt=""/>
+    <img src="./docs/assets/JEFF_github_logo_inverted.png#gh-dark-mode-only" width="700px" onerror="this.style.display='none'" alt=""/>
 </p>
 
 *Jeff* is a structured, extensible, and simple interchange format for quantum compilers. Designed
@@ -41,6 +41,17 @@ In particular,
   we can massively improve scalability.
 
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/structured-circuit.png#gh-light-mode-only" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.">
+    <!--
+    Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
+    will fail automatically and show nothing.
+    -->
+    <img src="./docs/assets/structured-circuit-inverted.png#gh-dark-mode-only" onerror="this.style.display='none'" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture."/>
+</p>
+
+<p align="center"><em>As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.</em></p>
 
 Compilation and optimization of such programs is crucial to support quantum hardware execution,
 however current de-facto interchange formats (such as QIR and OpenQASM) either lack the explicit structure needed for advanced high-level
