@@ -2,7 +2,7 @@
 
 This document describes the Jeff quantum program format—a binary exchange format for
 quantum programs designed for efficiency and compiler interoperability. The format is
-defined using Cap'n Proto, the schema for which can be found in
+defined using [Cap'n Proto](capnproto.org), the schema for which can be found in
 [jeff.capnp](../impl/capnp/jeff.capnp) - this document is best read alongside the schema.
 
 Jeff aims to balance expressiveness and simplicity, enabling representation of a wide range of structured and dynamic quantum algorithms, while remaining easy for non-expert users to parse and manipulate.
