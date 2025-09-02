@@ -5,13 +5,24 @@ quantum programs designed for efficiency and compiler interoperability. The form
 defined using [Cap'n Proto](capnproto.org), the schema for which can be found in
 [jeff.capnp](../impl/capnp/jeff.capnp) - this document is best read alongside the schema.
 
-Jeff aims to balance expressiveness and simplicity, enabling representation of a wide range of structured and dynamic quantum algorithms, while remaining easy for non-expert users to parse and manipulate.
+Jeff aims to balance expressiveness and simplicity, enabling representation
+of a wide range of structured and dynamic quantum algorithms, while remaining
+easy for non-expert users to parse and manipulate.
 
-Programs in Jeff are collections of functions, each containing a dataflow graph of operations. The format supports both quantum and classical data types, as well as structured control flow constructs. Jeff uses *value semantics*: values are immutable, and operations produce new values rather than modifying existing ones. This approach simplifies analysis and optimization. Individual regions can be viewed as directed acyclic graphs (DAGs) of operations, where edges represent typed data dependencies. Cycles in the dataflow graph are invalid.
+Programs in Jeff are collections of functions, each containing a
+dataflow graph of operations. The format supports both quantum and
+classical data types, as well as structured control flow constructs.
+Jeff uses *value semantics*: values are immutable, and operations
+produce new values rather than modifying existing ones. This approach
+simplifies analysis and optimization. Individual regions can be
+viewed as directed acyclic graphs (DAGs) of operations, where edges
+represent typed data dependencies. Cycles in the dataflow graph are invalid.
 
 ## Module
 
-The root of any Jeff program is the `Module` struct, which encapsulates the entire quantum program, including all functions, metadata, and configuration. Its fields are:
+The root of any Jeff program is the `Module` struct, which encapsulates
+the entire quantum program, including all functions, metadata, and
+configuration. Its fields are:
 
 - `version`: Integer specifying the Jeff format version.
 - `tool` / `toolVersion`: Text fields identifying the software and its version that generated the file.
