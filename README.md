@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/JEFF_github_logo.png#gh-light-mode-only" width="700px">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/main/docs/assets/JEFF_github_logo.png#gh-light-mode-only" width="700px">
     <!--
     Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
     will fail automatically and show nothing.
@@ -43,7 +43,7 @@ In particular,
 - Thinking beyond simple circuits will allow us to do new things and progress the field.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/docs/assets/structured-circuit.png#gh-light-mode-only" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.">
+  <img src="https://raw.githubusercontent.com/unitaryfoundation/jeff/main/docs/assets/structured-circuit.png#gh-light-mode-only" alt="As we increasingly represent program structure in our quantum algorithms and programs, we need to move beyond the circuit picture.">
     <!--
     Use a relative import for the dark mode image. When loading on alternative services (such as PyPI), this
     will fail automatically and show nothing.
