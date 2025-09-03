@@ -40,25 +40,24 @@ repos:
       - id: ruff-format
         name: ruff format
         description: Format python code with `ruff`.
-        entry: uv run ruff format
+        entry: uv run ruff format impl/py
         language: system
         files: \.py$
         pass_filenames: false
       - id: ruff-check
         name: ruff
         description: Check python code with `ruff`.
-        entry: uv run ruff check --fix --exit-non-zero-on-fix
+        entry: uv run ruff check --fix --exit-non-zero-on-fix impl/py
         language: system
         files: \.py$
         pass_filenames: false
-      # TODO: Fix lints and re-enable
-      #- id: mypy-check
-      #  name: mypy
-      #  description: Check python code with `mypy`.
-      #  entry: uv run mypy .
-      #  language: system
-      #  files: \.py$
-      #  pass_filenames: false
+      - id: mypy-check
+        name: mypy
+        description: Check python code with `mypy`.
+        entry: uv run mypy .
+        language: system
+        files: \.py$
+        pass_filenames: false
       - id: cargo-fmt
         name: cargo format
         description: Format rust code with `cargo fmt`.

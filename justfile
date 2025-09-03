@@ -27,7 +27,7 @@ fix-rs:
     cargo clippy --all-targets --all-features --workspace --fix --allow-staged --allow-dirty
 # Auto-fix all the lints in the python code.
 fix-py:
-    uv run ruff check --fix
+    uv run ruff check --fix impl/py
 
 # Format all the code in the repository.
 format: format-rs format-py
@@ -50,9 +50,9 @@ coverage-py:
 # Update the capnproto definitions.
 update-capnp:
     # Always use the latest version of capnproto-rust
-    cargo install capnpc
+    cargo binstall capnpc || cargo install capnpc
     # Copy the definition to the python package
-    cp impl/capnp/jeff.capnp impl/py/src/jeff-format/data/jeff.capnp
+    cp impl/capnp/jeff.capnp impl/py/src/jeff/capnp/jeff.capnp
     # Re-generate rust capnp files
     capnp compile -orust:impl/rs/src --src-prefix=impl impl/capnp/jeff.capnp
     # Re-generate c++ capnp files

@@ -27,12 +27,14 @@ classifiers = [
 ]
 
 dependencies = [
-    # TODO: Temporarily disabled
-    # "pycapnp ~= 2.0.0"
+    "pycapnp~=2.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/jeff"]
+
+[tool.uv.sources]
+pycapnp = { git = "https://github.com/mlxd/pycapnp", branch = "mlxd/update_gh_actions" }
 
 [build-system]
 requires = ["hatchling"]
