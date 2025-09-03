@@ -87,7 +87,7 @@ class Module(CapnpBuffer[schema.Module, schema.Module.Builder], LazyUpdate):  # 
 
         # Reusing an existing message is a bad idea as any new allocations will leave the old ones
         # in the message, bloating its size.
-        new_data = schema.Module.new_message()  # type: ignore
+        new_data = schema.Module.new_message()
         string_table = self._string_table
         self._write_to_buffer(new_data, string_table)
 
@@ -98,7 +98,7 @@ class Module(CapnpBuffer[schema.Module, schema.Module.Builder], LazyUpdate):  # 
         self.refresh()
 
         with open(path, "wb") as f:
-            self._raw_data.write(f)
+            self._raw_data.as_builder().write(f)
 
     @staticmethod
     def _read_from_buffer(module: schema.Module) -> Module:  # type: ignore

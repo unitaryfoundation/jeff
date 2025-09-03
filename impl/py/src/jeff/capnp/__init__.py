@@ -11,7 +11,7 @@ from jeff.string_table import StringTable
 
 
 def load_schema() -> Any:
-    import capnp  # type: ignore[unused-ignore, import-not-found]
+    import capnp  # type: ignore[import-untyped]
 
     capnp.remove_import_hook()
 
@@ -95,6 +95,4 @@ class LazyUpdate(Protocol):
         return self._is_dirty
 
 
-# TODO: Temporarily disabled
-# schema = load_schema()
-schema = None
+schema = load_schema()

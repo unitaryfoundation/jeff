@@ -55,7 +55,7 @@ def load_module(path: str) -> Module:
     """Load a jeff module from file."""
 
     with open(path, "rb") as f:
-        return Module._read_from_buffer(schema.Module.read(f))  # type: ignore
+        return Module._read_from_buffer(schema.Module.read(f))
 
 
 #################

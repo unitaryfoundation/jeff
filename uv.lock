@@ -186,6 +186,12 @@ wheels = [
 name = "jeff-format"
 version = "0.1.0"
 source = { editable = "impl/py" }
+dependencies = [
+    { name = "pycapnp" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pycapnp", git = "https://github.com/mlxd/pycapnp?branch=mlxd%2Fupdate_gh_actions" }]
 
 [[package]]
 name = "mypy"
@@ -301,6 +307,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/ff/29/7cf5bbc236333876e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5b/a5/987a405322d78a73b66e39e4a90e4ef156fd7141bf71df987e50717c321b/pre_commit-4.3.0-py2.py3-none-any.whl", hash = "sha256:2b0747ad7e6e967169136edffee14c16e148a778a54e4f967921aa1ebf2308d8", size = 220965, upload-time = "2025-08-09T18:56:13.192Z" },
 ]
+
+[[package]]
+name = "pycapnp"
+version = "2.0.0"
+source = { git = "https://github.com/mlxd/pycapnp?branch=mlxd%2Fupdate_gh_actions#ef05121594a58413f223f5b9adc5e931d9d9cfaf" }
 
 [[package]]
 name = "pygments"
