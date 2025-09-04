@@ -1,4 +1,4 @@
-"""Utility functions for tket extensions."""
+"""Utility functions for jeff schema loading."""
 
 import os
 from pathlib import Path
@@ -17,5 +17,5 @@ def load_schema() -> Any:
     if "PWD" in os.environ:
         del os.environ["PWD"]
 
-    capnp_file = Path(jeff.__file__).joinpath("data", "jeff.capnp")
-    return capnp.load(capnp_file)
+    capnp_file = Path(jeff.__file__).parent.joinpath("data", "jeff.capnp")
+    return capnp.load(str(capnp_file))
