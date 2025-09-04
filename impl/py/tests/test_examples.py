@@ -15,5 +15,6 @@ def test_example_notebooks(nb_regression, notebook: Path):
     nb_regression.diff_ignore += (
         "/metadata/language_info/version",
         "/cells/*/outputs/*/data/image/png",
+        "/cells/*/execution_count",
     )
     nb_regression.check(notebook)
