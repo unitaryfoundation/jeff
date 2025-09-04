@@ -13,10 +13,10 @@ for utility-scale quantum computation.
 
 However, there is still a lot of work to do, and a lot of uncertainty. We need to:
 
-- continue to make new theoretical compilation breakthroughs; 
+- continue to make new theoretical compilation breakthroughs;
 - identify the most-promising large scale algorithms; and finally,
 - figure out how to make this practical through quantum software.
-  
+
 To do so, we need to bridge the gap between researchers doing fundamental compilation and
 algorithmic research, and quantum software developers, and address the following challenges.
 

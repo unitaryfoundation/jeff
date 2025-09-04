@@ -69,7 +69,7 @@ We use [Cap'n Proto](https://capnproto.org/) as our data serialization format fo
 - Simple and expressive schema language
 - Robust tooling and support for key programming languages (Python, C++, Rust)
 
-**Alternative serialization formats:**  
+**Alternative serialization formats:**
 Other models considered include [Protocol Buffers](https://protobuf.dev/), [Flatbuffers](https://flatbuffers.dev/), [MessagePack](https://msgpack.org/), and JSON. While these formats offer similar features, Cap'n Proto provides the best combination of speed, schema support, and language integration for our needs.
 
 
