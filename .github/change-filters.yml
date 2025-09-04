@@ -19,3 +19,5 @@ python: &python
   - "impl/py/**"
   - "pyproject.toml"
   - "uv.lock"
+  - "examples/**.py"
+  - "examples/**.ipynb"
