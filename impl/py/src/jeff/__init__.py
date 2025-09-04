@@ -17,15 +17,14 @@ All classes come with pretty-print string representation. Note that parsing is a
 
 from __future__ import annotations
 
+from pathlib import Path
 import textwrap
 from abc import ABC, abstractmethod
 from typing import Any, Iterable
 
-# from .capnp import load_schema
+from .capnp import load_schema
 
-# TODO: Temporarily disabled
-# schema = load_schema()
-schema = None
+schema = load_schema()
 
 # TODO: add remaining op instructions
 # TODO: add methods to convert read-only data to cached (builder) instances, remove '_update_cache'
@@ -1871,7 +1870,7 @@ class DoWhileSCF(JeffSCF):
 # reading
 
 
-def load_module(path: str):
+def load_module(path: Path | str):
     """Load a jeff module from file."""
 
     with open(path, "rb") as f:
