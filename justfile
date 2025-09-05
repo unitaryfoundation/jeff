@@ -27,7 +27,7 @@ fix-rs:
     cargo clippy --all-targets --all-features --workspace --fix --allow-staged --allow-dirty
 # Auto-fix all the lints in the python code.
 fix-py:
-    uv run ruff check --fix impl/py
+    uv run ruff check --fix
 
 # Format all the code in the repository.
 format: format-rs format-py
@@ -36,7 +36,7 @@ format-rs:
     cargo fmt --all
 # Format the python code.
 format-py:
-    uv run ruff format impl/py
+    uv run ruff format
 
 # Generate a test coverage report.
 coverage: coverage-rs coverage-py

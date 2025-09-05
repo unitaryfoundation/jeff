@@ -61,10 +61,10 @@ jobs:
       #  run: uv run mypy .
 
       - name: Check formatting with ruff
-        run: uv run ruff format --check impl/py
+        run: uv run ruff format --check
 
       - name: Lint with ruff
-        run: uv run ruff check impl/py
+        run: uv run ruff check
 
   test:
     needs: [changes]
