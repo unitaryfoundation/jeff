@@ -27,7 +27,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "pycapnp ~= 2.1.0"
+    "pycapnp >= 2.1,< 2.3"
 ]
 
 [tool.hatch.build.targets.wheel]
