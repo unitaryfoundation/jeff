@@ -18,7 +18,8 @@
   --  * `chore:` for changes that don't fit in any of the above categories
   -- The last two categories will not be included in the changelog.
   --
-  -- If your PR includes a breaking change, please add a `!` after the type
+  -- If your PR is a change to a library and it includes a breaking change,
+  -- please add a `!` after the type (e.g. `feat!: New breaking feature`)
   -- and include a `BREAKING CHANGE:` line in the body of the PR describing
   -- the necessary changes for users to update their code.
   --
