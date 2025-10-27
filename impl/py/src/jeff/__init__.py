@@ -283,16 +283,20 @@ class JeffValue:
     # convenience methods
 
     @property
-    def id(self) -> int:
+    def id(self) -> int | None:
         if self._val_idx is not None:
             return self._val_idx
 
-        return id(self)
+        return None
 
     # Python integration
 
     def __str__(self):
-        return f"%{self.id}:{self.type}"
+        match self.id:
+            case None:
+                return f":{self.type}"
+            case _:
+                return f"%{self.id}:{self.type}"
 
     def __eq__(self, other):
         if not isinstance(other, JeffValue):
