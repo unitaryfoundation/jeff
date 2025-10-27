@@ -29,7 +29,7 @@ Explain the proposal as if it was already part of the Jeff specification and you
 - Explaining how Jeff users should *think* about the feature, and how it should impact the way they use Jeff. It should explain the impact as concretely as possible.
 - If applicable, provide sample migration guidance or deprecation guidance.
 
-For implementation-oriented RFCs (e.g. schema changes), this section should focus on how Jeff users should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+For implementation-oriented RFCs (e.g., schema changes), this section should focus on how Jeff users should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
 # Implementation-level explanation
 [implementation-level-explanation]: #implementation-level-explanation
