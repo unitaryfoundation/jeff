@@ -1,0 +1,29 @@
+<!--
+  -- Thanks for contributing to `jeff`!
+  --
+  -- We require PR titles to follow the Conventional Commits specification,
+  -- https://www.conventionalcommits.org/en/v1.0.0/. This helps us generate
+  -- changelogs and follow semantic versioning.
+  --
+  -- Start the PR title with one of the following:
+  --  * `feat:` for new features
+  --  * `fix:` for bug fixes
+  --  * `refactor:` for code refactors
+  --  * `docs:` for documentation changes
+  --  * `test:` for test changes
+  --  * `perf:` for performance improvements
+  --  * `revert:` for reverting changes
+  --  * `rfc:` for RFCs
+  --  * `ci:` for CI/CD changes
+  --  * `chore:` for changes that don't fit in any of the above categories
+  -- The last two categories will not be included in the changelog.
+  --
+  -- If your PR is a change to a library and it includes a breaking change,
+  -- please add a `!` after the type (e.g. `feat!: New breaking feature`)
+  -- and include a `BREAKING CHANGE:` line in the body of the PR describing
+  -- the necessary changes for users to update their code.
+  --
+  -- If your PR is an RFC, please follow the RFC process outlined in the
+  -- `rfcs/README.md` document.
+  --
+  -->
