@@ -35,6 +35,7 @@ following.
 
   - Any change to the Jeff specification that is not a bugfix or documentation improvement.
   - Large reorganizations of the Jeff project.
+  - New sub-project or package initiatives.
 
 Some changes do not require an RFC:
 
