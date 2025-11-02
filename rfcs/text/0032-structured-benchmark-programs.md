@@ -1,6 +1,6 @@
 - Feature Name: structured-benchmark-programs
 - Start Date: 2025-10-31
-- RFC PR: [unitaryfoundation/jeff#0000](https://github.com/unitaryfoundation/jeff/pull/0000)
+- RFC PR: [unitaryfoundation/jeff#0032](https://github.com/unitaryfoundation/jeff/pull/0032)
 
 # Summary
 [summary]: #summary
