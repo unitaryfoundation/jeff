@@ -39,10 +39,40 @@ While this feature may not directly impact the way many users interact with Jeff
 # Implementation-level explanation
 [implementation-level-explanation]: #implementation-level-explanation
 
-The following list outlines the proposed structured benchmark programs to be included in the `benchmarks/structured` directory, along with brief description, grouped by the way they utilize structured control flow:
+This chapter outlines the proposed structured benchmark programs to be included in the `benchmarks/structured` directory.
+In the table below, for each program type, the required structured control flow features are listed, as well as references to relevant literature or resources for further reading.
+Programs for which "*arbitrary size*" is marked can be defined generically and parameterized by input parameters to allow for different sizes at runtime.
+Further details on each program type are provided in the sections that follow the table.
 
 [!NOTE]
 This list was created from previous discussions among community members and is open for further suggestions and modifications.*
+
+| Program Type | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | conditionals | dynamic qubit allocation | qubit reuse | references | arbitrary-size |
+-----|--------------|-------------------------|--------------------------|-----------------------|--------------|-------------------------|-------------|-----------|
+| Quantum Teleportation | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://doi.org/10.1103/PhysRevLett.70.1895) | ❌ |
+| Block Encoding | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1606.02685), [Paper](https://arxiv.org/abs/1806.01838) | ❌ |
+| Grover's Search Algorithm | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/9605043) | ❌ |
+| Grover's Search with Weak Measurement | ❌ | ✔️ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta) | ❌ |
+| GHZ State Preparation | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Wikipedia](https://en.wikipedia.org/wiki/GHZ_state) | ✔️ |
+| Quantum Fourier Transform (QFT) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
+| Quantum Phase Estimation (QPE) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
+| Iterative Quantum Fourier Transform (iQFT) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ✔️ | [Paper](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.76.3228) | ✔️ |
+| Iterative Quantum Phase Estimation (iQPE) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/0610214) | ✔️ |
+| Shor's Algorithm | ✔️ | ❌ | ✔️ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/9508027) | ❌ |
+| X-Ray Absorption Spectroscopy | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/2405.11015), [Tutorial](https://pennylane.ai/qml/demos/tutorial_xas) | ❌ |
+| Repeat-Until-Success | ❌ | ✔️ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1311.1074) | ❌ |
+| Quantum Metropolis Sampling | ❌ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/0911.3635) | ❌ |
+| ML-QAE | ❌ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1904.10246) | ❌ |
+| Quantum Multiplexers | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/0410066) | ✔️ |
+| Toffoli-heavy Circuits | ✔️ | ❌ | ✔️ | ❌ | ✔️ | ✔️ | [Paper](https://arxiv.org/abs/1904.01671) | ✔️ |
+| Magic State Distillation | ✔️ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/0403025) | ✔️ |
+| Logical State Preparation | ✔️ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
+| Syndrome Measurement and Correction | ✔️ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
+| VQE Ansatz with Fixed Repetitions | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1304.3061) | ✔️ |
+| VQE | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1304.3061) | ✔️ |
+| QAOA with Fixed Repetitions | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1411.4028) | ❌ |
+
+The following sections provide more details on each program type.
 
 ## Static Loops without Dynamic Qubit Indexing
 
