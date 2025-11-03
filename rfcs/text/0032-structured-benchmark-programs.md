@@ -41,7 +41,8 @@ While this feature may not directly impact the way many users interact with Jeff
 
 The following list outlines the proposed structured benchmark programs to be included in the `benchmarks/structured` directory, along with brief description, grouped by the way they utilize structured control flow:
 
-*Note: this list was created from previous discussions among community members and is open for further suggestions and modifications.*
+[!NOTE]
+This list was created from previous discussions among community members and is open for further suggestions and modifications.*
 
 ## Static Loops without Dynamic Qubit Indexing
 
