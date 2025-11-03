@@ -90,6 +90,7 @@ This list was created from previous discussions among community members and is o
 - *Iterative Quantum Fourier Transform (iQFT)*: Rather than allocating all qubits upfront, just a single qubit is allocated at the start of execution and then reset during each loop iteration of QFT.
 - *Iterative Quantum Phase Estimation (iQPE)*: Similar to iQFT, iQPE allocates a single qubit (in addition to the phase qubit "psi") and reuses it across iterations to estimate the phase of a unitary operator.
 - *Shor's Algorithm*: The primitives used in Shor's algorithm can similarly be implemented using dynamic qubit reallocation to minimize the total number of qubits required.
+- *Toffoli-heavy Circuits*: Toffoli gates in quantum circuits can be implemented more efficiently using ancilla qubits. Circuits using a larger number of Toffoli gates, such as many arithmetic circuits, can benefit from dynamic qubit allocation to allocate and deallocate ancilla qubits repeatedly inside loop bodies.
 
 ## Loosely Coupled Hybrid Programs
 
@@ -103,6 +104,8 @@ This list was created from previous discussions among community members and is o
 *Quantum Error Correction (QEC) is one of the most important applications of structured control flow in quantum computing. These benchmark programs implement QEC protocols that involve structured operations at any point in the program.*
 
 - *Magic State Distillation*: Magic state distillation protocols utilize loops and conditionals to iteratively improve the fidelity of magic states, which are essential for fault-tolerant quantum computing. ([Bravyi & Kitaev, 2005](https://arxiv.org/abs/quant-ph/0403025))
+- *Logical Sate Preparation*: Preparing logical qubits in specific states  using QEC codes involves structured operations to ensure fault tolerance.
+- *Syndrome Measurement and Correction*: QEC protocols involve measuring error syndromes and applying corrections based on the measurement outcomes, utilizing conditionals to determine the appropriate corrective actions.
 
 ---
 
@@ -143,6 +146,7 @@ To the best of our knowledge, there is currently no widely adopted benchmark sui
 [unresolved-questions]: #unresolved-questions
 
 - Are there any additional structured benchmark programs that should be included in the initial release?
+- How do we define and/or produce these programs? What development "front end" should be used?
 - How can we best facilitate the adoption of these benchmarks by the quantum computing community?
 - Does Jeff already support all necessary features to accurately represent the proposed structured benchmark programs?
 
