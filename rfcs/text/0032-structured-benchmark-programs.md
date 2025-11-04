@@ -85,6 +85,7 @@ Further details on each program type are provided in the sections that follow th
 | ✔️ | Feature is required |
 | ❌ | Feature is not used |
 | 🟦 | Feature may be used depending on specific implementation |
+| ❓ | Requires some further research |
 
 ### Category Details
 
