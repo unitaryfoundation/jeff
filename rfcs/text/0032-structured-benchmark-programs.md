@@ -13,8 +13,10 @@ Quantum programs involving structured control flow operations such as `if` and `
 Many programs can be greatly simplified through the use of structured control flow operations.
 This includes simple loops for repeated operations, conditionals to implement classically controlled quantum operations in a natural way, and more complex loops and control flow structures that depend on measurement results and access qubits dynamically.
 
+Furthermore, some programs may even *require* structured program representation (e.g., those where loop iterations are dynamic and dependent on measurement values). In these cases, unrolling the program into a flat sequence of gates is either impossible or leads to an exponential blow-up in program size.
+
 However, a large number of existing quantum compiler toolchains still do not support some or even all of these features.
-Proposing a set of such programs as benchmarks can not only help users evaluate the capabilities of different toolchains, but also serve as a motivation for compiler developers to implement these features.
+Proposing a set of such programs as benchmarks can not only help users evaluate the capabilities of different toolchains, but also serve as a motivation for compiler developers to implement features such as the compilation of such programs *without unrolling* the program structure, and even *rethink the use of circuits* as the default program representation for quantum compilation - can they do better and result in more optimized programs by taking into account the additional information available from the structure?
 
 Furthermore, it can also increase the visibility of Jeff as a quantum program format that can express these advanced features, encouraging more users to adopt it for their quantum programming needs.
 
@@ -50,9 +52,9 @@ Further details on each program type are provided in the sections that follow th
 | Program Type | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | conditionals | dynamic qubit allocation | qubit reuse | references | arbitrary-size |
 -----|--------------|-------------------------|--------------------------|-----------------------|--------------|-------------------------|-------------|-----------|
 | Quantum Teleportation | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://doi.org/10.1103/PhysRevLett.70.1895) | ❌ |
-| Block Encoding | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1606.02685), [Paper](https://arxiv.org/abs/1806.01838) | ❌ |
-| Grover's Search Algorithm | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/9605043) | ❌ |
-| Grover's Search with Weak Measurement | ❌ | ✔️ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta) | ❌ |
+| Block Encoding | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1606.02685), [Paper](https://arxiv.org/abs/1806.01838) | ✔️ |
+| Grover's Search Algorithm | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/9605043) | ✔️ |
+| Grover's Search with Weak Measurement | ❌ | ✔️ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta) | ✔️ |
 | GHZ State Preparation | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Wikipedia](https://en.wikipedia.org/wiki/GHZ_state) | ✔️ |
 | Quantum Fourier Transform (QFT) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
 | Quantum Phase Estimation (QPE) | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ |
@@ -86,7 +88,7 @@ The following sections provide more details on each program type.
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on dynamic execution results. Inside the loop bodies, operations may be dynamically indexed (e.g. based on the loop parameter).*
 
-- *GHZ State Preparation*: A static loop is used to entangle all qubits with each other using `cx` gates where, at each loop index `i`, the `cx` gate is applied between qubit `0` and qubit `i`. ([Wikipedia on GHZ states](https://en.wikipedia.org/wiki/GHZ_state))
+- *GHZ State Preparation*: A static loop is used to entangle all qubits with each other using `cx` gates where, at each loop index `i`, the `cx` gate is applied between qubit `0` and qubit `i`. Alternatively, qubits `i` and `i + 1` could also be entangled iteratively. A benchmark program for both variants might be helpful. ([Wikipedia on GHZ states](https://en.wikipedia.org/wiki/GHZ_state))
 - *Quantum Fourier Transform (QFT)*: Nested static loops are used to apply controlled phase rotations between qubits, where the control and target qubits are determined based on the loop index. ([Nielsen and Chuang, 2010](https://doi.org/10.1017/CBO9780511976667))
 - *Quantum Phase Estimation (QPE)*: Static loops are used to apply controlled unitary operations and inverse QFT, with qubit indices determined by the loop parameters. ([Nielsen and Chuang, 2010](https://doi.org/10.1017/CBO9780511976667))
 - *X-Ray Absorption Spectroscopy*: Simulation of X-Ray Absorption Spectroscopy is implemented using static loops based on [this paper](https://arxiv.org/abs/2405.11015) (https://pennylane.ai/qml/demos/tutorial_xas).
@@ -149,6 +151,7 @@ There are several potential drawbacks to consider with this proposal:
 - Maintenance Overhead: The addition of a new benchmark suite requires ongoing maintenance to ensure that the benchmarks remain relevant and up-to-date with the latest advancements in quantum computing and compiler technologies.
 - Complexity: Introducing structured benchmarks may increase the complexity of the Jeff repository, potentially making it more challenging for new users to navigate and understand the available resources.
 - Limited Adoption: If the benchmarks are not widely adopted by the quantum computing community, their impact may be limited, reducing the incentive for compiler developers to implement support for structured control flow.
+- Comparisons are not simple: For users, it might not be stratighforward to know what to compare against when compiling these structured programs. For a full, fair evaluation, a meaningful baseline needs to be established and a more precise methodology for comparison is likely necessary.
 
 # Rationale and alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
@@ -179,6 +182,7 @@ To the best of our knowledge, there is currently no widely adopted benchmark sui
 - How do we define and/or produce these programs? What development "front end" should be used?
 - How can we best facilitate the adoption of these benchmarks by the quantum computing community?
 - Does Jeff already support all necessary features to accurately represent the proposed structured benchmark programs?
+- In setting a compilation challenge, what is the benchmark for compilation of these *unrolled* programs (where possible) that a user should compare against?
 
 # Future possibilities
 [future-possibilities]: #future-possibilities
