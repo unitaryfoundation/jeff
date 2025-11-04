@@ -44,8 +44,8 @@ In the table below, for each program type, the required structured control flow 
 Programs for which "*arbitrary size*" is marked can be defined generically and parameterized by input parameters to allow for different sizes at runtime.
 Further details on each program type are provided in the sections that follow the table.
 
-[!NOTE]
-This list was created from previous discussions among community members and is open for further suggestions and modifications.*
+> [!NOTE]
+> This list was created from previous discussions among community members and is open for further suggestions and modifications.
 
 | Program Type | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | conditionals | dynamic qubit allocation | qubit reuse | references | arbitrary-size |
 -----|--------------|-------------------------|--------------------------|-----------------------|--------------|-------------------------|-------------|-----------|
