@@ -104,26 +104,26 @@ Further details on each program type are provided in the sections that follow th
 
 The following sections provide more details on each program type.
 
-## Static Loops without Dynamic Qubit Indexing
+## Statically Bounded Loops without Dynamic Qubit Indexing
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on dynamic execution results. Inside the loop bodies, all operations are still statically indexed.*
+*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on values computed at runtime. Inside the loop bodies, all operations are still statically indexed.*
 
 - *Grover's Search Algorithm*: Oracle and diffusion operations can be applied repeatedly using a fixed-size loop. (https://arxiv.org/abs/quant-ph/9605043)
 - *VQE Ansatz with Fixed Repetitions*: A variational ansatz circuit that applies a set of parameterized gates in a loop with a predetermined number of repetitions. ([Peruzzo et al., 2014](https://arxiv.org/abs/1304.3061))
 - *QAOA with Fixed Repetitions*: A Quantum Approximate Optimization Algorithm circuit that applies problem and mixer Hamiltonians in a loop with a fixed number of layers. ([Farhi et al., 2014](https://arxiv.org/abs/1411.4028))
 
-## Static Loops with Dynamic Qubit Indexing
+## Statically Bounded Loops with Dynamic Qubit Indexing
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on dynamic execution results. Inside the loop bodies, operations may be dynamically indexed (e.g. based on the loop parameter).*
+*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on values computed at runtime. Inside the loop bodies, operations may be dynamically indexed (e.g. based on the loop parameter).*
 
 - *GHZ State Preparation*: A static loop is used to entangle all qubits with each other using `cx` gates where, at each loop index `i`, the `cx` gate is applied between qubit `0` and qubit `i`. Alternatively, qubits `i` and `i + 1` could also be entangled iteratively. A benchmark program for both variants might be helpful. ([Wikipedia on GHZ states](https://en.wikipedia.org/wiki/GHZ_state))
 - *Quantum Fourier Transform (QFT)*: Nested static loops are used to apply controlled phase rotations between qubits, where the control and target qubits are determined based on the loop index. ([Nielsen and Chuang, 2010](https://doi.org/10.1017/CBO9780511976667))
 - *Quantum Phase Estimation (QPE)*: Static loops are used to apply controlled unitary operations and inverse QFT, with qubit indices determined by the loop parameters. ([Nielsen and Chuang, 2010](https://doi.org/10.1017/CBO9780511976667))
 - *X-Ray Absorption Spectroscopy*: Simulation of X-Ray Absorption Spectroscopy is implemented using static loops based on [this paper](https://arxiv.org/abs/2405.11015) (https://pennylane.ai/qml/demos/tutorial_xas).
 
-## Dynamic Loops
+## Dynamically Bounded Loops
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do** depend on dynamic execution results, such as measurement outcomes. Operations may also be dynamically indexed.*
+*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do** depend on values computed at runtime, such as measurement outcomes. Operations may also be dynamically indexed.*
 
 - *Grover's Search with Weak Measurement*: Measurements on an ancilla qubit are utilized to determine whether to continue with another iteration of Grover's search or to stop as amplitude amplification has succeeded. ([Andrés-Martínez et al.](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta))
 - *Repeat-Until-Success*: Specific operations are applied repeatedly until a desired measurement outcome is achieved, indicating that a desired complex operation has been successfully implemented.
