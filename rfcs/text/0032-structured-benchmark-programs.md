@@ -5,7 +5,7 @@
 # Summary
 [summary]: #summary
 
-Quantum programs involving structured control flow operations such as `if` and `for` can only be represented in severely limited ways through existing quantum program formats. Qiskit does not allow dynamic qubit indexing, which is crucial for semantic `for` loops. Similarly, while OpenQASM 3 does not explicitly prohibit dynamic indexing, it leaves it open as an optional feature that many backends do not support. Jeff, on the other hand, has the ability to represent such programs, making it the ideal format for expressing a set of structured benchmark programs. These programs can then be used as a set of challenges for existing quantum compilers to drive the development of more advanced compilation techniques.
+Quantum programs involving structured control flow operations such as `if` and `for` can only be represented in severely limited ways through existing quantum program formats. Qiskit does not allow dynamic qubit indexing, which is crucial for semantic `for` loops. Similarly, while OpenQASM 3 does not explicitly prohibit dynamic indexing, it leaves it open as an optional feature that many backends do not support. Jeff, on the other hand, has the ability to represent such programs, making it the ideal format for expressing a set of structured benchmark programs. These programs can then be used as a set of challenges for quantum compilers to drive the development of more advanced compilation techniques.
 
 This RFC proposes to:
 - gather and provide a list of important patterns and algorithms that contain structure and/or dynamism
