@@ -64,7 +64,7 @@ Further details on each program type are provided in the sections that follow th
 | Quantum Phase Estimation (QPE)                | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ | ✔️ |
 | Iterative Quantum Fourier Transform (iQFT)    | ✔️ | ❌ | ✔️ | 🟦 | ❌ | ❌ | ❌ | ✔️ | [Paper](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.76.3228) | ✔️ | ❌ |
 | Iterative Quantum Phase Estimation (iQPE)     | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/0610214) | ✔️ | ✔️ |
-| Shor's Algorithm                              | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/9508027) | ❌ | ✔️ |
+| Shor's Algorithm                              | ✔️ | 🟦 | ✔️ | ✔️ | ❌ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/9508027) | ✔️ | ✔️ |
 | X-Ray Absorption Spectroscopy                 | ✔️ | ❌ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/2405.11015), [Tutorial](https://pennylane.ai/qml/demos/tutorial_xas) | ❌ | ✔️ |
 | Repeat-Until-Success                          | ❌ | ✔️ | ❌ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1311.1074) | ❌ | ❌ |
 | Quantum Metropolis Sampling                   | ❌ | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/0911.3635) | ❌ | ✔️ |
