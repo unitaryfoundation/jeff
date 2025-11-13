@@ -28,10 +28,20 @@ Furthermore, it can also increase the visibility of Jeff as a quantum program fo
 # Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
 
-A new directory, `benchmarks/structured` is introduced in the Jeff repository.
-It provides a set of individual Jeff files that each represent a single structured benchmark program.
+## File Locations and Formats
 
-In cases where the programs are adaptive in their size, it uses dynamic input parameters to keep the program implementation agnostic of the specifically desired size.
+A new directory, `benchmarks/structured` is introduced in the Jeff repository.
+It contains a set of sub-directories for each individual structured benchmark program.
+These sub-directories may contain implementations of the respective program in different *intermediate* representations, such as Jeff or OpenQASM 3.
+
+Implementations in higher-level frameworks such as Qiskit or PennyLane may also be included, but they should be actively divided specifically into the directory `benchmarks/_recipes/structured/` to indicate that they are not to be used as generalized benchmark formats, but rather as "recipes" for generating them.
+In this case, reprodubility of the Jeff programs generated from them has to be ensured, e.g., by specifying framework versions and random seeds. The directory is once again subdivided into sub-directories for each individual structured benchmark program, which in turn contain an additional sub-directory for each development front-end used (e.g. `benchmarks/_recipes/structured/quantum_teleportation/qiskit/`).
+
+The modular directory structure allows future adaptations and extensions of the benchmark suite, either by adding other structured programs or by also including entirely new categories of benchmarks.
+
+## Benchmark Program Structure
+
+In cases where the programs are adaptive in their size, the benchmark definitions use dynamic input parameters to keep the program implementation agnostic of the specifically desired size.
 This may include examples such as arbitrarily sized GHZ state preparation, where the number of qubits is specified as an input parameter at runtime.
 Similarly, programs that require classical input data such as rotation angles use input parameters to allow users to specify the data at runtime.
 An example of this might be a VQA ansatz that is repeated several times using `for` loops.
@@ -39,9 +49,13 @@ An example of this might be a VQA ansatz that is repeated several times using `f
 In contrast, some programs are provided with fixed sizes and parameters, either because they cannot easily be generalized or because they are intended as simpler test scenarios for basic compiler functionality.
 Examples of this include simple Quantum Teleportation programs, or predefined instances of Grover's search algorithm.
 
-The modular directory structure allows future adaptations and extensions of the benchmark suite, either by adding other structured programs or by also including entirely new categories of benchmarks.
+## Further Information
 
-While this feature may not directly impact the way many users interact with Jeff, it provides a valuable resource for evaluating and improving quantum compilers and test their compatibility with Jeff and advanced quantum programming features.
+Additionally, a `README.md` file is included in the `benchmarks/structured` directory.
+This file provides an overview of the available benchmarks, including descriptions of each program and the structured control flow features they utilize.
+It is used to track the progress of implementing the benchmarks and serves as a reference for users looking to understand the capabilities of different quantum compilers.
+
+While the desired results proposed in this RFC may not directly impact the way many users interact with Jeff, they provide a valuable resource for evaluating and improving quantum compilers and test their compatibility with Jeff and advanced quantum programming features.
 
 # Implementation-level explanation
 [implementation-level-explanation]: #implementation-level-explanation
