@@ -77,6 +77,9 @@ Further details on each program type are provided in the sections that follow th
 | Grover's Search with Weak Measurement         | ❌ | ✔️ | ❌ | ❌ | 🟦 | ✔️ | ❌ | ❌ | [Paper](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta) | ✔️ | ✔️ |
 | GHZ State Preparation                         | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | ❌ | ❌ | [Wikipedia](https://en.wikipedia.org/wiki/GHZ_state) | ✔️ | ❌ |
 | Quantum Fourier Transform (QFT)               | ✔️ | ❌ | ✔️ | 🟦 | ❌ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ | ❌ |
+| QFT adder (quantum input, two registers)      | ✔️ | ❌ | ✔️ | 🟦 | ❌ | ❌ | ❌ | ❌ | [Draper](https://arxiv.org/abs/quant-ph/0008033) | ✔️ | ✔️ |
+| QFT adder (classical input, single register)  | ✔️ | ❌ | ✔️ | ✔️|  🟦 | ❌ | ❌ | ❌ | [Beauregard](https://arxiv.org/abs/quant-ph/0205095), Fig. 3 | ✔️ | ✔️ |
+| Controlled multiplication modulo N            | ✔️ | ✔️ | ✔️ | ✔️|  🟦 | ❌ | ❌ | ❌ | [Beauregard](https://arxiv.org/abs/quant-ph/0205095), Fig. 6 | ✔️ | ✔️ |
 | Quantum Phase Estimation (QPE)                | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ | ✔️ |
 | Iterative Quantum Fourier Transform (iQFT)    | ✔️ | ❌ | ✔️ | 🟦 | ❌ | ❌ | ❌ | ✔️ | [Paper](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.76.3228) | ✔️ | ❌ |
 | Iterative Quantum Phase Estimation (iQPE)     | ✔️ | ❌ | ✔️ | ✔️ | ❌ | ❌ | ❌ | ✔️ | [Paper](https://arxiv.org/abs/quant-ph/0610214) | ✔️ | ✔️ |
@@ -87,12 +90,15 @@ Further details on each program type are provided in the sections that follow th
 | ML-QAE                                        | ❌ | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1904.10246) | ❌ | ✔️ |
 | Quantum Multiplexers                          | ✔️ | ❌ | ✔️ | ✔️ | ✔️ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/0410066) | ✔️ | ✔️ |
 | Toffoli-heavy Circuits                        | ✔️ | ❌ | ✔️ | ❌ | ❌ | ❌ | ✔️ | ✔️ | [Paper](https://arxiv.org/abs/1904.01671) | ✔️ | ❌ |
+| Parallelization with quantum fan-out          | ✔️ | ❌ | ✔️ | 🟦 | ❌ | ❌ | ✔️ | ❌| [Hoyer and Spalek](https://www.theoryofcomputing.org/articles/v001a005/v001a005.pdf), Figs. 4 and 5 | ✔️ | 🟦 |
 | Magic State Distillation                      | ✔️ | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/quant-ph/0403025) | ✔️ | ✔️ |
 | Logical State Preparation                     | ✔️ | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ | ✔️ |
 | Syndrome Measurement and Correction           | ✔️ | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | [Nielsen and Chuang](https://doi.org/10.1017/CBO9780511976667) | ✔️ | ✔️ |
 | QAOA with Fixed Repetitions                   | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1411.4028) | ❌ | ❌ |
 | VQE Ansatz with Fixed Repetitions             | ✔️ | ❌ | ❌ | ✔️ | ❌ | ❌ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1304.3061) | ✔️ | ❌ |
 | VQE                                           | ✔️ | ❌ | ❌ | ✔️ | ❌ | ✔️ | ❌ | ❌ | [Paper](https://arxiv.org/abs/1304.3061) | ✔️ | ✔️ |
+| Measurement-based quantum computation         | 🟦 | ❌ | 🟦 | ✔️ | ❌ | ✔️ | ❌ | 🟦 | [Wikipedia](https://en.wikipedia.org/wiki/One-way_quantum_computer) | ❌ | 🟦 |
+
 
 ### Symbol Legend
 
