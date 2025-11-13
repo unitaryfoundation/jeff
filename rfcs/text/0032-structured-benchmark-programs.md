@@ -201,7 +201,7 @@ There are several potential drawbacks to consider with this proposal:
 - Maintenance Overhead: The addition of a new benchmark suite requires ongoing maintenance to ensure that the benchmarks remain relevant and up-to-date with the latest advancements in quantum computing and compiler technologies.
 - Complexity: Introducing structured benchmarks may increase the complexity of the Jeff repository, potentially making it more challenging for new users to navigate and understand the available resources.
 - Limited Adoption: If the benchmarks are not widely adopted by the quantum computing community, their impact may be limited, reducing the incentive for compiler developers to implement support for structured control flow.
-- Comparisons are not simple: For users, it might not be stratighforward to know what to compare against when compiling these structured programs. For a full, fair evaluation, a meaningful baseline needs to be established and a more precise methodology for comparison is likely necessary.
+- Comparisons are not simple: For users, it might not be straightforward to know what to compare against when compiling these structured programs. For a full, fair evaluation, a meaningful baseline needs to be established and a more precise methodology for comparison is likely necessary.
 
 # Rationale and alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
