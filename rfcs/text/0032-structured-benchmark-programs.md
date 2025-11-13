@@ -55,6 +55,8 @@ Additionally, a `README.md` file is included in the `benchmarks/structured` dire
 This file provides an overview of the available benchmarks, including descriptions of each program and the structured control flow features they utilize.
 It is used to track the progress of implementing the benchmarks and serves as a reference for users looking to understand the capabilities of different quantum compilers.
 
+The README file also includes information on what particular structured control flow features are supported by different existing formats and toolchains, helping users to identify which tools are best suited for the corresponding needs.
+
 While the desired results proposed in this RFC may not directly impact the way many users interact with Jeff, they provide a valuable resource for evaluating and improving quantum compilers and test their compatibility with Jeff and advanced quantum programming features.
 
 # Implementation-level explanation
