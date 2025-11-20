@@ -44,7 +44,7 @@ enum WellKnownGate {
     #
 
     i @12;
-    # Identity (no-op) gate. Pi radians X rotation.
+    # Identity (no-op) gate.
     # I = | 1  0 |
     #     | 0  1 |
     #
