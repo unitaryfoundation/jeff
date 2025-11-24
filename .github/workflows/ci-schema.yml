@@ -26,7 +26,7 @@ jobs:
     outputs:
       schema: ${{ steps.filter.outputs.schema }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/check-changes
         id: filter
 
@@ -39,7 +39,7 @@ jobs:
     name: Keep the capnp generated code up-to-date with the schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: mozilla-actions/sccache-action@v0.0.9
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
