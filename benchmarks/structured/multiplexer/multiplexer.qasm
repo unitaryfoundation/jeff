@@ -11,7 +11,8 @@ input angle[num_states] angles;
 
 qubit[num_controls] controls;
 qubit target;
-bit[num_controls + 1] c;
+bit[num_controls] c;
+bit outcome;
 
 for int state in [0:num_states-1] {
     // We want to apply angles[state] when controls equal 'state'
@@ -38,3 +39,6 @@ for int state in [0:num_states-1] {
         }
     }
 }
+
+c = measure controls;
+outcome = measure target;
