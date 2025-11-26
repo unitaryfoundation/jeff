@@ -5,14 +5,13 @@ OPENQASM 3.0;
 
 input int n;
 int num_controls = n - 1;
-input angle[2**num_controls] angles;
+int num_states = 2**num_controls;
+input angle[num_states] angles;
 
 
 qubit[num_controls] controls;
 qubit target;
 bit[num_controls + 1] c;
-
-int num_states = 2**num_controls;
 
 for int state in [0:num_states-1] {
     // We want to apply angles[state] when controls equal 'state'
