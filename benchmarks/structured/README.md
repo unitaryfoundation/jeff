@@ -11,7 +11,7 @@ This section tracks the current programs of benchmark program implementation and
 
 The following table lists the currently implemented benchmark programs and indicates the different formats the program is available in.
 
-| Program                                                          | Jeff |                   OpeanQASM 3                     |
+| Program                                                          | Jeff |                   OpenQASM 3                     |
 |------------------------------------------------------------------|------|---------------------------------------------------|
 | [Quantum Teleportation](./teleportation/README.md)               |  ❌  |     [✔️](./teleportation/teleportation.qasm)     |
 | [Grover's Search Algorithm](./grover/README.md)                  |  ❌  |     [✔️](./grover/grover.qasm)                   |
@@ -63,7 +63,7 @@ The following table lists the currently implemented benchmark programs together 
 
 ### Unimplemented Benchmark Programs
 
-The following table lists the not yet implemented benchmark programs that may be implemented through future pull requests.
+The following table tracks benchmark programs that have not been implemented yet and that may be implemented through future pull requests.
 
 | Program Type | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | dynamic classical values | conditionals on originally classical values | conditionals on measurement results | dynamic qubit allocation | qubit reuse | references | arbitrary-size | composite
 |-----|--------------|-------------------------|--------------------------|-----------------------|--------------|-------------------------|-------------|-----------|--------|----------|----------|
