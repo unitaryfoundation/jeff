@@ -11,7 +11,7 @@ x anc;
 
 // Iteratively apply gates
 for int i in [0:n-2] {
-    pow(2**i) @ cp(3*pi/8) q[i], anc;
+    ctrl @ pow(2**i) @ p(3*pi/8) q[i], anc;
 }
 
 // Apply reverse QFT
