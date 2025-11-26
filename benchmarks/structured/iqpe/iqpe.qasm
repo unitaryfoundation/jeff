@@ -14,7 +14,7 @@ for int i in [precision - 1:0:-1] {
     ctrl @ pow(2**i) @ p(3*pi/8) q, anc;
     for int j in [i + 1:precision - 1] {
         if (res[j]) {
-            p(2*pi/2**(j-i+1)) q;
+            p(pi/2**(j-i)) q;
         }
     }
     h q;
