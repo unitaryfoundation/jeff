@@ -11,7 +11,7 @@ This section tracks the current programs of benchmark program implementation and
 
 The following table lists the currently implemented benchmark programs and indicates the different formats the program is available in.
 
-| Program                                                          | Jeff |                   OpeanQASM 3                     |
+| Program                                                          | Jeff |                   OpenQASM 3                     |
 |------------------------------------------------------------------|------|---------------------------------------------------|
 | [Quantum Teleportation](./teleportation/README.md)               |  ❌  |     [✔️](./teleportation/teleportation.qasm)     |
 | [Grover's Search Algorithm](./grover/README.md)                  |  ❌  |     [✔️](./grover/grover.qasm)                   |
