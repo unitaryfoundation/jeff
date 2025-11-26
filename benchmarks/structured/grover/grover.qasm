@@ -5,6 +5,7 @@ input int n;
 
 qubit[n-1] q;
 qubit flag;
+bit[n-1] c;
 
 h q;
 x flag;
@@ -22,3 +23,5 @@ for int i in [1:num_iterations] {
     x q;
     h q;
 }
+
+c = measure q;

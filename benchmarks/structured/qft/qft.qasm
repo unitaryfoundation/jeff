@@ -4,6 +4,7 @@ include "qelib1.inc";
 input int n;
 
 qubit[n] q;
+bit[n] c;
 
 for int i in [0:n-1] {
     h q[i];
@@ -14,3 +15,5 @@ for int i in [0:n-1] {
 for int i in [0:(n-1)/2] {
     swap q[i], q[n - 1 - i];
 }
+
+c = measure q;

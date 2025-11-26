@@ -29,3 +29,5 @@ if (a) {
 }
 
 // Now q2 is in the previous state of a.
+
+bit b2 = measure q2;

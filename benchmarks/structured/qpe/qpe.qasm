@@ -5,6 +5,7 @@ input int n;
 
 qubit[n-1] q;
 qubit anc;
+bit[n-1] c;
 
 h q;
 x anc;
@@ -24,3 +25,5 @@ for int i in [0:n-2] {
         cp(2*pi/2**(j-i+1)) q[j], q[i];
     }
 }
+
+c = measure q;

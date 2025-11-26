@@ -4,8 +4,11 @@ include "qelib1.inc";
 input int n;
 
 qubit[n] q;
+bit[n] c;
 
 h q[0];
 for int i in [1:n-1] {
   cx q[0], q[i];
 }
+
+c = measure q;
