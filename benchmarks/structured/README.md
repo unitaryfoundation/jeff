@@ -63,7 +63,7 @@ The following table lists the currently implemented benchmark programs together 
 
 ### Unimplemented Benchmark Programs
 
-The following table lists the not yet implemented benchmark programs that may be implemented through future pull requests.
+The following table tracks benchmark programs that have not been implemented yet and that may be implemented through future pull requests.
 
 | Program Type | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | dynamic classical values | conditionals on originally classical values | conditionals on measurement results | dynamic qubit allocation | qubit reuse | references | arbitrary-size | composite
 |-----|--------------|-------------------------|--------------------------|-----------------------|--------------|-------------------------|-------------|-----------|--------|----------|----------|
