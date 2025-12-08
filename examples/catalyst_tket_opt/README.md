@@ -8,7 +8,7 @@ The demo only involves one translation direction, since the reverse path has not
 in Catalyst/HUGR yet.
 
 The Catalyst converter prototype can be found [here](https://github.com/PennyLaneAI/catalyst-jeff).
-The HUGR converter prototype can be found [here](https://github.com/CQCL/hugr-jeff).
+The HUGR converter prototype can be found [here](https://github.com/quantinuum/hugr-jeff).
 
 
 ### Catalyst MLIR
