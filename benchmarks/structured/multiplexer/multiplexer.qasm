@@ -16,8 +16,8 @@ bit outcome;
 
 for int state in [0:num_states-1] {
     // We want to apply angles[state] when controls equal 'state'
-    // State is a binary number: e.g., state=5 = 0b101 for 3 controls
-    // means control[0]=1, control[1]=0, control[2]=1
+    // State is a binary number: e.g., state=5 = 0b110 for 3 controls
+    // means control[0]=0, control[1]=1, control[2]=1
 
     // Extract each bit: if 0, we need to flip the corresponding qubit
     // Bit i is: (state >> i) & 1
