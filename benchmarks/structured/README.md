@@ -16,7 +16,7 @@ The following table lists the currently implemented benchmark programs and indic
 | [Quantum Teleportation](./teleportation/README.md)               |  ❌  |     [✔️](./teleportation/teleportation.qasm)     |
 | [Grover's Search Algorithm](./grover/README.md)                  |  ❌  |     [✔️](./grover/grover.qasm)                   |
 | [GHZ State Preparation (linear)](./ghz-linear/README.md)          |  ❌  |     [✔️](./ghz-linear/ghz-linear.qasm)           |
-| [GHZ Sate Preparation (star)](./ghz-star/README.md)              |  ❌  |     [✔️](./ghz-star/ghz-star.qasm)               |
+| [GHZ State Preparation (star)](./ghz-star/README.md)              |  ❌  |     [✔️](./ghz-star/ghz-star.qasm)               |
 | [Quantum Fourier Transform (QFT)](./qft/README.md)               |  ❌  |     [✔️](./qft/qft.qasm)                         |
 | [Quantum Phase Estimation (QPE)](./qpe/README.md)                |  ❌  |     [✔️](./qpe/qpe.qasm)                         |
 | [Iterative Quantum Fourier Transform (iQFT)](./iqft/README.md)   |  ❌  |     [✔️](./iqft/iqft.qasm)                       |
