@@ -1,6 +1,7 @@
 # qpe
 
 This benchmark program is an implementation of Quantum Phase Estimation (QPE) with an arbitrary number of qubits.
+It estimates the phase of the operator `Z`, using `n - 1` qubits to store the phase estimate and one target qubit.
 The given size parameter `n` specifies the total number of qubits used, including the ancilla qubit.
 It must be at least 2.
 
