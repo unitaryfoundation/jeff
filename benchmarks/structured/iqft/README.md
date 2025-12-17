@@ -9,7 +9,7 @@ Therefore, the output qubits will be ordered such that bit `i` (`res[i]`) contai
 |-----------------------------------------------|--------------------------|---------------------------|------------------------|--------------------------|---------------------------------------------|-------------------------------------|--------------------------|-------------|----------------------------------------------------------------------------|----------------|-----------|
 | Iterative Quantum Fourier Transform (iQFT)    |            ✔️            |            ❌            |           ✔️           |           🟦           |                      ❌                      |                 ✔️                 |            ❌            |     ✔️     | [Paper](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.76.3228) |       ✔️       |    ❌    |
 
-## Concerns & Constraints
+## Constraints & Concerns
 
 - The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it is still used in this benchmark for potential future compatibility.
 - The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it is still used in this benchmark for potential future compatibility.
