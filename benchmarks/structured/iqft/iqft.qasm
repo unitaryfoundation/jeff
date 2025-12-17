@@ -14,4 +14,5 @@ for int i in [0:n-1] {
     }
     h q;
     res[n - 1 - i] = measure q;
+    reset q;
 }

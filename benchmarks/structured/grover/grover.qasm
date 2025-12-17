@@ -10,7 +10,7 @@ bit[n-1] c;
 h q;
 x flag;
 
-int num_iterations = int(pi / 4 * sqrt(2**(n-1)));
+int num_iterations = int(ceiling(pi / 4 * sqrt(2**(n-1))));
 
 for int i in [1:num_iterations] {
     // oracle
