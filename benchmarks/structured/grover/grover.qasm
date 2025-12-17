@@ -1,6 +1,8 @@
 OPENQASM 3.0;
 include "qelib1.inc";
 
+// n must be at least 2.
+
 input int n;
 
 qubit[n-1] q;
