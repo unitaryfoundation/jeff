@@ -6,6 +6,8 @@ input int precision;
 qubit q;
 qubit anc;
 bit[precision] res;
+reset q;
+reset anc;
 
 x anc;
 

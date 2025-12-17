@@ -5,6 +5,7 @@ input int n;
 
 qubit[n] q;
 bit[n] c;
+reset q;
 
 for int i in [0:n-1] {
     h q[i];

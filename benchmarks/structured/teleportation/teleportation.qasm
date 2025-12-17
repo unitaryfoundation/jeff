@@ -4,6 +4,9 @@ include "qelib1.inc";
 qubit msg;
 qubit alice;
 qubit bob;
+reset msg;
+reset alice;
+reset bob;
 
 // Alice has a qubit in an unknown state.
 h msg;

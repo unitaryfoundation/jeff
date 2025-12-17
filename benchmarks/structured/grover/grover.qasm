@@ -6,6 +6,8 @@ input int n;
 qubit[n-1] q;
 qubit flag;
 bit[n-1] c;
+reset q;
+reset flag;
 
 h q;
 x flag;

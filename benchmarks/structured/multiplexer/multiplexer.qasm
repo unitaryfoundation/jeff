@@ -13,6 +13,8 @@ qubit[num_controls] controls;
 qubit target;
 bit[num_controls] c;
 bit outcome;
+reset controls;
+reset target;
 
 for int state in [0:num_states-1] {
     // We want to apply angles[state] when controls equal 'state'
