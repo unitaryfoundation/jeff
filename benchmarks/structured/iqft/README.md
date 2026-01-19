@@ -11,4 +11,3 @@ The provided program also includes the final swap operations to reverse the orde
 ## Constraints & Concerns
 
 - The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it is still used in this benchmark for potential future compatibility.
-- The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it is still used in this benchmark for potential future compatibility.
