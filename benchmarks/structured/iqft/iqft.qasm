@@ -1,0 +1,19 @@
+OPENQASM 3.0;
+include "qelib1.inc";
+
+input int n;
+
+qubit q;
+bit[n] res;
+reset q;
+
+for int i in [0:n-1] {
+    for int j in [0:i-1] {
+        if (res[n - 1 - j]) {
+            p(pi/2**(i-j)) q;
+        }
+    }
+    h q;
+    res[n - 1 - i] = measure q;
+    reset q;
+}

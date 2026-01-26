@@ -1,0 +1,25 @@
+OPENQASM 3.0;
+include "qelib1.inc";
+
+input int precision;
+
+qubit q;
+qubit anc;
+bit[precision] res;
+reset q;
+reset anc;
+
+x anc;
+
+for int i in [precision - 1:0:-1] {
+    h q;
+    ctrl @ pow(2**i) @ p(3*pi/8) q, anc;
+    for int j in [i + 1:precision - 1] {
+        if (res[j]) {
+            p(pi/2**(j-i)) q;
+        }
+    }
+    h q;
+    res[i] = measure q;
+    reset q;
+}
