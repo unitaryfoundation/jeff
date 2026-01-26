@@ -153,8 +153,8 @@ with QIR.
 
 ### Why not HUGR?
 
-[HUGR](https://github.com/CQCL/hugr) is a hybrid quantum-classical program representation introduced by Quantinuum and used by the
-[TKET](https://github.com/CQCL/tket2) and [Guppy](https://github.com/CQCL/guppylang) software libraries. While satisfying a lot of our intended criteria, HUGR itself was
+[HUGR](https://github.com/quantinuum/hugr) is a hybrid quantum-classical program representation introduced by Quantinuum and used by the
+[TKET](https://github.com/quantinuum/tket2) and [Guppy](https://github.com/quantinuum/guppylang) software libraries. While satisfying a lot of our intended criteria, HUGR itself was
 not designed to be an exchange format, and instead is used as an internal intermediate
 representation. In addition, HUGR contains advanced features such as type structure that has a high
 barrier to entry.
