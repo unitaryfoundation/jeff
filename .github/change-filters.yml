@@ -4,7 +4,7 @@
 schema: &schema
   - "impl/capnp/**"
   - "impl/fbs/**"
-  - "examples/**.txt"
+  - "examples/**/*.txt"
 
 rust: &rust
   - *schema
@@ -15,9 +15,9 @@ rust: &rust
 
 python: &python
   - *schema
-  - ".github/workflows/ci.yml"
+  - ".github/workflows/ci-py.yml"
   - "impl/py/**"
   - "pyproject.toml"
   - "uv.lock"
-  - "examples/**.py"
-  - "examples/**.ipynb"
+  - "examples/**/*.py"
+  - "examples/**/*.ipynb"
