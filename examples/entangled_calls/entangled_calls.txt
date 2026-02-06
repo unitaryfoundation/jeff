@@ -8,17 +8,17 @@
                     sources = [],
                     targets = [49],
                     operations = [
-                        (outputs = [0], instruction = (int = (const32 = 1))),
+                        (outputs = [0], instruction = (int = (const8 = 1))),
                         (outputs = [1], instruction = (qubit = (alloc = void))),
                         (outputs = [2], instruction = (qubit = (alloc = void))),
                         (outputs = [3], instruction = (qubit = (alloc = void))),
                         (outputs = [4], instruction = (qubit = (alloc = void))),
                         (outputs = [5], instruction = (qubit = (alloc = void))),
                         (inputs = [1], outputs = [6], instruction = (qubit = (gate = (custom = (name = 4, numQubits = 1))))),
-                        (inputs = [6, 2], outputs = [7, 8], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
-                        (inputs = [8, 3], outputs = [9, 10], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
-                        (inputs = [10, 4], outputs = [11, 12], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
-                        (inputs = [12, 5], outputs = [13, 14], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2))))),
+                        (inputs = [6, 2], outputs = [7, 8], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2), controlQubits = 1)))),
+                        (inputs = [8, 3], outputs = [9, 10], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2), controlQubits = 1)))),
+                        (inputs = [10, 4], outputs = [11, 12], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2), controlQubits = 1)))),
+                        (inputs = [12, 5], outputs = [13, 14], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 2), controlQubits = 1)))),
                         (outputs = [15], instruction = (intArray = (const8 = [0, 0, 0, 0, 0]))),
                         (inputs = [7], outputs = [16], instruction = (qubit = (measure = void))),
                         (outputs = [17], instruction = (int = (const32 = 0))),
@@ -73,7 +73,7 @@
                     (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
                     (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
                     (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
-                    (type = (int = 8))
+                    (type = (int = 8)), (type = (int = 8))
                 ]
             ),
         ),
@@ -103,7 +103,7 @@
                     ]
                 ),
                 values = [
-                    (type = (int = 8))
+                    (type = (int = 32))
                 ]
             ),
         ),
