@@ -25,6 +25,7 @@ path = "src/lib.rs"
 capnp = { workspace = true }
 derive_more = { workspace = true, features = ["display", "error", "from"] }
 itertools = { workspace = true }
+semver = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true, features = ["html_reports"] }
