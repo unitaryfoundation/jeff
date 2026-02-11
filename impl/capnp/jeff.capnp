@@ -203,7 +203,7 @@ enum WellKnownGate {
 
 struct Module {
     version @0 :UInt32;
-    # The mayor version of the format.
+    # The major version of the format.
     #
     # Forms a semver version triplet with `versionMinor` and `versionPatch`.
     versionMinor @7 :UInt32;

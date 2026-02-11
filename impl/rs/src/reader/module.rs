@@ -21,10 +21,10 @@ impl<'a> Module<'a> {
 
     /// Version of the jeff protocol used in this module.
     pub fn version(&self) -> semver::Version {
-        let mayor = self.module.get_version() as u64;
+        let major = self.module.get_version() as u64;
         let minor = self.module.get_version_minor() as u64;
         let patch = self.module.get_version_patch() as u64;
-        semver::Version::new(mayor, minor, patch)
+        semver::Version::new(major, minor, patch)
     }
 
     /// Returns the internal reader over the module's functions.
