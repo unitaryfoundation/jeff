@@ -21,7 +21,11 @@ pub use capnp::jeff_capnp;
 use derive_more::derive::{Display, Error, From};
 
 /// Latest version of the jeff schema.
-pub const SCHEMA_VERSION: u32 = 0;
+pub const SCHEMA_VERSION: semver::Version = semver::Version::new(
+    capnp::jeff_capnp::SCHEMA_VERSION_MAJOR as u64,
+    capnp::jeff_capnp::SCHEMA_VERSION_MINOR as u64,
+    capnp::jeff_capnp::SCHEMA_VERSION_PATCH as u64,
+);
 
 /// Errors that can occur when processing a jeff file.
 #[derive(Debug, Display, From, Error)]
@@ -29,14 +33,26 @@ pub const SCHEMA_VERSION: u32 = 0;
 pub enum JeffError {
     /// The jeff file is invalid.
     #[display("Invalid jeff file: {_0}")]
+    #[from]
     InvalidFile(::capnp::Error),
     /// Invalid schema version.
-    #[display("Invalid schema version: {v}. Expected {}", Jeff::VERSION)]
-    InvalidVersion {
+    #[display("Schema version {v} is too old. Expected {min}")]
+    VersionTooOld {
         /// The invalid schema version.
-        v: u32,
+        v: semver::Version,
+        /// The minimum compatible version.
+        min: String,
+    },
+    /// The jeff file is too new.
+    #[display("Schema version {v} is too new. Expected {max}")]
+    VersionTooNew {
+        /// The invalid schema version.
+        v: semver::Version,
+        /// The maximum compatible version.
+        max: String,
     },
     /// Error while reading the internal structure.
+    #[from]
     ReadError(reader::ReadError),
 }
 

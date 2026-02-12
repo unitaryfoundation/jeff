@@ -1,5 +1,7 @@
 (
     version = 0,
+    versionMinor = 1,
+    versionPatch = 0,
     functions = [
         (
             name = 0,

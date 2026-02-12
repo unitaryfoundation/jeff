@@ -109,13 +109,13 @@ Run `just` to see all available commands.
 
 ### 💥 API-breaking changes
 
-The package mayor versions follow the versioning of the serialization schema.
+The package major versions follow the versioning of the serialization schema.
 Packages with the same major version are guaranteed to be inter-compatible.
 
 #### Rust `semver-checks`
 
 For the rust package we use `cargo semver-checks` to alert you of any
-problematic changes that would require a mayor version bump. You can run the
+problematic changes that would require a major version bump. You can run the
 check locally with:
 
 ```bash

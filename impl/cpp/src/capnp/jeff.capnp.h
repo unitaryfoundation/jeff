@@ -18,6 +18,9 @@ CAPNP_BEGIN_HEADER
 namespace capnp {
 namespace schemas {
 
+CAPNP_DECLARE_SCHEMA(c08370fc5ea50ebe);
+CAPNP_DECLARE_SCHEMA(c2dc2b913c617b49);
+CAPNP_DECLARE_SCHEMA(e4bbfe0c8785cec7);
 CAPNP_DECLARE_SCHEMA(ff11858a5d46ba79);
 enum class FloatPrecision_ff11858a5d46ba79: uint16_t {
   FLOAT32,
@@ -80,6 +83,9 @@ CAPNP_DECLARE_SCHEMA(bfefb4a58d54b4fe);
 
 namespace jeff {
 
+static constexpr  ::uint32_t SCHEMA_VERSION_MAJOR = 0u;
+static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 1u;
+static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 0u;
 typedef ::capnp::schemas::FloatPrecision_ff11858a5d46ba79 FloatPrecision;
 
 typedef ::capnp::schemas::Pauli_8ecf0123694bb7e6 Pauli;
@@ -94,7 +100,7 @@ struct Module {
   class Pipeline;
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(feaffd89ffd0617b, 1, 5)
+    CAPNP_DECLARE_STRUCT_HEADER(feaffd89ffd0617b, 2, 5)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -633,6 +639,10 @@ public:
   inline bool hasToolVersion() const;
   inline  ::capnp::Text::Reader getToolVersion() const;
 
+  inline  ::uint32_t getVersionMinor() const;
+
+  inline  ::uint32_t getVersionPatch() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -702,6 +712,12 @@ public:
   inline  ::capnp::Text::Builder initToolVersion(unsigned int size);
   inline void adoptToolVersion(::capnp::Orphan< ::capnp::Text>&& value);
   inline ::capnp::Orphan< ::capnp::Text> disownToolVersion();
+
+  inline  ::uint32_t getVersionMinor();
+  inline void setVersionMinor( ::uint32_t value);
+
+  inline  ::uint32_t getVersionPatch();
+  inline void setVersionPatch( ::uint32_t value);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3791,6 +3807,34 @@ inline void Module::Builder::adoptToolVersion(
 inline ::capnp::Orphan< ::capnp::Text> Module::Builder::disownToolVersion() {
   return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
       ::capnp::bounded<4>() * ::capnp::POINTERS));
+}
+
+inline  ::uint32_t Module::Reader::getVersionMinor() const {
+  return _reader.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint32_t Module::Builder::getVersionMinor() {
+  return _builder.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline void Module::Builder::setVersionMinor( ::uint32_t value) {
+  _builder.setDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
+}
+
+inline  ::uint32_t Module::Reader::getVersionPatch() const {
+  return _reader.getDataField< ::uint32_t>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint32_t Module::Builder::getVersionPatch() {
+  return _builder.getDataField< ::uint32_t>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS);
+}
+inline void Module::Builder::setVersionPatch( ::uint32_t value) {
+  _builder.setDataField< ::uint32_t>(
+      ::capnp::bounded<3>() * ::capnp::ELEMENTS, value);
 }
 
 inline  ::jeff::Function::Which Function::Reader::which() const {

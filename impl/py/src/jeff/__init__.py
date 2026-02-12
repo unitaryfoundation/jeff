@@ -21,6 +21,7 @@ from pathlib import Path
 import textwrap
 from abc import ABC, abstractmethod
 from typing import Any, Iterable
+import semver
 
 from .capnp import load_schema
 
@@ -974,7 +975,7 @@ class JeffModule:
     # cached attributes
     _functions: list[JeffFunc] = _Empty
     _entrypoint: int = _Empty
-    _version: int = _Empty
+    _version: semver.Version | _Empty = _Empty
     _tool: str = _Empty
     _tool_version: str = _Empty
 
@@ -982,12 +983,21 @@ class JeffModule:
         self,
         functions: list[JeffFunc],
         entrypoint: int = 0,
-        version: int = 0,
         tool: str = "",
         tool_version: str = "",
+        version: semver.Version | None = None,
     ):
         """Build a JeffModule from its children fields. The data is cached until `write-out`
         is called, upon which the data is encoded in the jeff binary format."""
+
+        # If the version is not provided, use the default version.
+        if version is None:
+            version = semver.Version(
+                major=schema.schemaVersionMajor,
+                minor=schema.schemaVersionMinor,
+                patch=schema.schemaVersionPatch,
+            )
+
         for func in functions:
             func._module = self
         self._functions = functions
@@ -1039,7 +1049,9 @@ class JeffModule:
             func._refresh(functions[i], _strings)
 
         new_data.entrypoint = self.entrypoint
-        new_data.version = self.version
+        new_data.version = self.version.major
+        new_data.versionMinor = self.version.minor
+        new_data.versionPatch = self.version.patch
         new_data.tool = self.tool
         new_data.toolVersion = self.tool_version
 
@@ -1126,15 +1138,19 @@ class JeffModule:
         return self._raw_data.entrypoint
 
     @property
-    def version(self) -> int:
+    def version(self) -> semver.Version:
         if self._version is not _Empty:
             return self._version
 
-        return self._raw_data.version
+        return semver.Version(
+            major=self._raw_data.version,
+            minor=self._raw_data.versionMinor,
+            patch=self._raw_data.versionPatch,
+        )
 
     @property
     def tool(self) -> str:
-        if self._version is not _Empty:
+        if self._tool is not _Empty:
             return self._tool
 
         return self._raw_data.tool

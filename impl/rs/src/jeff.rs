@@ -36,7 +36,12 @@ impl<'a> Jeff<'a> {
     ///
     /// Loading a jeff file with a previous version will automatically upgrade it
     /// to this version.
-    pub const VERSION: u32 = crate::SCHEMA_VERSION;
+    pub const VERSION: semver::Version = crate::SCHEMA_VERSION;
+
+    /// The minimum version of the jeff format supported by this reader.
+    pub const MIN_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 0, 0);
+    /// The maximum version of the jeff format supported by this reader.
+    pub const MAX_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 1, u64::MAX);
 
     /// Read a jeff program from a slice without copying the data.
     ///
@@ -80,14 +85,34 @@ impl<'a> Jeff<'a> {
     }
 
     /// Check if the schema version is compatible with the current version.
+    ///
+    /// The version must be between [`Self::MIN_COMPATIBLE_VERSION`] and [`Self::MAX_COMPATIBLE_VERSION`].
     //
     // TODO: Upgrade older versions to the current one.
     fn check_version(&self) -> Result<(), JeffError> {
         let version = self.module().version();
-        match version {
-            Self::VERSION => Ok(()),
-            _ => Err(JeffError::InvalidVersion { v: version }),
+
+        if version < Self::MIN_COMPATIBLE_VERSION {
+            return Err(JeffError::VersionTooOld {
+                v: version,
+                min: Self::MIN_COMPATIBLE_VERSION.to_string(),
+            });
         }
+        if version > Self::MAX_COMPATIBLE_VERSION {
+            // User-friendly formatting of the maximum compatible version.
+            let x_if_max = |v: u64| match v {
+                u64::MAX => "x".to_string(),
+                _ => v.to_string(),
+            };
+            let max = format!(
+                "{}.{}.{}",
+                x_if_max(Self::MAX_COMPATIBLE_VERSION.major),
+                x_if_max(Self::MAX_COMPATIBLE_VERSION.minor),
+                x_if_max(Self::MAX_COMPATIBLE_VERSION.patch)
+            );
+            return Err(JeffError::VersionTooNew { v: version, max });
+        }
+        Ok(())
     }
 }
 

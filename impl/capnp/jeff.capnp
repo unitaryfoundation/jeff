@@ -1,5 +1,12 @@
 
 @0xcc0f7aa735ae288c;
+# Jeff Exchange Format
+#
+# This file defines the schema for the Jeff exchange format version 0.1.0.
+
+const schemaVersionMajor: UInt32 = 0;
+const schemaVersionMinor: UInt32 = 1;
+const schemaVersionPatch: UInt32 = 0;
 
 using ValueIndex = UInt32;
 using Length = UInt32;
@@ -196,7 +203,13 @@ enum WellKnownGate {
 
 struct Module {
     version @0 :UInt32;
-    # The version of the format.
+    # The major version of the format.
+    #
+    # Forms a semver version triplet with `versionMinor` and `versionPatch`.
+    versionMinor @7 :UInt32;
+    # The minor version of the format.
+    versionPatch @8 :UInt32;
+    # The patch version of the format.
 
     tool @5 :Text;
     toolVersion @6 :Text;
