@@ -6,14 +6,14 @@ on:
       - main
   pull_request:
     branches:
-      - '**'
+      - "**"
   merge_group:
     types: [checks_requested]
   workflow_dispatch: {}
 
 env:
   SCCACHE_GHA_ENABLED: "true"
-  CAPNPROTO_VERSION: "1.1.0"
+  CAPNPROTO_VERSION: "1.3.0"
 
 jobs:
   # Check if changes were made to the relevant files.
@@ -48,7 +48,7 @@ jobs:
           curl -O https://capnproto.org/capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
           tar zxf capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
           cd capnproto-c++-${CAPNPROTO_VERSION}
-          ./configure
+          ./configure CC="${SCCACHE_PATH} gcc" CXX="${SCCACHE_PATH} g++"
           make -j6 check
           sudo make install
       - name: Get cargo binstall
@@ -65,7 +65,7 @@ jobs:
             impl/rs/src/capnp/ \
             impl/cpp/src/capnp/ \
             examples/ \
-            impl/py/src/jeff-format/data/jeff.capnp
+            impl/py/src/jeff/data/jeff.capnp
           if [ $? -ne 0 ]; then
             echo "The capnp generated code is not up to date"
             echo "Please run 'just update-capnp' and commit the changes"
@@ -76,10 +76,7 @@ jobs:
   # even if they are skipped due to no changes in the relevant files.
   required-checks:
     name: Required checks 📜
-    needs: [
-      changes,
-      capnp-schema,
-    ]
+    needs: [changes, capnp-schema]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:

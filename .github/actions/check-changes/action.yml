@@ -12,15 +12,12 @@ description: Checks if any relevant files have changed in the current pull reque
 # Set job outputs to values from filter step
 # These outputs are always true when running after a merge to main, or if the PR has a `run-ci-checks` label.
 outputs:
-  extensions:
-    description: "The extension definitions have changed"
-    value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.std-extensions == 'true' }}
   rust:
     description: "Rust files have changed"
     value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.rust == 'true' }}
-  rust-core:
-    description: "The main tket rust library has changed"
-    value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.rust == 'true' }}
+  schema:
+    description: "Schema files have changed"
+    value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.schema == 'true' }}
   python:
     description: "Python files have changed"
     value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.python == 'true' }}
