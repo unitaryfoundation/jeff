@@ -42,11 +42,11 @@
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 8)), (type = (intArray = 8))
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8))
                 ]
             ),
         )
