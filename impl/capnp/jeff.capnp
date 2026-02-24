@@ -3,10 +3,27 @@
 # Jeff Exchange Format
 #
 # This file defines the schema for the Jeff exchange format version 0.1.0.
+#
+# See the [Jeff
+# Specification](https://github.com/unitaryfoundation/jeff/blob/main/docs/spec.md)
+# for more details. And the [Jeff
+# CHANGELOG](https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md)
+# for the format version history.
 
 const schemaVersionMajor: UInt32 = 0;
+# The major version of the format.
+#
+# Changelog: https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md
+#
+# Forms a semver version triplet with `schemaVersionMinor` and `schemaVersionPatch`.
 const schemaVersionMinor: UInt32 = 1;
+# The minor version of the format.
+#
+# Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionPatch`.
 const schemaVersionPatch: UInt32 = 0;
+# The patch version of the format.
+#
+# Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionMinor`.
 
 using ValueIndex = UInt32;
 using Length = UInt32;
