@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - '**'
+      - "**"
   merge_group:
     types: [checks_requested]
   workflow_dispatch: {}
@@ -17,7 +17,6 @@ env:
   CI: true # insta snapshots behave differently on ci
   SCCACHE_GHA_ENABLED: "true"
   RUSTC_WRAPPER: "sccache"
-  CAPNPROTO_VERSION: "1.1.0"
 
 jobs:
   # Check if changes were made to the relevant files.
@@ -151,11 +150,7 @@ jobs:
   # even if they are skipped due to no changes in the relevant files.
   required-checks:
     name: Required checks 🦀
-    needs: [
-      changes,
-      rs-check,
-      rs-tests-stable-all-features,
-    ]
+    needs: [changes, rs-check, rs-tests-stable-all-features]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:

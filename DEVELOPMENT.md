@@ -79,7 +79,7 @@ To setup the environment manually you will need:
 - Just: https://just.systems/
 - Rust `>=1.85.0`: https://www.rust-lang.org/tools/install
 - uv `>=1`: https://docs.astral.sh/uv/getting-started/installation
-- capnproto `1.1.0`: https://capnproto.org/install.html
+- capnproto `1.3.0`: https://capnproto.org/install.html
 
 Once you have these installed, you can install the required python dependencies
 and setup pre-commit hooks with:
