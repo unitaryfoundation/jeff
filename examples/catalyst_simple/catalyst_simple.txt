@@ -54,8 +54,8 @@
               outputs = [],
               instruction = (qureg = (free = void)) ) ] ),
         values = [
-          (type = (int = 64)),
-          (type = (int = 64)),
+          (type = (int = 32)),
+          (type = (int = 32)),
           (type = (float = float64)),
           (type = (qureg = void)),
           (type = (qureg = void)),
