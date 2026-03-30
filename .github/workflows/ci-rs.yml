@@ -139,7 +139,7 @@ jobs:
       - name: Upload coverage to codecov.io
         # TODO: Setup Covecov.io coverage reporting
         if: false
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: impl/coverage.json
           name: rust
