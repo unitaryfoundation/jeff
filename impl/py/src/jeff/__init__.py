@@ -1917,7 +1917,7 @@ def qubit_free(qubit: JeffValue):
 def quantum_gate(
     name: str,
     qubits: JeffValue | list[JeffValue],
-    params: list[float] = None,
+    params: list[JeffValue] = None,
     control_qubits: list[JeffValue] = None,
     adjoint: bool = False,
     power: int = 1,
