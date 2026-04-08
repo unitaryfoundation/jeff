@@ -11,7 +11,6 @@ The serialization schema is defined using the [Cap'n Proto](https://capnproto.or
 
 See the [capnp](capnp) directory for the schema definition.
 
-An alternative schema definition is provided in the [protobuf](protobuf) directory.
 Although the current implementation is in Cap'n Proto, we may consider switching to protobuf in the future.
 
 ## Languages
