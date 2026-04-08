@@ -570,8 +570,8 @@ struct QuregOp {
         #
         # Inputs:
         # - `qureg`: The qubit register to insert into.
-        # - `qubit`: The qubit to insert.
         # - `int(32)`: The index of the slot to insert into.
+        # - `qubit`: The qubit to insert.
         #
         # Outputs:
         # - `qureg`: The modified qubit register.
@@ -597,8 +597,8 @@ struct QuregOp {
         #
         # Inputs:
         # - `qureg`: The qubit register to insert into.
-        # - `qureg`: The qubit register to insert.
         # - `int(32)`: The start index of the slice to insert into.
+        # - `qureg`: The qubit register to insert.
         #
         # Outputs:
         # - `qureg`: The modified qubit register.

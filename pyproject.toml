@@ -3,7 +3,7 @@ members = ["impl/py"]
 
 [dependency-groups]
 dev = [{ include-group = "lint" }, { include-group = "test" }]
-lint = ["pre-commit ~=4.3", "ruff ~=0.12.10", "mypy ~=1.17"]
+lint = ["pre-commit ~=4.3", "ruff ~=0.12.10", "mypy ~=1.17", "nb-clean ~=4.0.1"]
 test = [
     "ipykernel ~=6.29",
     "pytest ~=8.4",
