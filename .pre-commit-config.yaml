@@ -59,6 +59,13 @@ repos:
       #  language: system
       #  files: \.py$
       #  pass_filenames: false
+      - id: nb-clean
+        name: nb-clean
+        description: Clean Jupyter notebooks with `nb-clean`.
+        entry: uv run nb-clean clean --preserve-cell-outputs .
+        language: system
+        files: \.ipynb$
+        pass_filenames: false
       - id: cargo-fmt
         name: cargo format
         description: Format rust code with `cargo fmt`.

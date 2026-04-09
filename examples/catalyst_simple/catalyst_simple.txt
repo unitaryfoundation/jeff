@@ -46,7 +46,7 @@
               outputs = [8, 9],
               instruction = (
                 qubit = (measureNd = void) ) ),
-            ( inputs = [4, 8, 0],
+            ( inputs = [4, 0, 8],
               outputs = [10],
               instruction = (
                 qureg = (insertIndex = void) ) ),
