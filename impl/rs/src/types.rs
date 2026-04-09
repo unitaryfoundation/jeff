@@ -20,8 +20,13 @@ pub enum Type {
     ///
     /// Quantum registers are linear types.
     ///
-    /// The length of the register is not known at compile time, but fixed at runtime.
-    QubitRegister,
+    /// If `length` is `None`, the register has dynamic length.
+    /// If `Some`, the register has static compile-time length.
+    #[display("Qureg")]
+    QubitRegister {
+        /// Optional compile-time length.
+        length: Option<u32>,
+    },
     /// Integers.
     ///
     /// The type does not distinguish between signed and unsigned integers.
@@ -36,13 +41,16 @@ pub enum Type {
     },
     /// Integer array.
     ///
-    /// The length of the array is not known at compile time, but fixed at runtime.
-    ///
     /// Arrays of integers of bitwidth 1 can be used as classical bit arrays.
+    ///
+    /// If `length` is `None`, the array has dynamic length.
+    /// If `Some`, the array has static compile-time length.
     #[display("IntArray{}", bits)]
     IntArray {
         /// Bitwidth of the integers.
         bits: u8,
+        /// Optional compile-time length.
+        length: Option<u32>,
     },
     /// Floating point numbers.
     #[display("Float{}", precision.bits())]
@@ -52,11 +60,14 @@ pub enum Type {
     },
     /// Array of floating point numbers.
     ///
-    /// The length of the array is not known at compile time, but fixed at runtime.
+    /// If `length` is `None`, the array has dynamic length.
+    /// If `Some`, the array has static compile-time length.
     #[display("FloatArray{}", precision.bits())]
     FloatArray {
         /// Precision of the floating point numbers.
         precision: FloatPrecision,
+        /// Optional compile-time length.
+        length: Option<u32>,
     },
 }
 
@@ -72,8 +83,11 @@ impl Type {
     }
 
     /// Create a new integer array type.
-    pub fn int_array(bits: u8) -> Self {
-        Self::IntArray { bits }
+    ///
+    /// If `length` is `None`, the array has dynamic length.
+    /// If `Some`, the array has static compile-time length.
+    pub fn int_array(bits: u8, length: Option<u32>) -> Self {
+        Self::IntArray { bits, length }
     }
 
     /// Create a new floating point type.
@@ -82,8 +96,11 @@ impl Type {
     }
 
     /// Create a new floating point array type.
-    pub fn float_array(precision: FloatPrecision) -> Self {
-        Self::FloatArray { precision }
+    ///
+    /// If `length` is `None`, the array has dynamic length.
+    /// If `Some`, the array has static compile-time length.
+    pub fn float_array(precision: FloatPrecision, length: Option<u32>) -> Self {
+        Self::FloatArray { precision, length }
     }
 
     /// Parse a type from a capnp reader.
@@ -94,18 +111,39 @@ impl Type {
             .expect("Type id was not in the schema. Schema should have been verified.")
         {
             Which::Qubit(_) => Self::Qubit,
-            Which::Qureg(_) => Self::QubitRegister,
+            Which::Qureg(qureg) => Self::QubitRegister {
+                length: match qureg.which().expect(
+                    "Qureg type id was not in the schema. Schema should have been verified.",
+                ) {
+                    jeff_capnp::type_::qureg::Which::Static(length) => Some(length),
+                    jeff_capnp::type_::qureg::Which::Dynamic(_) => None,
+                },
+            },
             Which::Int(bits) => Self::Int { bits },
-            Which::IntArray(bits) => Self::IntArray { bits },
+            Which::IntArray(int_array) => Self::IntArray {
+                bits: int_array.get_bitwidth(),
+                length: match int_array.get_length().which().expect(
+                    "IntArray length id was not in the schema. Schema should have been verified.",
+                ) {
+                    jeff_capnp::type_::int_array::length::Which::Static(length) => Some(length),
+                    jeff_capnp::type_::int_array::length::Which::Dynamic(_) => None,
+                },
+            },
             Which::Float(prec) => Self::Float {
                 precision: FloatPrecision::from_capnp(prec.expect(
                     "FloatPrecision id was not in the schema. Schema should have been verified.",
                 )),
             },
-            Which::FloatArray(prec) => Self::FloatArray {
-                precision: FloatPrecision::from_capnp(prec.expect(
+            Which::FloatArray(float_array) => Self::FloatArray {
+                precision: FloatPrecision::from_capnp(float_array.get_precision().expect(
                     "FloatPrecision id was not in the schema. Schema should have been verified.",
                 )),
+                length: match float_array.get_length().which().expect(
+                    "FloatArray length id was not in the schema. Schema should have been verified.",
+                ) {
+                    jeff_capnp::type_::float_array::length::Which::Static(length) => Some(length),
+                    jeff_capnp::type_::float_array::length::Which::Dynamic(_) => None,
+                },
             },
         }
     }
@@ -115,11 +153,33 @@ impl Type {
     pub(crate) fn build_capnp(&self, mut builder: jeff_capnp::type_::Builder) {
         match self {
             Self::Qubit => builder.set_qubit(()),
-            Self::QubitRegister => builder.set_qureg(()),
+            Self::QubitRegister { length } => {
+                let mut qureg = builder.reborrow().init_qureg();
+                match length {
+                    Some(length) => qureg.set_static(*length),
+                    None => qureg.set_dynamic(()),
+                }
+            }
             Self::Int { bits } => builder.set_int(*bits),
-            Self::IntArray { bits } => builder.set_int_array(*bits),
+            Self::IntArray { bits, length } => {
+                let mut int_array = builder.reborrow().init_int_array();
+                int_array.set_bitwidth(*bits);
+                let mut int_array_len = int_array.reborrow().init_length();
+                match length {
+                    Some(length) => int_array_len.set_static(*length),
+                    None => int_array_len.set_dynamic(()),
+                }
+            }
             Self::Float { precision } => builder.set_float(precision.as_capnp()),
-            Self::FloatArray { precision } => builder.set_float_array(precision.as_capnp()),
+            Self::FloatArray { precision, length } => {
+                let mut float_array = builder.reborrow().init_float_array();
+                float_array.set_precision(precision.as_capnp());
+                let mut float_array_len = float_array.reborrow().init_length();
+                match length {
+                    Some(length) => float_array_len.set_static(*length),
+                    None => float_array_len.set_dynamic(()),
+                }
+            }
         }
     }
 }

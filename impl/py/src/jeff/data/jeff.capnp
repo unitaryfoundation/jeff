@@ -338,15 +338,17 @@ struct Type {
         #
         # Qubits are linear types.
 
-        qureg @1 :Void;
+        qureg :union {
+            dynamic @1 :Void;
+            static @2 :Length;
+        }
         # Quantum registers.
         #
         # A quantum register is an array of slots that can hold qubits.
         # Slots of a quantum register can either be empty or filled with a qubit.
         # Quantum registers are linear types.
-        # The length of the register is not known at compile time.
 
-        int @2 :Bitwidth;
+        int @3 :Bitwidth;
         # Integers.
         #
         # The type does not distinguish between signed and unsigned integers.
@@ -355,22 +357,28 @@ struct Type {
         #
         # Integers of bitwidth 1 can be used as classical bits or boolean values.
 
-        intArray @3 :Bitwidth;
+        intArray :group {
+            bitwidth @4 :Bitwidth;
+            length :union {
+                dynamic @5 :Void;
+                static @6 :Length;
+            }
+        }
         # Integer arrays.
-        #
-        # The length of the array is not known at compile time.
         #
         # Arrays of integers of bitwidth 1 can be used as classical bit arrays.
 
-        float @4 :FloatPrecision;
+        float @7 :FloatPrecision;
         # Floating point numbers.
-        #
-        # The length of the array is not known at compile time.
 
-        floatArray @5 :FloatPrecision;
+        floatArray :group {
+            precision @8 :FloatPrecision;
+            length :union {
+                dynamic @9 :Void;
+                static @10 :Length;
+            }
+        }
         # Floating point number arrays.
-        #
-        # The length of the array is not known at compile time.
     }
 }
 

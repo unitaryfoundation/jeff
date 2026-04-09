@@ -10,7 +10,7 @@ print(notebook_files)
 
 
 @pytest.mark.parametrize("notebook", notebook_files)
-def test_example_notebooks(nb_regression, notebook: Path):
+def test_example_notebooks(nb_regression, notebook: Path) -> None:
     print("Notebook:", notebook)
     nb_regression.diff_ignore += (
         "/metadata/language_info/version",

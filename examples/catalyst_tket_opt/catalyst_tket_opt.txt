@@ -100,7 +100,7 @@
             ( inputs = [31],
               outputs = [],
               instruction = (qureg = (free = void)) ) ] ),
-        values = [(type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (qureg = void)), (type = (qureg = void)), (type = (qubit = void)), (type = (qureg = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 1)), (type = (qubit = void)), (type = (int = 1)), (type = (qureg = void)), (type = (qureg = void))]
+        values = [(type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (qureg = (dynamic = void))), (type = (qureg = (dynamic = void))), (type = (qubit = void)), (type = (qureg = (dynamic = void))), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (int = 32)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)), (type = (int = 1)), (type = (qubit = void)), (type = (int = 1)), (type = (qureg = (dynamic = void))), (type = (qureg = (dynamic = void)))]
       ),
     ),
   ],
