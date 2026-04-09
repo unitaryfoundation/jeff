@@ -1,6 +1,6 @@
-# Welcome to the *jeff* development guide <!-- omit in toc -->
+# Welcome to the `jeff` development guide <!-- omit in toc -->
 
-This guide is intended to help you get started with developing *jeff*.
+This guide is intended to help you get started with developing `jeff`.
 
 If you find any errors or omissions in this document, please
 [open an issue](https://github.com/unitaryfoundation/jeff/issues/new)!
@@ -156,9 +156,9 @@ just fix-rs
 just fix-py
 ```
 
-## 🌐 Contributing to *jeff*
+## 🌐 Contributing to `jeff`
 
-We welcome contributions to *jeff*! Please open
+We welcome contributions to `jeff`! Please open
 [an issue](https://github.com/unitaryfoundation/jeff/new) or
 [pull request](https://github.com/unitaryfoundation/jeff/compare) if you have any questions
 or suggestions.

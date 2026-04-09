@@ -1,9 +1,9 @@
 # Protocol implementations
 
 This directory contains the capnproto schema definition and the generated code
-for reading and writing *jeff* programs in different languages.
+for reading and writing `jeff` programs in different languages.
 
-The package major versions match the *jeff* version they implement.
+The package major versions match the `jeff` version they implement.
 
 ## Schema definition
 

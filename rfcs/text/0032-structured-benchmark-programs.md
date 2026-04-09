@@ -5,7 +5,7 @@
 # Summary
 [summary]: #summary
 
-Quantum programs involving structured control flow operations such as `if` and `for` can only be represented in severely limited ways through existing quantum program formats. Qiskit does not allow dynamic qubit indexing, which is crucial for semantic `for` loops. Similarly, while OpenQASM 3 does not explicitly prohibit dynamic indexing, it leaves it open as an optional feature that many backends do not support. Jeff, on the other hand, has the ability to represent such programs, making it the ideal format for expressing a set of structured benchmark programs. These programs can then be used as a set of challenges for quantum compilers to drive the development of more advanced compilation techniques.
+Quantum programs involving structured control flow operations such as `if` and `for` can only be represented in severely limited ways through existing quantum program formats. Qiskit does not allow dynamic qubit indexing, which is crucial for semantic `for` loops. Similarly, while OpenQASM 3 does not explicitly prohibit dynamic indexing, it leaves it open as an optional feature that many backends do not support. `jeff`, on the other hand, has the ability to represent such programs, making it the ideal format for expressing a set of structured benchmark programs. These programs can then be used as a set of challenges for quantum compilers to drive the development of more advanced compilation techniques.
 
 This RFC proposes to:
 - gather and provide a list of important patterns and algorithms that contain structure and/or dynamism.
@@ -23,19 +23,19 @@ Furthermore, some programs may even *require* structured program representation 
 However, a large number of existing quantum compiler toolchains still do not support some or even all of these features.
 Proposing a set of such programs as benchmarks can not only help users evaluate the capabilities of different toolchains, but also serve as a motivation for compiler developers to implement features such as the compilation of such programs *without unrolling* the program structure, and even *rethink the use of circuits* as the default program representation for quantum compilation - can they do better and result in more optimized programs by taking into account the additional information available from the structure?
 
-Furthermore, it can also increase the visibility of Jeff as a quantum program format that can express these advanced features, encouraging more users to adopt it for their quantum programming needs.
+Furthermore, it can also increase the visibility of `jeff` as a quantum program format that can express these advanced features, encouraging more users to adopt it for their quantum programming needs.
 
 # Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
 
 ## File Locations and Formats
 
-A new directory, `benchmarks/structured` is introduced in the Jeff repository.
+A new directory, `benchmarks/structured` is introduced in the `jeff` repository.
 It contains a set of sub-directories for each individual structured benchmark program.
-These sub-directories may contain implementations of the respective program in different *intermediate* representations, such as Jeff or OpenQASM 3.
+These sub-directories may contain implementations of the respective program in different *intermediate* representations, such as `jeff` or OpenQASM 3.
 
 Implementations in higher-level frameworks such as Qiskit or PennyLane may also be included, but they should be actively divided specifically into the directory `benchmarks/_recipes/structured/` to indicate that they are not to be used as generalized benchmark formats, but rather as "recipes" for generating them.
-In this case, reprodubility of the Jeff programs generated from them has to be ensured, e.g., by specifying framework versions and random seeds. The directory is once again subdivided into sub-directories for each individual structured benchmark program, which in turn contain an additional sub-directory for each development front-end used (e.g. `benchmarks/_recipes/structured/quantum_teleportation/qiskit/`).
+In this case, reprodubility of the `jeff` programs generated from them has to be ensured, e.g., by specifying framework versions and random seeds. The directory is once again subdivided into sub-directories for each individual structured benchmark program, which in turn contain an additional sub-directory for each development front-end used (e.g. `benchmarks/_recipes/structured/quantum_teleportation/qiskit/`).
 
 The modular directory structure allows future adaptations and extensions of the benchmark suite, either by adding other structured programs or by also including entirely new categories of benchmarks.
 
@@ -57,7 +57,7 @@ It is used to track the progress of implementing the benchmarks and serves as a 
 
 The README file also includes information on what particular structured control flow features are supported by different existing formats and toolchains, helping users to identify which tools are best suited for the corresponding needs.
 
-While the desired results proposed in this RFC may not directly impact the way many users interact with Jeff, they provide a valuable resource for evaluating and improving quantum compilers and test their compatibility with Jeff and advanced quantum programming features.
+While the desired results proposed in this RFC may not directly impact the way many users interact with `jeff`, they provide a valuable resource for evaluating and improving quantum compilers and test their compatibility with `jeff` and advanced quantum programming features.
 
 # Implementation-level explanation
 [implementation-level-explanation]: #implementation-level-explanation
@@ -199,7 +199,7 @@ Each of the benchmark programs listed above should be implemented individually t
 There are several potential drawbacks to consider with this proposal:
 
 - Maintenance Overhead: The addition of a new benchmark suite requires ongoing maintenance to ensure that the benchmarks remain relevant and up-to-date with the latest advancements in quantum computing and compiler technologies.
-- Complexity: Introducing structured benchmarks may increase the complexity of the Jeff repository, potentially making it more challenging for new users to navigate and understand the available resources.
+- Complexity: Introducing structured benchmarks may increase the complexity of the `jeff` repository, potentially making it more challenging for new users to navigate and understand the available resources.
 - Limited Adoption: If the benchmarks are not widely adopted by the quantum computing community, their impact may be limited, reducing the incentive for compiler developers to implement support for structured control flow.
 - Comparisons are not simple: For users, it might not be straightforward to know what to compare against when compiling these structured programs. For a full, fair evaluation, a meaningful baseline needs to be established and a more precise methodology for comparison is likely necessary.
 
@@ -208,10 +208,10 @@ There are several potential drawbacks to consider with this proposal:
 
 Potential alternatives include:
 - *Implementing structured benchmarks using OpenQASM 3*: While it is possible to represent all desired structured program features in OpenQASM 3, many of these features are only optional and not widely supported by existing backends. Furthermore, using such a representation runs the risk of larger specification changes in the future that could break compatibility.
-- *Using more involved quantum programming frameworks like PennyLane*: While frameworks like PennyLane can express structured quantum programs, they often come with additional abstractions and dependencies that are not easily translatable to arbitrary other representations. As the goal of Jeff is to be a widely compatible exchange format, it mitigates this risk by allowing easier compatibility with different representations.
+- *Using more involved quantum programming frameworks like PennyLane*: While frameworks like PennyLane can express structured quantum programs, they often come with additional abstractions and dependencies that are not easily translatable to arbitrary other representations. As the goal of `jeff` is to be a widely compatible exchange format, it mitigates this risk by allowing easier compatibility with different representations.
 - *Not implementing structured benchmarks at all*: Sooner or later, the quantum computing community will need to address the challenges of structured control flow in quantum programs. By not providing a benchmark suite, we risk slowing down the progress in this area and missing out on opportunities to drive compiler development.
 
-As the reasoning above shows, the proposed design of structured benchmark programs in Jeff is the most effective way to address the need for evaluating and improving quantum compilers' support for advanced control flow features.
+As the reasoning above shows, the proposed design of structured benchmark programs in `jeff` is the most effective way to address the need for evaluating and improving quantum compilers' support for advanced control flow features.
 
 # Prior art
 [prior-art]: #prior-art
@@ -231,7 +231,7 @@ To the best of our knowledge, there is currently no widely adopted benchmark sui
 - Are there any additional structured benchmark programs that should be included in the initial release?
 - How do we define and/or produce these programs? What development "front end" should be used?
 - How can we best facilitate the adoption of these benchmarks by the quantum computing community?
-- Does Jeff already support all necessary features to accurately represent the proposed structured benchmark programs?
+- Does `jeff` already support all necessary features to accurately represent the proposed structured benchmark programs?
 - In setting a compilation challenge, what is the benchmark for compilation of these *unrolled* programs (where possible) that a user should compare against?
 
 # Future possibilities

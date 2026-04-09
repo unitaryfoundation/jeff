@@ -1,6 +1,6 @@
 # Optimizing Catalyst IR with TKET
 
-This example demonstrates the ability to optimize Catalyst IR through the *jeff* interchange format
+This example demonstrates the ability to optimize Catalyst IR through the `jeff` interchange format
 and the TKET compiler. The optimization applied to the example is Matthew Amy's
 [phase polynomial optimization across control flow](https://dl.acm.org/doi/10.1145/3704873).
 
@@ -63,9 +63,9 @@ To obtain the human-readable (.txt) form:
 capnp decode jeff.capnp Module < catalyst_tket_opt.jeff
 ```
 
-### Catalyst *jeff*
+### Catalyst `jeff`
 
-The generated *jeff* is available as `catalyst_tket_opt.jeff` (encoded)
+The generated `jeff` is available as `catalyst_tket_opt.jeff` (encoded)
 and `catalyst_tket_opt.txt` (decoded).
 
 

@@ -1,18 +1,18 @@
-# Jeff Specification
+# `jeff` Specification
 
-This document describes the Jeff quantum program format—a binary exchange format for
+This document describes the `jeff` quantum program format—a binary exchange format for
 quantum programs designed for efficiency and compiler interoperability. The format is
 defined using [Cap'n Proto](capnproto.org), the schema for which can be found in
 [jeff.capnp](../impl/capnp/jeff.capnp) - this document is best read alongside the schema.
 
-Jeff aims to balance expressiveness and simplicity, enabling representation
+`jeff` aims to balance expressiveness and simplicity, enabling representation
 of a wide range of structured and dynamic quantum algorithms, while remaining
 easy for non-expert users to parse and manipulate.
 
-Programs in Jeff are collections of functions, each containing a
+Programs in `jeff` are collections of functions, each containing a
 dataflow graph of operations. The format supports both quantum and
 classical data types, as well as structured control flow constructs.
-Jeff uses *value semantics*: values are immutable, and operations
+`jeff` uses *value semantics*: values are immutable, and operations
 produce new values rather than modifying existing ones. This approach
 simplifies analysis and optimization. Individual regions can be
 viewed as directed acyclic graphs (DAGs) of operations, where edges
@@ -20,11 +20,11 @@ represent typed data dependencies. Cycles in the dataflow graph are invalid.
 
 ## Module
 
-The root of any Jeff program is the `Module` struct, which encapsulates
+The root of any `jeff` program is the `Module` struct, which encapsulates
 the entire quantum program, including all functions, metadata, and
 configuration. Its fields are:
 
-- `version`: Integer specifying the Jeff format version.
+- `version`: Integer specifying the `jeff` format version.
 - `tool` / `toolVersion`: Text fields identifying the software and its version that generated the file.
 - `functions`: List of all functions defined or declared in the module.
 - `strings`: List of strings. To save space and improve lookup efficiency, strings (such as function names or metadata keys) are stored once and referenced by index (`StringIndex`).
@@ -33,18 +33,18 @@ configuration. Its fields are:
 
 ## Functions
 
-Functions are the primary building blocks of a Jeff program. A `Function` can be either a full `definition` with a body, or a `declaration` with only a type signature. Declarations are useful for describing functions defined elsewhere, such as in external libraries or runtime environments.
+Functions are the primary building blocks of a `jeff` program. A `Function` can be either a full `definition` with a body, or a `declaration` with only a type signature. Declarations are useful for describing functions defined elsewhere, such as in external libraries or runtime environments.
 
 The `Function` struct includes:
 
 - `definition`: Contains the implementation of the function.
-    - `body`: A `Region` holding the function's operations. The region's inputs and outputs implicitly define the function's type signature. Jeff functions can have multiple outputs, and the function signature is determined by the region's sources and targets.
+    - `body`: A `Region` holding the function's operations. The region's inputs and outputs implicitly define the function's type signature. `jeff` functions can have multiple outputs, and the function signature is determined by the region's sources and targets.
     - `values`: List of all data values (wires) used within the function's dataflow graph. Operations reference these values by their index (`ValueIndex`).
 - **`declaration`**: Represents a function signature for functions defined externally. Specifies the `inputs` and `outputs` types.
 
 ## Dataflow Graph: `Region`, `Op`, `Value`
 
-Jeff represents program logic as a dataflow graph within a `Region`.
+`jeff` represents program logic as a dataflow graph within a `Region`.
 
 - `Region`: Container for a set of operations. Defines its inputs (`sources`) and outputs (`targets`) by referencing values from the parent function's `values` list. The `operations` list contains all operations in the region. Execution order is determined by data dependencies, not list order; only a partial order is defined. Cycles in the dataflow graph are invalid. Lower-level tools may choose a specific execution order as long as dependencies are respected. Regions used in control flow operations (such as `switch`, `for`, `while`, `doWhile`) are themselves dataflow graphs, and their inputs/outputs are wired according to the control flow operation's semantics.
 - `Op`: A single operation in the dataflow graph. Consumes `inputs` and produces `outputs`, which are indices into the function's `values` list. The specific action is defined by the `instruction` field.
@@ -52,7 +52,7 @@ Jeff represents program logic as a dataflow graph within a `Region`.
 
 ## Metadata
 
-Jeff provides a flexible mechanism for attaching arbitrary metadata to various parts of the program structure. This is useful for tool-specific information, debugging, or any extended attributes not part of the core specification.
+`jeff` provides a flexible mechanism for attaching arbitrary metadata to various parts of the program structure. This is useful for tool-specific information, debugging, or any extended attributes not part of the core specification.
 
 The `Meta` struct represents a key-value pair:
 
@@ -67,11 +67,11 @@ Metadata can be attached as a list of `Meta` objects to:
 - `Op`
 - `Value`
 
-This extensibility allows tools to communicate extra information without changing the core Jeff specification. Metadata is always optional, and tools that do not understand a particular metadata entry can ignore it and pass it through unmodified.
+This extensibility allows tools to communicate extra information without changing the core `jeff` specification. Metadata is always optional, and tools that do not understand a particular metadata entry can ignore it and pass it through unmodified.
 
 ## Types
 
-The `Type` struct defines the kind of data a `Value` can hold. Jeff includes simple classical types alongside quantum types, enabling representation of quantum-classical hybrid algorithms.
+The `Type` struct defines the kind of data a `Value` can hold. `jeff` includes simple classical types alongside quantum types, enabling representation of quantum-classical hybrid algorithms.
 
 - `qubit`: A single quantum bit. Must be treated "linearly": it cannot be copied or deleted (satisfying the no-cloning and no-deleting theorems of quantum mechanics). Structurally, a `qubit` value must be used exactly once as an input after being produced as an output.
 - `qureg`: A quantum register—a dynamically sized array of qubits. Also treated linearly: the entire register must be used exactly once. The length of a quantum register is not known at compile time, but can be queried at runtime.
@@ -96,7 +96,7 @@ Operations on individual qubits.
 - Gates: The `gate` operation applies a `QubitGate`:
     - `wellKnown`: Standard gate from the `WellKnownGate` enum.
     - `ppr`: Arbitrary Pauli-product rotation defined by a list of `Pauli` components, a rotation angle (in radians), and target qubits.
-    - `custom`: User-defined gate specified by name and number of qubits/parameters. This is the key extension point of Jeff, allowing users to define and use gates beyond the standard set. As long as two tools agree on the semantics of a custom gate, they can interoperate via Jeff.
+    - `custom`: User-defined gate specified by name and number of qubits/parameters. This is the key extension point of `jeff`, allowing users to define and use gates beyond the standard set. As long as two tools agree on the semantics of a custom gate, they can interoperate via `jeff`.
     - All gates can be modified with `controlQubits`, `adjoint`, and `power` to create controlled, adjoint (inverse), and repeated applications, respectively.
 
 ### QuregOp
@@ -184,9 +184,9 @@ Comprehensive set of operations for floating-point numbers and arrays, including
 
 ### Structured Control Flow (`ScfOp`)
 
-Structured control flow is a key feature of Jeff, allowing compact representation of complex algorithms. To represent control flow (branching, looping, etc.), Jeff uses a *structured* approach, similar to constructs in high-level programming languages, rather than a control-flow graph (CFG) approach (like LLVM or QIR). This choice simplifies analysis and optimization.
+Structured control flow is a key feature of `jeff`, allowing compact representation of complex algorithms. To represent control flow (branching, looping, etc.), `jeff` uses a *structured* approach, similar to constructs in high-level programming languages, rather than a control-flow graph (CFG) approach (like LLVM or QIR). This choice simplifies analysis and optimization.
 
-Jeff takes inspiration from the MLIR SCF dialect, adapting it to fit the format's needs. Structured control flow operations include:
+`jeff` takes inspiration from the MLIR SCF dialect, adapting it to fit the format's needs. Structured control flow operations include:
 
 - `switch`: Conditional branching based on an integer value. Consists of multiple `branches` (regions) and an optional `default` region. Each branch is a region (dataflow graph) whose inputs and outputs are determined by the control flow operation.
 - `for`: Classic for-loop that iterates from a start to a stop value with a given step. Passes a loop state through its body `Region` (dataflow graph) on each iteration.
