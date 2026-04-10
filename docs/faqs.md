@@ -1,9 +1,9 @@
 # Frequently asked questions
 
-## Is *Jeff* meant to be an intermediate format that quantum software packages manipulate?
+## Is `jeff` meant to be an intermediate format that quantum software packages manipulate?
 
-No. *Jeff* is designed purely to be an exchange format. It is expected that software
-frameworks map **Jeff** input to their own intermediate representations for internal manipulation.
+No. `jeff` is designed purely to be an exchange format. It is expected that software
+frameworks map *`jeff`* input to their own intermediate representations for internal manipulation.
 
 ## Why design a non-human readable format?
 
@@ -13,7 +13,7 @@ non-human readable format.
 
 [Protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers) (and derivatives such as Cap'n Proto) are a binary
 data format initially developed by Google that have been used for similar problems across the
-classical domain, and were chosen for *Jeff*.
+classical domain, and were chosen for `jeff`.
 
 Human-readable formats have been quite common in the quantum space thus far, but in addition we see
 two major reason why they might make less sense going forward:
@@ -61,7 +61,7 @@ There is still a lot of work to do when it comes to compiling structured program
 
 ## Why Cap'n Proto?
 
-We use [Cap'n Proto](https://capnproto.org/) as our data serialization format for Jeff.
+We use [Cap'n Proto](https://capnproto.org/) as our data serialization format for `jeff`.
 
 **Reasons for choosing Cap'n Proto:**
 - Fast, efficient binary encoding
@@ -79,7 +79,7 @@ The danger of introducing new exchange formats or standards is that they themsel
 development — perhaps because of a governance structure with too much process and/or stakeholders,
 or simply because the format is too rigid and doesn't permit extensibility for new ideas.
 
-This is something we wish to avoid — Jeff is *not* a standard we need all stakeholders to adopt, but
+This is something we wish to avoid — `jeff` is *not* a standard we need all stakeholders to adopt, but
 an exchange format localized to compilers, designed to
 be easily extensible. Additional information for program representation and compilation can be added
 directly, and will be taken into account by software frameworks that understand the direction.

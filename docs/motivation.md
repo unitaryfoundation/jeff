@@ -1,6 +1,6 @@
 # Motivation
 
-*Jeff* was designed to solve a few very specific problems the field is currently encountering.
+`jeff` was designed to solve a few very specific problems the field is currently encountering.
 
 ## Better interdisciplinary support.
 
@@ -85,7 +85,7 @@ The danger of introducing new exchange formats or standards is that they themsel
 development — perhaps because of a governance structure with too much process and/or stakeholders,
 or simply because the format is too rigid and doesn't permit extensibility for new ideas.
 
-This is something we wish to avoid — Jeff is *not* a standard we need all stakeholders to adopt, but an exchange format localized to compilers, designed to
+This is something we wish to avoid — `jeff` is *not* a standard we need all stakeholders to adopt, but an exchange format localized to compilers, designed to
 be easily extensible. Additional information for program representation and compilation can be added
 directly, and will be taken into account by software frameworks that understand the direction.
 Further, development will happen out in the open, on GitHub.

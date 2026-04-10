@@ -11,7 +11,7 @@ One paragraph explanation of the feature.
 # Motivation
 [motivation]: #motivation
 
-Any changes to Jeff should focus on solving a problem that users of Jeff are having.
+Any changes to `jeff` should focus on solving a problem that users of `jeff` are having.
 This section should explain this problem in detail, including necessary background.
 
 It should also contain several specific use cases where this feature can help a user, and explain how it helps.
@@ -22,22 +22,22 @@ This section is one of the most important sections of any RFC, and can be length
 # Guide-level explanation
 [guide-level-explanation]: #guide-level-explanation
 
-Explain the proposal as if it was already part of the Jeff specification and you were teaching it to another Jeff user. That generally means:
+Explain the proposal as if it was already part of the `jeff` specification and you were teaching it to another `jeff` user. That generally means:
 
 - Introducing new named concepts.
 - Explaining the feature largely in terms of examples.
-- Explaining how Jeff users should *think* about the feature, and how it should impact the way they use Jeff. It should explain the impact as concretely as possible.
+- Explaining how `jeff` users should *think* about the feature, and how it should impact the way they use `jeff`. It should explain the impact as concretely as possible.
 - If applicable, provide sample migration guidance or deprecation guidance.
 
-For implementation-oriented RFCs (e.g., schema changes), this section should focus on how Jeff users should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+For implementation-oriented RFCs (e.g., schema changes), this section should focus on how `jeff` users should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
 # Implementation-level explanation
 [implementation-level-explanation]: #implementation-level-explanation
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
-- It is clear what changes should be made to the Jeff specification.
-- It is reasonably clear how the Jeff libraries should be updated to expose the feature.
+- It is clear what changes should be made to the `jeff` specification.
+- It is reasonably clear how the `jeff` libraries should be updated to expose the feature.
 - Its interaction with other features is clear.
 - Corner cases are dissected by example.
 
@@ -70,7 +70,7 @@ This section is intended to encourage you as an author to think about the lesson
 If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other formats.
 
 Note that while precedent set by other languages is some motivation, it does not on its own motivate an RFC.
-Please also take into consideration that Jeff sometimes intentionally diverges from common program representations.
+Please also take into consideration that `jeff` sometimes intentionally diverges from common program representations.
 
 # Unresolved questions
 [unresolved-questions]: #unresolved-questions
