@@ -16,7 +16,7 @@ const schemaVersionMajor: UInt32 = 0;
 # Changelog: https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md
 #
 # Forms a semver version triplet with `schemaVersionMinor` and `schemaVersionPatch`.
-const schemaVersionMinor: UInt32 = 1;
+const schemaVersionMinor: UInt32 = 2;
 # The minor version of the format.
 #
 # Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionPatch`.

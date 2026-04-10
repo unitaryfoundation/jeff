@@ -5,7 +5,7 @@
 // capnpc crate version: 0.25.3
 
 pub const SCHEMA_VERSION_MAJOR: u32 = 0;
-pub const SCHEMA_VERSION_MINOR: u32 = 1;
+pub const SCHEMA_VERSION_MINOR: u32 = 2;
 pub const SCHEMA_VERSION_PATCH: u32 = 0;
 
 #[repr(u16)]

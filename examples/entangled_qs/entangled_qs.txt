@@ -1,6 +1,6 @@
 (
     version = 0,
-    versionMinor = 1,
+    versionMinor = 2,
     versionPatch = 0,
     functions = [
         (

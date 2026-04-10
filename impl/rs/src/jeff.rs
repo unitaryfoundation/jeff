@@ -41,7 +41,7 @@ impl<'a> Jeff<'a> {
     /// The minimum version of the jeff format supported by this reader.
     pub const MIN_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 0, 0);
     /// The maximum version of the jeff format supported by this reader.
-    pub const MAX_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 1, u64::MAX);
+    pub const MAX_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 2, u64::MAX);
 
     /// Read a jeff program from a slice without copying the data.
     ///

@@ -89,7 +89,7 @@ CAPNP_DECLARE_SCHEMA(bfefb4a58d54b4fe);
 namespace jeff {
 
 static constexpr  ::uint32_t SCHEMA_VERSION_MAJOR = 0u;
-static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 1u;
+static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 2u;
 static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 0u;
 typedef ::capnp::schemas::FloatPrecision_ff11858a5d46ba79 FloatPrecision;
 
