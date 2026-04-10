@@ -139,15 +139,15 @@ class QuregType(JeffType):
         if self._length is not _Empty:
             return self._length
 
-        if self._raw_data.floatArray.length.which == "static":
-            return self._raw_data.floatArray.length.static
+        if self._raw_data.qureg.which == "static":
+            return self._raw_data.qureg.static
         else:
             return None
 
     # Python integration
 
     def __str__(self) -> str:
-        return "qureg"
+        return f"qureg[{self.length if self.length is not None else ''}]"
 
 
 class IntType(JeffType):
@@ -219,7 +219,7 @@ class IntArrayType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"int{self._bitwidth}[]"
+        return f"int{self._bitwidth}[{self.length if self.length is not None else ''}]"
 
 
 class FloatType(JeffType):
@@ -293,7 +293,7 @@ class FloatArrayType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"float{self.bitwidth}[]"
+        return f"float{self.bitwidth}[{self.length if self.length is not None else ''}]"
 
 
 class JeffValue:
