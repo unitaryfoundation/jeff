@@ -340,7 +340,7 @@ struct Type {
 
         qureg :union {
             dynamic @1 :Void;
-            static @2 :Length;
+            static @6 :Length;
         }
         # Quantum registers.
         #
@@ -350,7 +350,7 @@ struct Type {
         #
         # The length of the register can be a compile-time constant (static) or dynamic.
 
-        int @3 :Bitwidth;
+        int @2 :Bitwidth;
         # Integers.
         #
         # The type does not distinguish between signed and unsigned integers.
@@ -360,10 +360,10 @@ struct Type {
         # Integers of bitwidth 1 can be used as classical bits or boolean values.
 
         intArray :group {
-            bitwidth @4 :Bitwidth;
+            bitwidth @3 :Bitwidth;
             length :union {
-                dynamic @5 :Void;
-                static @6 :Length;
+                dynamic @7 :Void;
+                static @8 :Length;
             }
         }
         # Integer arrays.
@@ -372,11 +372,11 @@ struct Type {
         #
         # The length of the array can be a compile-time constant (static) or dynamic.
 
-        float @7 :FloatPrecision;
+        float @4 :FloatPrecision;
         # Floating point numbers.
 
         floatArray :group {
-            precision @8 :FloatPrecision;
+            precision @5 :FloatPrecision;
             length :union {
                 dynamic @9 :Void;
                 static @10 :Length;
