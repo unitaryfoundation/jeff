@@ -348,8 +348,7 @@ struct Type {
         # Slots of a quantum register can either be empty or filled with a qubit.
         # Quantum registers are linear types.
         #
-        # The quantum register can have a static compile-time length.
-        # A dynamic length can be selected by setting the corresponding flag.
+        # The length of the register can be a compile-time constant (static) or dynamic.
 
         int @3 :Bitwidth;
         # Integers.
@@ -371,8 +370,7 @@ struct Type {
         #
         # Arrays of integers of bitwidth 1 can be used as classical bit arrays.
         #
-        # The array can have a static compile-time length.
-        # A dynamic length can be selected by setting the corresponding flag.
+        # The length of the array can be a compile-time constant (static) or dynamic.
 
         float @7 :FloatPrecision;
         # Floating point numbers.
@@ -386,8 +384,7 @@ struct Type {
         }
         # Floating point number arrays.
         #
-        # The array can have a static compile-time length.
-        # A dynamic length can be selected by setting the corresponding flag.
+        # The length of the array can be a compile-time constant (static) or dynamic.
     }
 }
 
