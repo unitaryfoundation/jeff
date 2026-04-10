@@ -87,20 +87,6 @@ class JeffType(ABC):
         obj._raw_data = type
         return obj
 
-    # Python integration
-
-    def __eq__(self, other):
-        if not isinstance(other, type(self)):
-            return False
-
-        if hasattr(self, "bitwidth") and self.bitwidth != other.bitwidth:
-            return False
-
-        if hasattr(self, "length") and self.length != other.length:
-            return False
-
-        return True
-
 
 class QubitType(JeffType):
     """Specialization of the JeffType for qubit values."""
@@ -114,6 +100,9 @@ class QubitType(JeffType):
 
     def __str__(self) -> str:
         return "qubit"
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, QubitType)
 
 
 class QuregType(JeffType):
@@ -149,6 +138,15 @@ class QuregType(JeffType):
     def __str__(self) -> str:
         return f"qureg[{self.length if self.length is not None else ''}]"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, QuregType):
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
+
 
 class IntType(JeffType):
     """Specialization of the JeffType for integer values."""
@@ -176,6 +174,15 @@ class IntType(JeffType):
 
     def __str__(self) -> str:
         return f"int{self.bitwidth}"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IntType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        return True
 
 
 class IntArrayType(JeffType):
@@ -221,6 +228,18 @@ class IntArrayType(JeffType):
     def __str__(self) -> str:
         return f"int{self._bitwidth}[{self.length if self.length is not None else ''}]"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IntArrayType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
+
 
 class FloatType(JeffType):
     """Specialization of the JeffType for floating point values."""
@@ -249,6 +268,15 @@ class FloatType(JeffType):
 
     def __str__(self) -> str:
         return f"float{self.bitwidth}"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FloatType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        return True
 
 
 class FloatArrayType(JeffType):
@@ -294,6 +322,18 @@ class FloatArrayType(JeffType):
 
     def __str__(self) -> str:
         return f"float{self.bitwidth}[{self.length if self.length is not None else ''}]"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FloatArrayType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
 
 
 class JeffValue:
