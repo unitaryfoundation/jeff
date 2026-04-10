@@ -136,7 +136,7 @@ class QuregType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"qureg[{self.length if self.length is not None else ''}]"
+        return f"qureg[{self.length if self.length is not None else '?'}]"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, QuregType):
@@ -226,7 +226,7 @@ class IntArrayType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"int{self._bitwidth}[{self.length if self.length is not None else ''}]"
+        return f"int{self._bitwidth}[{self.length if self.length is not None else '?'}]"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, IntArrayType):
@@ -321,7 +321,9 @@ class FloatArrayType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"float{self.bitwidth}[{self.length if self.length is not None else ''}]"
+        return (
+            f"float{self.bitwidth}[{self.length if self.length is not None else '?'}]"
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, FloatArrayType):

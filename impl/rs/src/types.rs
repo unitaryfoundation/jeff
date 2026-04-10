@@ -22,7 +22,7 @@ pub enum Type {
     ///
     /// If `length` is `None`, the register has dynamic length.
     /// If `Some`, the register has static compile-time length.
-    #[display("Qureg{}", length.map_or("".to_string(), |l| format!("[{}]", l)))]
+    #[display("Qureg[{}]", length.map_or("?".to_string(), |l| l.to_string()))]
     QubitRegister {
         /// Optional compile-time length.
         length: Option<u32>,
@@ -45,7 +45,7 @@ pub enum Type {
     ///
     /// If `length` is `None`, the array has dynamic length.
     /// If `Some`, the array has static compile-time length.
-    #[display("IntArray{}{}", bits, length.map_or("".to_string(), |l| format!("[{}]", l)))]
+    #[display("IntArray{}[{}]", bits, length.map_or("?".to_string(), |l| l.to_string()))]
     IntArray {
         /// Bitwidth of the integers.
         bits: u8,
@@ -62,7 +62,7 @@ pub enum Type {
     ///
     /// If `length` is `None`, the array has dynamic length.
     /// If `Some`, the array has static compile-time length.
-    #[display("FloatArray{}{}", precision.bits(), length.map_or("".to_string(), |l| format!("[{}]", l)))]
+    #[display("FloatArray{}[{}]", precision.bits(), length.map_or("?".to_string(), |l| l.to_string()))]
     FloatArray {
         /// Precision of the floating point numbers.
         precision: FloatPrecision,
