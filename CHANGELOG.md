@@ -1,6 +1,6 @@
 # Changelog
 
-This file tracks the changes to the *Jeff* exchange format.
+This file tracks the changes to the `jeff` exchange format.
 For changes to the binding libraries, see the [Rust CHANGELOG](https://github.com/unitaryfoundation/jeff/blob/main/impl/rs/CHANGELOG.md) and [Python CHANGELOG](https://github.com/unitaryfoundation/jeff/blob/main/impl/py/CHANGELOG.md) files.
 
 The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

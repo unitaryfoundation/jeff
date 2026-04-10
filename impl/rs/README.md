@@ -6,8 +6,8 @@
 <!-- [![codecov][]](https://codecov.io/gh/unitaryfoundation/jeff) -->
 <!-- [![bencher][]](https://bencher.dev/perf/jeff) -->
 
-Rust bindings for the *jeff* exchange format.
-See the [jeff project](https://github.com/unitaryfoundation/jeff) for more information.
+Rust bindings for the `jeff` exchange format.
+See the [`jeff` project](https://github.com/unitaryfoundation/jeff) for more information.
 
 The [API documentation][] is available on docs.rs.
 

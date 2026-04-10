@@ -6,8 +6,8 @@
   [py-version]: https://img.shields.io/pypi/pyversions/jeff-format
   [pypi]: https://img.shields.io/pypi/v/jeff-format
 
-Python bindings for the *jeff* exchange format.
-See the [jeff project](https://github.com/unitaryfoundation/jeff) for more information.
+Python bindings for the `jeff` exchange format.
+See the [`jeff` project](https://github.com/unitaryfoundation/jeff) for more information.
 
 ## Recent Changes
 

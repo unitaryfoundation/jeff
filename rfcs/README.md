@@ -1,8 +1,8 @@
-# Jeff RFCs
-[Jeff RFCs]: #jeff-rfcs
+# `jeff` RFCs
+[`jeff` RFCs]: #jeff-rfcs
 
 The "RFC" (request for comments) process is intended to provide a consistent
-and controlled path for changes to Jeff (such as new features) so that all
+and controlled path for changes to `jeff` (such as new features) so that all
 stakeholders can be confident about the direction of the project.
 
 Many changes, including bug fixes and documentation improvements can be
@@ -28,13 +28,13 @@ bit of a design process and produce a consensus among the community and maintain
 [When you need to follow this process]: #when-you-need-to-follow-this-process
 
 You need to follow this process if you intend to make "substantial" changes to
-the Jeff format, the project, or the RFC process itself. What constitutes a
+the `jeff` format, the project, or the RFC process itself. What constitutes a
 "substantial" change is evolving based on community norms and varies depending
 on what part of the ecosystem you are proposing to change, but may include the
 following.
 
-  - Any change to the Jeff specification that is not a bugfix or documentation improvement.
-  - Large reorganizations of the Jeff project.
+  - Any change to the `jeff` specification that is not a bugfix or documentation improvement.
+  - Large reorganizations of the `jeff` project.
   - New sub-project or package initiatives.
 
 Some changes do not require an RFC:
@@ -61,11 +61,11 @@ impact on the project requires concerted effort toward consensus-building.
 ## What the process is
 [What the process is]: #what-the-process-is
 
-In short, to get a major feature added to Jeff, one must first get the RFC
+In short, to get a major feature added to `jeff`, one must first get the RFC
 document merged into the repository as a markdown file. At that point the RFC is
-"active" and may be implemented with the goal of eventual inclusion into Jeff.
+"active" and may be implemented with the goal of eventual inclusion into `jeff`.
 
-  - Fork the Jeff repo [Jeff repository]
+  - Fork the `jeff` repo [`jeff` repository]
   - Copy `rfcs/0000-template.md` to `rfcs/text/0000-my-feature.md` (where "my-feature" is
     descriptive). Don't assign an RFC number yet; This is going to be the PR
     number and we'll rename the file accordingly if the RFC is accepted.
@@ -92,7 +92,7 @@ document merged into the repository as a markdown file. At that point the RFC is
     request, and leave a comment on the pull request explaining your changes.
     **Specifically, do not squash or rebase commits after they are visible on
     the pull request.**
-  - If the RFC requires an implementation, a new issue should be created in the [Jeff repository] and linked to the RFC document.
+  - If the RFC requires an implementation, a new issue should be created in the [`jeff` repository] and linked to the RFC document.
   - At some point, once the community has reached a consensus, the RFC will be
     either merged or closed. This should be done with enough notice that all
     stakeholders have a chance to lodge any final objections before a decision
@@ -103,7 +103,7 @@ document merged into the repository as a markdown file. At that point the RFC is
 [Implementing an RFC]: #implementing-an-rfc
 
 If the RFC requires changes to be made in the repository, an associated issue
-for the RFC's implementation will be created in the [Jeff repository].
+for the RFC's implementation will be created in the [`jeff` repository].
 
 The author of an RFC is not obligated to implement it. Of course, the RFC
 author (like any other developer) is welcome to post an implementation for
@@ -127,4 +127,4 @@ RFC proposals are licensed under the Apache License, Version 2.0.
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be licensed under the same license.
 
 
-[Jeff repository]: https://github.com/unitaryfoundation/jeff
+[`jeff` repository]: https://github.com/unitaryfoundation/jeff
