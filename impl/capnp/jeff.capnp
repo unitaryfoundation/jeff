@@ -16,7 +16,7 @@ const schemaVersionMajor: UInt32 = 0;
 # Changelog: https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md
 #
 # Forms a semver version triplet with `schemaVersionMinor` and `schemaVersionPatch`.
-const schemaVersionMinor: UInt32 = 1;
+const schemaVersionMinor: UInt32 = 2;
 # The minor version of the format.
 #
 # Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionPatch`.
@@ -338,13 +338,17 @@ struct Type {
         #
         # Qubits are linear types.
 
-        qureg @1 :Void;
+        qureg :union {
+            dynamic @1 :Void;
+            static @6 :Length;
+        }
         # Quantum registers.
         #
         # A quantum register is an array of slots that can hold qubits.
         # Slots of a quantum register can either be empty or filled with a qubit.
         # Quantum registers are linear types.
-        # The length of the register is not known at compile time.
+        #
+        # The length of the register can be a compile-time constant (static) or dynamic.
 
         int @2 :Bitwidth;
         # Integers.
@@ -355,22 +359,32 @@ struct Type {
         #
         # Integers of bitwidth 1 can be used as classical bits or boolean values.
 
-        intArray @3 :Bitwidth;
+        intArray :group {
+            bitwidth @3 :Bitwidth;
+            length :union {
+                dynamic @7 :Void;
+                static @8 :Length;
+            }
+        }
         # Integer arrays.
         #
-        # The length of the array is not known at compile time.
-        #
         # Arrays of integers of bitwidth 1 can be used as classical bit arrays.
+        #
+        # The length of the array can be a compile-time constant (static) or dynamic.
 
         float @4 :FloatPrecision;
         # Floating point numbers.
-        #
-        # The length of the array is not known at compile time.
 
-        floatArray @5 :FloatPrecision;
+        floatArray :group {
+            precision @5 :FloatPrecision;
+            length :union {
+                dynamic @9 :Void;
+                static @10 :Length;
+            }
+        }
         # Floating point number arrays.
         #
-        # The length of the array is not known at compile time.
+        # The length of the array can be a compile-time constant (static) or dynamic.
     }
 }
 

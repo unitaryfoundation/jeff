@@ -62,6 +62,11 @@ CAPNP_DECLARE_SCHEMA(a94718ae94e9656a);
 CAPNP_DECLARE_SCHEMA(fa48502f34c25717);
 CAPNP_DECLARE_SCHEMA(c0abcfe5577d0247);
 CAPNP_DECLARE_SCHEMA(c905be8527863bef);
+CAPNP_DECLARE_SCHEMA(c7d1e561354eb5db);
+CAPNP_DECLARE_SCHEMA(cd006cd39a6389c7);
+CAPNP_DECLARE_SCHEMA(90eb79dde44bebf8);
+CAPNP_DECLARE_SCHEMA(f6730d15dc7e5aca);
+CAPNP_DECLARE_SCHEMA(ca7759f8a1be900e);
 CAPNP_DECLARE_SCHEMA(a279c44ec6501fde);
 CAPNP_DECLARE_SCHEMA(806a117358065420);
 CAPNP_DECLARE_SCHEMA(acfb91813c79f080);
@@ -84,7 +89,7 @@ CAPNP_DECLARE_SCHEMA(bfefb4a58d54b4fe);
 namespace jeff {
 
 static constexpr  ::uint32_t SCHEMA_VERSION_MAJOR = 0u;
-static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 1u;
+static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 2u;
 static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 0u;
 typedef ::capnp::schemas::FloatPrecision_ff11858a5d46ba79 FloatPrecision;
 
@@ -243,9 +248,101 @@ struct Type {
     FLOAT,
     FLOAT_ARRAY,
   };
+  struct Qureg;
+  struct IntArray;
+  struct FloatArray;
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(c905be8527863bef, 1, 0)
+    CAPNP_DECLARE_STRUCT_HEADER(c905be8527863bef, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct Type::Qureg {
+  Qureg() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  enum Which: uint16_t {
+    DYNAMIC,
+    STATIC,
+  };
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(c7d1e561354eb5db, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct Type::IntArray {
+  IntArray() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  struct Length;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(cd006cd39a6389c7, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct Type::IntArray::Length {
+  Length() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  enum Which: uint16_t {
+    DYNAMIC,
+    STATIC,
+  };
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(90eb79dde44bebf8, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct Type::FloatArray {
+  FloatArray() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  struct Length;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(f6730d15dc7e5aca, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct Type::FloatArray::Length {
+  Length() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+  enum Which: uint16_t {
+    DYNAMIC,
+    STATIC,
+  };
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(ca7759f8a1be900e, 2, 0)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -1535,19 +1632,19 @@ public:
   inline  ::capnp::Void getQubit() const;
 
   inline bool isQureg() const;
-  inline  ::capnp::Void getQureg() const;
+  inline typename Qureg::Reader getQureg() const;
 
   inline bool isInt() const;
   inline  ::uint8_t getInt() const;
 
   inline bool isIntArray() const;
-  inline  ::uint8_t getIntArray() const;
+  inline typename IntArray::Reader getIntArray() const;
 
   inline bool isFloat() const;
   inline  ::jeff::FloatPrecision getFloat() const;
 
   inline bool isFloatArray() const;
-  inline  ::jeff::FloatPrecision getFloatArray() const;
+  inline typename FloatArray::Reader getFloatArray() const;
 
 private:
   ::capnp::_::StructReader _reader;
@@ -1583,24 +1680,24 @@ public:
   inline void setQubit( ::capnp::Void value = ::capnp::VOID);
 
   inline bool isQureg();
-  inline  ::capnp::Void getQureg();
-  inline void setQureg( ::capnp::Void value = ::capnp::VOID);
+  inline typename Qureg::Builder getQureg();
+  inline typename Qureg::Builder initQureg();
 
   inline bool isInt();
   inline  ::uint8_t getInt();
   inline void setInt( ::uint8_t value);
 
   inline bool isIntArray();
-  inline  ::uint8_t getIntArray();
-  inline void setIntArray( ::uint8_t value);
+  inline typename IntArray::Builder getIntArray();
+  inline typename IntArray::Builder initIntArray();
 
   inline bool isFloat();
   inline  ::jeff::FloatPrecision getFloat();
   inline void setFloat( ::jeff::FloatPrecision value);
 
   inline bool isFloatArray();
-  inline  ::jeff::FloatPrecision getFloatArray();
-  inline void setFloatArray( ::jeff::FloatPrecision value);
+  inline typename FloatArray::Builder getFloatArray();
+  inline typename FloatArray::Builder initFloatArray();
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -1615,6 +1712,431 @@ private:
 class Type::Pipeline {
 public:
   typedef Type Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class Type::Qureg::Reader {
+public:
+  typedef Qureg Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline Which which() const;
+  inline bool isDynamic() const;
+  inline  ::capnp::Void getDynamic() const;
+
+  inline bool isStatic() const;
+  inline  ::uint32_t getStatic() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class Type::Qureg::Builder {
+public:
+  typedef Qureg Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline Which which();
+  inline bool isDynamic();
+  inline  ::capnp::Void getDynamic();
+  inline void setDynamic( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isStatic();
+  inline  ::uint32_t getStatic();
+  inline void setStatic( ::uint32_t value);
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class Type::Qureg::Pipeline {
+public:
+  typedef Qureg Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class Type::IntArray::Reader {
+public:
+  typedef IntArray Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline  ::uint8_t getBitwidth() const;
+
+  inline typename Length::Reader getLength() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class Type::IntArray::Builder {
+public:
+  typedef IntArray Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline  ::uint8_t getBitwidth();
+  inline void setBitwidth( ::uint8_t value);
+
+  inline typename Length::Builder getLength();
+  inline typename Length::Builder initLength();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class Type::IntArray::Pipeline {
+public:
+  typedef IntArray Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+  inline typename Length::Pipeline getLength();
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class Type::IntArray::Length::Reader {
+public:
+  typedef Length Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline Which which() const;
+  inline bool isDynamic() const;
+  inline  ::capnp::Void getDynamic() const;
+
+  inline bool isStatic() const;
+  inline  ::uint32_t getStatic() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class Type::IntArray::Length::Builder {
+public:
+  typedef Length Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline Which which();
+  inline bool isDynamic();
+  inline  ::capnp::Void getDynamic();
+  inline void setDynamic( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isStatic();
+  inline  ::uint32_t getStatic();
+  inline void setStatic( ::uint32_t value);
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class Type::IntArray::Length::Pipeline {
+public:
+  typedef Length Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class Type::FloatArray::Reader {
+public:
+  typedef FloatArray Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline  ::jeff::FloatPrecision getPrecision() const;
+
+  inline typename Length::Reader getLength() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class Type::FloatArray::Builder {
+public:
+  typedef FloatArray Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline  ::jeff::FloatPrecision getPrecision();
+  inline void setPrecision( ::jeff::FloatPrecision value);
+
+  inline typename Length::Builder getLength();
+  inline typename Length::Builder initLength();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class Type::FloatArray::Pipeline {
+public:
+  typedef FloatArray Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+  inline typename Length::Pipeline getLength();
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class Type::FloatArray::Length::Reader {
+public:
+  typedef Length Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
+  }
+#endif  // !CAPNP_LITE
+
+  inline Which which() const;
+  inline bool isDynamic() const;
+  inline  ::capnp::Void getDynamic() const;
+
+  inline bool isStatic() const;
+  inline  ::uint32_t getStatic() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class Type::FloatArray::Length::Builder {
+public:
+  typedef Length Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline Which which();
+  inline bool isDynamic();
+  inline  ::capnp::Void getDynamic();
+  inline void setDynamic( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isStatic();
+  inline  ::uint32_t getStatic();
+  inline void setStatic( ::uint32_t value);
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class Type::FloatArray::Length::Pipeline {
+public:
+  typedef Length Pipelines;
 
   inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
@@ -4906,26 +5428,23 @@ inline bool Type::Reader::isQureg() const {
 inline bool Type::Builder::isQureg() {
   return which() == Type::QUREG;
 }
-inline  ::capnp::Void Type::Reader::getQureg() const {
+inline typename Type::Qureg::Reader Type::Reader::getQureg() const {
   KJ_IREQUIRE((which() == Type::QUREG),
               "Must check which() before get()ing a union member.");
-  return _reader.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+  return typename Type::Qureg::Reader(_reader);
 }
-
-inline  ::capnp::Void Type::Builder::getQureg() {
+inline typename Type::Qureg::Builder Type::Builder::getQureg() {
   KJ_IREQUIRE((which() == Type::QUREG),
               "Must check which() before get()ing a union member.");
-  return _builder.getDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+  return typename Type::Qureg::Builder(_builder);
 }
-inline void Type::Builder::setQureg( ::capnp::Void value) {
+inline typename Type::Qureg::Builder Type::Builder::initQureg() {
   _builder.setDataField<Type::Which>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS, Type::QUREG);
-  _builder.setDataField< ::capnp::Void>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<1>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint32_t>(::capnp::bounded<1>() * ::capnp::ELEMENTS, 0);
+  return typename Type::Qureg::Builder(_builder);
 }
-
 inline bool Type::Reader::isInt() const {
   return which() == Type::INT;
 }
@@ -4958,26 +5477,24 @@ inline bool Type::Reader::isIntArray() const {
 inline bool Type::Builder::isIntArray() {
   return which() == Type::INT_ARRAY;
 }
-inline  ::uint8_t Type::Reader::getIntArray() const {
+inline typename Type::IntArray::Reader Type::Reader::getIntArray() const {
   KJ_IREQUIRE((which() == Type::INT_ARRAY),
               "Must check which() before get()ing a union member.");
-  return _reader.getDataField< ::uint8_t>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+  return typename Type::IntArray::Reader(_reader);
 }
-
-inline  ::uint8_t Type::Builder::getIntArray() {
+inline typename Type::IntArray::Builder Type::Builder::getIntArray() {
   KJ_IREQUIRE((which() == Type::INT_ARRAY),
               "Must check which() before get()ing a union member.");
-  return _builder.getDataField< ::uint8_t>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+  return typename Type::IntArray::Builder(_builder);
 }
-inline void Type::Builder::setIntArray( ::uint8_t value) {
+inline typename Type::IntArray::Builder Type::Builder::initIntArray() {
   _builder.setDataField<Type::Which>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS, Type::INT_ARRAY);
-  _builder.setDataField< ::uint8_t>(
-      ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
+  _builder.setDataField< ::uint8_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint32_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  return typename Type::IntArray::Builder(_builder);
 }
-
 inline bool Type::Reader::isFloat() const {
   return which() == Type::FLOAT;
 }
@@ -5010,24 +5527,265 @@ inline bool Type::Reader::isFloatArray() const {
 inline bool Type::Builder::isFloatArray() {
   return which() == Type::FLOAT_ARRAY;
 }
-inline  ::jeff::FloatPrecision Type::Reader::getFloatArray() const {
+inline typename Type::FloatArray::Reader Type::Reader::getFloatArray() const {
   KJ_IREQUIRE((which() == Type::FLOAT_ARRAY),
               "Must check which() before get()ing a union member.");
+  return typename Type::FloatArray::Reader(_reader);
+}
+inline typename Type::FloatArray::Builder Type::Builder::getFloatArray() {
+  KJ_IREQUIRE((which() == Type::FLOAT_ARRAY),
+              "Must check which() before get()ing a union member.");
+  return typename Type::FloatArray::Builder(_builder);
+}
+inline typename Type::FloatArray::Builder Type::Builder::initFloatArray() {
+  _builder.setDataField<Type::Which>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, Type::FLOAT_ARRAY);
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<1>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint32_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  return typename Type::FloatArray::Builder(_builder);
+}
+inline  ::jeff::Type::Qureg::Which Type::Qureg::Reader::which() const {
+  return _reader.getDataField<Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+inline  ::jeff::Type::Qureg::Which Type::Qureg::Builder::which() {
+  return _builder.getDataField<Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+
+inline bool Type::Qureg::Reader::isDynamic() const {
+  return which() == Type::Qureg::DYNAMIC;
+}
+inline bool Type::Qureg::Builder::isDynamic() {
+  return which() == Type::Qureg::DYNAMIC;
+}
+inline  ::capnp::Void Type::Qureg::Reader::getDynamic() const {
+  KJ_IREQUIRE((which() == Type::Qureg::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void Type::Qureg::Builder::getDynamic() {
+  KJ_IREQUIRE((which() == Type::Qureg::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void Type::Qureg::Builder::setDynamic( ::capnp::Void value) {
+  _builder.setDataField<Type::Qureg::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, Type::Qureg::DYNAMIC);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool Type::Qureg::Reader::isStatic() const {
+  return which() == Type::Qureg::STATIC;
+}
+inline bool Type::Qureg::Builder::isStatic() {
+  return which() == Type::Qureg::STATIC;
+}
+inline  ::uint32_t Type::Qureg::Reader::getStatic() const {
+  KJ_IREQUIRE((which() == Type::Qureg::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::uint32_t>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint32_t Type::Qureg::Builder::getStatic() {
+  KJ_IREQUIRE((which() == Type::Qureg::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::uint32_t>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS);
+}
+inline void Type::Qureg::Builder::setStatic( ::uint32_t value) {
+  _builder.setDataField<Type::Qureg::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, Type::Qureg::STATIC);
+  _builder.setDataField< ::uint32_t>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, value);
+}
+
+inline  ::uint8_t Type::IntArray::Reader::getBitwidth() const {
+  return _reader.getDataField< ::uint8_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint8_t Type::IntArray::Builder::getBitwidth() {
+  return _builder.getDataField< ::uint8_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline void Type::IntArray::Builder::setBitwidth( ::uint8_t value) {
+  _builder.setDataField< ::uint8_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
+}
+
+inline typename Type::IntArray::Length::Reader Type::IntArray::Reader::getLength() const {
+  return typename Type::IntArray::Length::Reader(_reader);
+}
+inline typename Type::IntArray::Length::Builder Type::IntArray::Builder::getLength() {
+  return typename Type::IntArray::Length::Builder(_builder);
+}
+#if !CAPNP_LITE
+inline typename Type::IntArray::Length::Pipeline Type::IntArray::Pipeline::getLength() {
+  return typename Type::IntArray::Length::Pipeline(_typeless.noop());
+}
+#endif  // !CAPNP_LITE
+inline typename Type::IntArray::Length::Builder Type::IntArray::Builder::initLength() {
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint32_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  return typename Type::IntArray::Length::Builder(_builder);
+}
+inline  ::jeff::Type::IntArray::Length::Which Type::IntArray::Length::Reader::which() const {
+  return _reader.getDataField<Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline  ::jeff::Type::IntArray::Length::Which Type::IntArray::Length::Builder::which() {
+  return _builder.getDataField<Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline bool Type::IntArray::Length::Reader::isDynamic() const {
+  return which() == Type::IntArray::Length::DYNAMIC;
+}
+inline bool Type::IntArray::Length::Builder::isDynamic() {
+  return which() == Type::IntArray::Length::DYNAMIC;
+}
+inline  ::capnp::Void Type::IntArray::Length::Reader::getDynamic() const {
+  KJ_IREQUIRE((which() == Type::IntArray::Length::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void Type::IntArray::Length::Builder::getDynamic() {
+  KJ_IREQUIRE((which() == Type::IntArray::Length::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void Type::IntArray::Length::Builder::setDynamic( ::capnp::Void value) {
+  _builder.setDataField<Type::IntArray::Length::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Type::IntArray::Length::DYNAMIC);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool Type::IntArray::Length::Reader::isStatic() const {
+  return which() == Type::IntArray::Length::STATIC;
+}
+inline bool Type::IntArray::Length::Builder::isStatic() {
+  return which() == Type::IntArray::Length::STATIC;
+}
+inline  ::uint32_t Type::IntArray::Length::Reader::getStatic() const {
+  KJ_IREQUIRE((which() == Type::IntArray::Length::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint32_t Type::IntArray::Length::Builder::getStatic() {
+  KJ_IREQUIRE((which() == Type::IntArray::Length::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline void Type::IntArray::Length::Builder::setStatic( ::uint32_t value) {
+  _builder.setDataField<Type::IntArray::Length::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Type::IntArray::Length::STATIC);
+  _builder.setDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
+}
+
+inline  ::jeff::FloatPrecision Type::FloatArray::Reader::getPrecision() const {
   return _reader.getDataField< ::jeff::FloatPrecision>(
       ::capnp::bounded<1>() * ::capnp::ELEMENTS);
 }
 
-inline  ::jeff::FloatPrecision Type::Builder::getFloatArray() {
-  KJ_IREQUIRE((which() == Type::FLOAT_ARRAY),
-              "Must check which() before get()ing a union member.");
+inline  ::jeff::FloatPrecision Type::FloatArray::Builder::getPrecision() {
   return _builder.getDataField< ::jeff::FloatPrecision>(
       ::capnp::bounded<1>() * ::capnp::ELEMENTS);
 }
-inline void Type::Builder::setFloatArray( ::jeff::FloatPrecision value) {
-  _builder.setDataField<Type::Which>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS, Type::FLOAT_ARRAY);
+inline void Type::FloatArray::Builder::setPrecision( ::jeff::FloatPrecision value) {
   _builder.setDataField< ::jeff::FloatPrecision>(
       ::capnp::bounded<1>() * ::capnp::ELEMENTS, value);
+}
+
+inline typename Type::FloatArray::Length::Reader Type::FloatArray::Reader::getLength() const {
+  return typename Type::FloatArray::Length::Reader(_reader);
+}
+inline typename Type::FloatArray::Length::Builder Type::FloatArray::Builder::getLength() {
+  return typename Type::FloatArray::Length::Builder(_builder);
+}
+#if !CAPNP_LITE
+inline typename Type::FloatArray::Length::Pipeline Type::FloatArray::Pipeline::getLength() {
+  return typename Type::FloatArray::Length::Pipeline(_typeless.noop());
+}
+#endif  // !CAPNP_LITE
+inline typename Type::FloatArray::Length::Builder Type::FloatArray::Builder::initLength() {
+  _builder.setDataField< ::uint16_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  _builder.setDataField< ::uint32_t>(::capnp::bounded<2>() * ::capnp::ELEMENTS, 0);
+  return typename Type::FloatArray::Length::Builder(_builder);
+}
+inline  ::jeff::Type::FloatArray::Length::Which Type::FloatArray::Length::Reader::which() const {
+  return _reader.getDataField<Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline  ::jeff::Type::FloatArray::Length::Which Type::FloatArray::Length::Builder::which() {
+  return _builder.getDataField<Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline bool Type::FloatArray::Length::Reader::isDynamic() const {
+  return which() == Type::FloatArray::Length::DYNAMIC;
+}
+inline bool Type::FloatArray::Length::Builder::isDynamic() {
+  return which() == Type::FloatArray::Length::DYNAMIC;
+}
+inline  ::capnp::Void Type::FloatArray::Length::Reader::getDynamic() const {
+  KJ_IREQUIRE((which() == Type::FloatArray::Length::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void Type::FloatArray::Length::Builder::getDynamic() {
+  KJ_IREQUIRE((which() == Type::FloatArray::Length::DYNAMIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void Type::FloatArray::Length::Builder::setDynamic( ::capnp::Void value) {
+  _builder.setDataField<Type::FloatArray::Length::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Type::FloatArray::Length::DYNAMIC);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool Type::FloatArray::Length::Reader::isStatic() const {
+  return which() == Type::FloatArray::Length::STATIC;
+}
+inline bool Type::FloatArray::Length::Builder::isStatic() {
+  return which() == Type::FloatArray::Length::STATIC;
+}
+inline  ::uint32_t Type::FloatArray::Length::Reader::getStatic() const {
+  KJ_IREQUIRE((which() == Type::FloatArray::Length::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+
+inline  ::uint32_t Type::FloatArray::Length::Builder::getStatic() {
+  KJ_IREQUIRE((which() == Type::FloatArray::Length::STATIC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS);
+}
+inline void Type::FloatArray::Length::Builder::setStatic( ::uint32_t value) {
+  _builder.setDataField<Type::FloatArray::Length::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, Type::FloatArray::Length::STATIC);
+  _builder.setDataField< ::uint32_t>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, value);
 }
 
 inline  ::uint16_t Meta::Reader::getName() const {

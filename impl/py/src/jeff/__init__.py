@@ -87,17 +87,6 @@ class JeffType(ABC):
         obj._raw_data = type
         return obj
 
-    # Python integration
-
-    def __eq__(self, other):
-        if not isinstance(other, type(self)):
-            return False
-
-        if hasattr(self, "bitwidth"):
-            return self.bitwidth == other.bitwidth
-
-        return True
-
 
 class QubitType(JeffType):
     """Specialization of the JeffType for qubit values."""
@@ -112,19 +101,51 @@ class QubitType(JeffType):
     def __str__(self) -> str:
         return "qubit"
 
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, QubitType)
+
 
 class QuregType(JeffType):
     """Specialization of the JeffType for qureg values."""
 
+    _length: int | None = _Empty
+
+    def __init__(self, length: int | None = None):
+        self._length = length
+
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
-        new_data.qureg = None
+        if self.length is not None:
+            new_data.qureg.length.static = self.length
+        else:
+            new_data.qureg.length.dynamic = None
         self._raw_data = new_data.as_reader()
+
+    # static fields
+
+    @property
+    def length(self) -> int | None:
+        if self._length is not _Empty:
+            return self._length
+
+        if self._raw_data.qureg.which == "static":
+            return self._raw_data.qureg.static
+        else:
+            return None
 
     # Python integration
 
     def __str__(self) -> str:
-        return "qureg"
+        return f"qureg[{self.length if self.length is not None else '?'}]"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, QuregType):
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
 
 
 class IntType(JeffType):
@@ -154,18 +175,33 @@ class IntType(JeffType):
     def __str__(self) -> str:
         return f"int{self.bitwidth}"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IntType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        return True
+
 
 class IntArrayType(JeffType):
     """Specialization of the JeffType for integer arrays."""
 
     _bitwidth: int = _Empty
+    _length: int | None = _Empty
 
-    def __init__(self, bitwidth: int):
+    def __init__(self, bitwidth: int, length: int | None = None):
         self._bitwidth = bitwidth
+        self._length = length
 
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
-        new_data.intArray = self.bitwidth
+        new_data.intArray.bitwidth = self.bitwidth
+        if self.length is not None:
+            new_data.intArray.length.static = self.length
+        else:
+            new_data.intArray.length.dynamic = None
         self._raw_data = new_data.as_reader()
 
     # static fields
@@ -177,10 +213,32 @@ class IntArrayType(JeffType):
 
         return self._raw_data.intArray
 
+    @property
+    def length(self) -> int | None:
+        if self._length is not _Empty:
+            return self._length
+
+        if self._raw_data.intArray.length.which == "static":
+            return self._raw_data.intArray.length.static
+        else:
+            return None
+
     # Python integration
 
     def __str__(self) -> str:
-        return f"int{self._bitwidth}[]"
+        return f"int{self._bitwidth}[{self.length if self.length is not None else '?'}]"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IntArrayType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
 
 
 class FloatType(JeffType):
@@ -211,19 +269,34 @@ class FloatType(JeffType):
     def __str__(self) -> str:
         return f"float{self.bitwidth}"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FloatType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        return True
+
 
 class FloatArrayType(JeffType):
     """Specialization of the JeffType for floating point arrays."""
 
     _bitwidth: int = _Empty
+    _length: int | None = _Empty
 
-    def __init__(self, bitwidth: int):
+    def __init__(self, bitwidth: int, length: int | None = None):
         assert bitwidth in FloatPrecisions
         self._bitwidth = bitwidth
+        self._length = length
 
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
         new_data.floatArray = f"float{self.bitwidth}"
+        if self.length is not None:
+            new_data.floatArray.length.static = self.length
+        else:
+            new_data.floatArray.length.dynamic = None
         self._raw_data = new_data.as_reader()
 
     # static fields
@@ -235,10 +308,34 @@ class FloatArrayType(JeffType):
 
         return 32 if self._raw_data.floatArray == "float32" else 64
 
+    @property
+    def length(self) -> int | None:
+        if self._length is not _Empty:
+            return self._length
+
+        if self._raw_data.floatArray.length.which == "static":
+            return self._raw_data.floatArray.length.static
+        else:
+            return None
+
     # Python integration
 
     def __str__(self) -> str:
-        return f"float{self.bitwidth}[]"
+        return (
+            f"float{self.bitwidth}[{self.length if self.length is not None else '?'}]"
+        )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FloatArrayType):
+            return False
+
+        if self.bitwidth != other.bitwidth:
+            return False
+
+        if self.length != other.length:
+            return False
+
+        return True
 
 
 class JeffValue:

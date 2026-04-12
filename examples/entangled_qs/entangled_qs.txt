@@ -1,6 +1,6 @@
 (
     version = 0,
-    versionMinor = 1,
+    versionMinor = 2,
     versionPatch = 0,
     functions = [
         (
@@ -41,12 +41,12 @@
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
-                    (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8)),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = 8))
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5))))
                 ]
             ),
         )
