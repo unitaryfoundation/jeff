@@ -115,10 +115,11 @@ class QuregType(JeffType):
 
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
+        qureg = new_data.init("qureg")
         if self.length is not None:
-            new_data.qureg.length.static = self.length
+            qureg.static = self.length
         else:
-            new_data.qureg.length.dynamic = None
+            qureg.dynamic = None
         self._raw_data = new_data.as_reader()
 
     # static fields
@@ -197,11 +198,12 @@ class IntArrayType(JeffType):
 
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
-        new_data.intArray.bitwidth = self.bitwidth
+        int_array = new_data.init("intArray")
+        int_array.bitwidth = self.bitwidth
         if self.length is not None:
-            new_data.intArray.length.static = self.length
+            int_array.length.static = self.length
         else:
-            new_data.intArray.length.dynamic = None
+            int_array.length.dynamic = None
         self._raw_data = new_data.as_reader()
 
     # static fields
@@ -211,7 +213,7 @@ class IntArrayType(JeffType):
         if self._bitwidth is not _Empty:
             return self._bitwidth
 
-        return self._raw_data.intArray
+        return self._raw_data.intArray.bitwidth
 
     @property
     def length(self) -> int | None:
@@ -226,7 +228,7 @@ class IntArrayType(JeffType):
     # Python integration
 
     def __str__(self) -> str:
-        return f"int{self._bitwidth}[{self.length if self.length is not None else '?'}]"
+        return f"int{self.bitwidth}[{self.length if self.length is not None else '?'}]"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, IntArrayType):
@@ -292,11 +294,12 @@ class FloatArrayType(JeffType):
 
     def _refresh(self, new_data: schema.Type.Builder):
         """For immutable classes, just write the cached data into the encoding buffer."""
-        new_data.floatArray = f"float{self.bitwidth}"
+        float_array = new_data.init("floatArray")
+        float_array.precision = f"float{self.bitwidth}"
         if self.length is not None:
-            new_data.floatArray.length.static = self.length
+            float_array.length.static = self.length
         else:
-            new_data.floatArray.length.dynamic = None
+            float_array.length.dynamic = None
         self._raw_data = new_data.as_reader()
 
     # static fields
@@ -306,7 +309,7 @@ class FloatArrayType(JeffType):
         if self._bitwidth is not _Empty:
             return self._bitwidth
 
-        return 32 if self._raw_data.floatArray == "float32" else 64
+        return 32 if self._raw_data.floatArray.precision == "float32" else 64
 
     @property
     def length(self) -> int | None:
