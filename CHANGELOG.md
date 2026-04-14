@@ -10,7 +10,7 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 This version releases two breaking changes:
 
 - The `qureg`, `intArray`, and `floatArray` types now hold information about the size of the underlying structure ([#52])
-- The order of inputs to `QuregOp.insertIndex` and `QuregOp.insertSlice` has been adapted to be more in line with the order of inputs to `IntArrayOp.setIndex` and `FloarArrayOp.setIndex` ([#50])
+- The order of inputs to `QuregOp.insertIndex` and `QuregOp.insertSlice` has been adapted to be more in line with the order of inputs to `IntArrayOp.setIndex` and `FloatArrayOp.setIndex` ([#50])
 
 ## [0.1.0] - 2026-02-24
 
