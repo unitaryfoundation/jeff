@@ -126,7 +126,14 @@ def _assert_error(module: object, expected: str) -> None:
 def _empty_module(
     *, version: tuple[int, int, int] = SCHEMA_VERSION, entrypoint: int = 0
 ) -> object:
-    return _module_from_parts([], sources=[], targets=[], ops=[], version=version, entrypoint=entrypoint)
+    return _module_from_parts(
+        [],
+        sources=[],
+        targets=[],
+        ops=[],
+        version=version,
+        entrypoint=entrypoint,
+    )
 
 
 def _int_add_module() -> object:
@@ -150,7 +157,13 @@ def _switch_module(*, branch_uses_parent: bool) -> object:
         ops=[_op("int", "not", [branch_input], [3])],
     )
     return _module_from_parts(
-        [("int", 32), ("int", 32), ("int", 32), ("int", 32), ("int", 32)],
+        [
+            ("int", 32),
+            ("int", 32),
+            ("int", 32),
+            ("int", 32),
+            ("int", 32),
+        ],
         sources=[0, 1],
         targets=[4],
         ops=[_op("scf", "switch", [0, 1], [4], branches=[branch])],
@@ -158,7 +171,7 @@ def _switch_module(*, branch_uses_parent: bool) -> object:
 
 
 def _module_from_parts(
-    type_specs: list[tuple[str, int | None]],
+    type_specs: list[tuple[object, ...]],
     *,
     sources: list[int],
     targets: list[int],
@@ -256,7 +269,7 @@ def _write_op(builder: object, op: dict[str, object]) -> None:
     setattr(instruction, subkind, op["data"])
 
 
-def _write_type(builder: object, type_spec: tuple[str, int | None]) -> None:
+def _write_type(builder: object, type_spec: tuple[object, ...]) -> None:
     kind = type_spec[0]
     if kind == "qubit":
         builder.qubit = None
