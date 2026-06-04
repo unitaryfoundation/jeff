@@ -336,9 +336,7 @@ class _Verifier:
                     f"linear value %{index} has {uses[index]} uses; expected exactly 1",
                 )
 
-    def _verify_op_types(
-        self, op: object, types: Sequence[TypeRef], loc: str
-    ) -> None:
+    def _verify_op_types(self, op: object, types: Sequence[TypeRef], loc: str) -> None:
         inputs = _lookup_types(_indices(op.inputs), types)
         outputs = _lookup_types(_indices(op.outputs), types)
         if inputs is None or outputs is None:
@@ -441,9 +439,7 @@ class _Verifier:
         elif subkind == "extractIndex":
             self._expect_signature(loc, inputs, outputs, [QUREG, INT32], [QUREG, QUBIT])
         elif subkind == "insertIndex":
-            self._expect_signature(
-                loc, inputs, outputs, [QUREG, INT32, QUBIT], [QUREG]
-            )
+            self._expect_signature(loc, inputs, outputs, [QUREG, INT32, QUBIT], [QUREG])
         elif subkind == "extractSlice":
             self._expect_signature(
                 loc, inputs, outputs, [QUREG, INT32, INT32], [QUREG, QUREG]
@@ -572,7 +568,9 @@ class _Verifier:
             if self._expect_signature(loc, inputs, outputs, expected, [ANY_FLOAT]):
                 self._expect_type(outputs[0], TypeRef("float", inputs[0].bitwidth), loc)
         elif subkind == "setIndex":
-            expected_value = TypeRef("float", inputs[0].bitwidth) if inputs else ANY_FLOAT
+            expected_value = (
+                TypeRef("float", inputs[0].bitwidth) if inputs else ANY_FLOAT
+            )
             expected = [ANY_FLOAT_ARRAY, INT32, expected_value]
             self._expect_signature(loc, inputs, outputs, expected, [ANY_FLOAT_ARRAY])
         elif subkind == "length":
@@ -603,7 +601,9 @@ class _Verifier:
         if subkind == "switch":
             self._verify_switch_op(instruction.switch, inputs, outputs, types, loc)
         elif subkind == "for":
-            self._verify_for_op(getattr(instruction, "for"), inputs, outputs, types, loc)
+            self._verify_for_op(
+                getattr(instruction, "for"), inputs, outputs, types, loc
+            )
         elif subkind == "while":
             while_op = getattr(instruction, "while")
             self._verify_while_like_op(
