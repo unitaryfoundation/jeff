@@ -25,3 +25,4 @@ python: &python
   - "uv.lock"
   - "examples/**/*.py"
   - "examples/**/*.ipynb"
+  - "tools/verifier/**"
