@@ -12,14 +12,20 @@ BUILD_DIR = REPO_ROOT / "build"
 BINARY = BUILD_DIR / "jeff-qiskit-convert"
 
 QISKIT_SITE = (
-    Path(sys.prefix) / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}"
-    / "site-packages" / "qiskit"
+    Path(sys.prefix)
+    / "lib"
+    / f"python{sys.version_info.major}.{sys.version_info.minor}"
+    / "site-packages"
+    / "qiskit"
 )
 
 try:
     import qiskit  # noqa: F401
 except ImportError:
-    pytest.skip("Qiskit is not installed — skipping qiskit_convert tests", allow_module_level=True)
+    pytest.skip(
+        "Qiskit is not installed — skipping qiskit_convert tests",
+        allow_module_level=True,
+    )
 
 
 def _build_binary() -> Path:
@@ -27,14 +33,16 @@ def _build_binary() -> Path:
         return BINARY
     result = subprocess.run(
         ["cmake", "-B", str(BUILD_DIR), str(REPO_ROOT / "tools/qiskit_convert")],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
         env={**os.environ, "QISKIT_ROOT": str(QISKIT_SITE)},
     )
     if result.returncode != 0:
         raise RuntimeError(f"cmake configure failed:\n{result.stdout}\n{result.stderr}")
     result = subprocess.run(
         ["cmake", "--build", str(BUILD_DIR)],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         raise RuntimeError(f"cmake build failed:\n{result.stdout}\n{result.stderr}")
@@ -45,7 +53,10 @@ def _run(*args: str, **kwargs) -> subprocess.CompletedProcess:
     binary = _build_binary()
     return subprocess.run(
         [str(binary), *args],
-        capture_output=True, text=True, timeout=30, **kwargs,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        **kwargs,
     )
 
 
@@ -66,7 +77,7 @@ def test_write_jeff_then_read_back() -> None:
 
     result = _run("read", tmp)
     assert result.returncode == 0, f"read failed: {result.stderr}"
-    assert f"3 qubits, 2 clbits" in result.stdout
+    assert "3 qubits, 2 clbits" in result.stdout
     os.unlink(tmp)
 
 
