@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 BUILD_DIR = REPO_ROOT / "build"
 BINARY = BUILD_DIR / "jeff-qiskit-convert"
@@ -13,6 +15,11 @@ QISKIT_SITE = (
     Path(sys.prefix) / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}"
     / "site-packages" / "qiskit"
 )
+
+try:
+    import qiskit  # noqa: F401
+except ImportError:
+    pytest.skip("Qiskit is not installed — skipping qiskit_convert tests", allow_module_level=True)
 
 
 def _build_binary() -> Path:
