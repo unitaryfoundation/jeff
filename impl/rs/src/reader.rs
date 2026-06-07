@@ -9,6 +9,7 @@ mod op;
 mod region;
 mod string_table;
 pub mod value;
+pub mod verify;
 
 pub mod optype;
 
@@ -17,6 +18,7 @@ pub use metadata::{HasMetadata, Metadata};
 pub use module::Module;
 pub use op::Operation;
 pub use region::Region;
+pub use verify::{verify, verify_module, VerificationError};
 
 use derive_more::derive::{Display, Error, From};
 
