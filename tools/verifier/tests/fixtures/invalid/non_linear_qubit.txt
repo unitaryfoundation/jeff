@@ -1,0 +1,26 @@
+(
+    version = 0,
+    versionMinor = 2,
+    versionPatch = 0,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    sources = [0],
+                    targets = [1, 2],
+                    operations = [
+                        (inputs = [0], outputs = [1], instruction = (qubit = (gate = (wellKnown = h)))),
+                        (inputs = [0], outputs = [2], instruction = (qubit = (gate = (wellKnown = h))))
+                    ]
+                ),
+                values = [
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void))
+                ]
+            ),
+        ),
+    ],
+    strings = ["main"]
+)
