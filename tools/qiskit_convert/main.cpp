@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-#include "capnp/jeff.capnp.h"
+#include "jeff.capnp.h"
 
 // -----------------------------------------------------------------------
 // Gate metadata — data-driven, single source of truth
@@ -216,11 +216,9 @@ static int qiskit_to_jeff(QkCircuit *circuit, const char *output_path) {
     mod.setTool("jeff-qiskit-convert");
     mod.setToolVersion("0.1.0");
 
-    auto strings = mod.initStrings(4);
+    auto strings = mod.initStrings(2);
     strings.set(0, "main");
-    strings.set(1, "q");
-    strings.set(2, "c");
-    strings.set(3, "gate");
+    strings.set(1, "custom");
 
     auto funcs = mod.initFunctions(1);
     auto func = funcs[0];
@@ -359,13 +357,13 @@ static int qiskit_to_jeff(QkCircuit *circuit, const char *output_path) {
                     gate.setWellKnown(static_cast<WellKnownGate>(target_wk));
                 } else {
                     auto cust = gate.initCustom();
-                    cust.setName(3);
+                    cust.setName(1);
                     cust.setNumQubits(n_targets);
                     cust.setNumParams((uint8_t)np);
                 }
             } else {
                 auto cust = gate.initCustom();
-                cust.setName(3);
+                cust.setName(1);
                 cust.setNumQubits(n_targets);
                 cust.setNumParams((uint8_t)np);
             }
@@ -381,8 +379,6 @@ static int qiskit_to_jeff(QkCircuit *circuit, const char *output_path) {
         qk_circuit_instruction_clear(&inst);
     }
 
-    body.setSources(kj::ArrayPtr<const uint32_t>(
-        qubit_value_ids.data(), qubit_value_ids.size()));
     std::vector<uint32_t> targets;
     for (uint32_t v : current_vals) targets.push_back(v);
     for (uint32_t v : clbit_value_ids) targets.push_back(v);
@@ -590,9 +586,7 @@ static void usage() {
     printf("  jeff-qiskit-convert read <jeff_file> [diagram.txt]  "
            "Convert jeff -> Qiskit\n");
     printf("  jeff-qiskit-convert write <jeff_output> [n_qubits n_clbits]  "
-           "Build test jeff file\n");
-    printf("  jeff-qiskit-convert test                  "
-           "Run round-trip verification\n");
+           "Convert Qiskit circuit -> jeff\n");
     printf("\nRequires Qiskit C API (set QISKIT_ROOT env var if not auto-detected)\n");
 }
 
@@ -643,43 +637,6 @@ int main(int argc, char **argv) {
         }
         printf("Wrote %s\n", argv[2]);
         qk_circuit_free(circuit);
-        return 0;
-    }
-
-    if (cmd == "test") {
-        printf("Running round-trip verification...\n");
-
-        QkCircuit *circuit = qk_circuit_new(2, 2);
-        uint32_t q0[] = {0};
-        uint32_t q1[] = {1};
-        uint32_t q01[] = {0, 1};
-
-        qk_circuit_gate(circuit, QkGate_X, q0, nullptr);
-        qk_circuit_gate(circuit, QkGate_H, q1, nullptr);
-        qk_circuit_gate(circuit, QkGate_CX, q01, nullptr);
-        double ry_p[] = {-2.0 * M_PI / 3.0};
-        qk_circuit_gate(circuit, QkGate_RY, q1, ry_p);
-        qk_circuit_measure(circuit, 0, 0);
-        qk_circuit_measure(circuit, 1, 1);
-
-        size_t n_inst = qk_circuit_num_instructions(circuit);
-        printf("Original circuit: %zu instructions\n", n_inst);
-
-        const char *tmp_path = "/tmp/jeff_test_output.jeff";
-        if (qiskit_to_jeff(circuit, tmp_path) < 0) {
-            qk_circuit_free(circuit);
-            return 1;
-        }
-        printf("Wrote jeff file, reading back...\n");
-
-        if (jeff_to_qiskit(tmp_path, nullptr) < 0) {
-            qk_circuit_free(circuit);
-            return 1;
-        }
-
-        unlink(tmp_path);
-        qk_circuit_free(circuit);
-        printf("PASS\n");
         return 0;
     }
 

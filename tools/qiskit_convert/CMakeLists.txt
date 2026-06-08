@@ -6,13 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(CapnProto REQUIRED)
 
-# Generate Cap'n Proto bindings from schema at build time
-set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../../impl)
-set(CAPNPC_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set(CAPNPC_IMPORT_DIRS ${CAPNP_INCLUDE_DIRECTORY})
-capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS
-    ${CAPNPC_SRC_PREFIX}/capnp/jeff.capnp
-)
+# Use pre-generated Cap'n Proto bindings from the shared implementation
+set(CAPNP_SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../impl/cpp/src/capnp)
 
 # Find Python (needed for Qiskit's C API path discovery)
 find_package(Python3 COMPONENTS Interpreter Development QUIET)
@@ -47,11 +42,11 @@ find_library(QISKIT_LIBRARY
 
 add_executable(jeff-qiskit-convert
     main.cpp
-    ${CAPNP_SRCS}
+    ${CAPNP_SHARED_DIR}/jeff.capnp.c++
 )
 
 target_include_directories(jeff-qiskit-convert PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CAPNP_SHARED_DIR}
     ${QISKIT_INCLUDE_DIR}
 )
 
