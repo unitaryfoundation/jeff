@@ -1,0 +1,47 @@
+(
+    version = 0,
+    versionMinor = 2,
+    versionPatch = 0,
+    entrypoint = 1,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 42))),
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                ]
+            ),
+        ),
+        (
+            name = 1,
+            definition = (
+                body = (
+                    sources = [0],
+                    targets = [6],
+                    operations = [
+                        (outputs = [1], instruction = (qubit = (alloc = void))),
+                        (outputs = [2], instruction = (qubit = (alloc = void))),
+                        (inputs = [1, 2], outputs = [3, 4], instruction = (qubit = (gate = (custom = (name = 1, numQubits = 1), controlQubits = 1)))),
+                        (inputs = [3], outputs = [5], instruction = (qubit = (measure = void))),
+                        (inputs = [4], outputs = [6], instruction = (qubit = (measure = void))),
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (qubit = void)),
+                    (type = (int = 1)),
+                    (type = (int = 1)),
+                ]
+            ),
+        ),
+    ],
+    strings = ["helper", "main", "CX"]
+)

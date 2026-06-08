@@ -3,7 +3,7 @@ lto = "thin"
 
 [workspace]
 resolver = "2"
-members = ["impl/rs"]
+members = ["impl/rs", "tools/verifier"]
 
 [workspace.package]
 rust-version = "1.85"

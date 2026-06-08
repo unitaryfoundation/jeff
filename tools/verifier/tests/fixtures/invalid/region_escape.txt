@@ -1,0 +1,43 @@
+(
+    version = 0,
+    versionMinor = 2,
+    versionPatch = 0,
+    entrypoint = 1,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 0))),
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                ]
+            ),
+        ),
+        (
+            name = 1,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 0))),
+                        (outputs = [1], instruction = (int = (const32 = 10))),
+                        (outputs = [2], instruction = (int = (const32 = 1))),
+                        (inputs = [0, 1, 2], outputs = [3, 4], instruction = (scf = (for = (sources = [3], targets = [4], operations = [(inputs = [0], outputs = [5], instruction = (int = (add = void)))]))))
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                    (type = (int = 32)),
+                    (type = (int = 32)),
+                    (type = (int = 32)),
+                    (type = (int = 32)),
+                    (type = (int = 32)),
+                ]
+            ),
+        ),
+    ],
+    strings = ["helper", "main"]
+)

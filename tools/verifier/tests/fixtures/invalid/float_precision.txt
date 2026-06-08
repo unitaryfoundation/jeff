@@ -1,0 +1,41 @@
+(
+    version = 0,
+    versionMinor = 2,
+    versionPatch = 0,
+    entrypoint = 1,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 0))),
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                ]
+            ),
+        ),
+        (
+            name = 1,
+            definition = (
+                body = (
+                    sources = [],
+                    targets = [2],
+                    operations = [
+                        (outputs = [0], instruction = (float = (const32 = 1.0))),
+                        (outputs = [1], instruction = (float = (const64 = 2.0))),
+                        (inputs = [0, 1], outputs = [2], instruction = (float = (add = void)))
+                    ]
+                ),
+                values = [
+                    (type = (float = float32)),
+                    (type = (float = float64)),
+                    (type = (float = float64))
+                ]
+            ),
+        ),
+    ],
+    strings = ["helper", "main"]
+)

@@ -14,6 +14,7 @@ rust: &rust
   - *schema-def
   - ".github/workflows/ci-rs.yml"
   - "impl/rs/**"
+  - "tools/verifier/**"
   - "Cargo.toml"
   - "Cargo.lock"
 
