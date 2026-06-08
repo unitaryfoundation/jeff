@@ -41,22 +41,58 @@ fn check_region_linearity(
     errors: &mut Vec<CheckError>,
 ) {
     let mut qubit_inputs: HashSet<u32> = HashSet::new();
+    let mut qubit_outputs: HashSet<u32> = HashSet::new();
+
+    for source in region.sources() {
+        let Ok(v) = source else { continue };
+        if is_linear_type(&v.ty()) {
+            qubit_outputs.insert(v.id());
+        }
+    }
 
     for (op_idx, op) in region.operations().enumerate() {
         for result in op.inputs() {
             let Ok(v) = result else { continue };
-            if is_linear_type(&v.ty()) && !qubit_inputs.insert(v.id()) {
-                errors.push(CheckError {
-                    check_name: "linearity",
-                    message: format!(
-                        "Function '{func_name}', op[{op_idx}]: qubit/qureg value {} consumed more than once",
-                        v.id()
-                    ),
-                });
+            if is_linear_type(&v.ty()) {
+                if !qubit_inputs.insert(v.id()) {
+                    errors.push(CheckError {
+                        check_name: "linearity",
+                        message: format!(
+                            "Function '{func_name}', op[{op_idx}]: qubit/qureg value {} consumed more than once",
+                            v.id()
+                        ),
+                    });
+                }
+            }
+        }
+
+        for result in op.outputs() {
+            let Ok(v) = result else { continue };
+            if is_linear_type(&v.ty()) {
+                qubit_outputs.insert(v.id());
             }
         }
 
         check_nested_regions(func_name, op_idx, &op, errors);
+    }
+
+    for target in region.targets() {
+        let Ok(v) = target else { continue };
+        if is_linear_type(&v.ty()) {
+            qubit_inputs.insert(v.id());
+        }
+    }
+
+    for q in &qubit_outputs {
+        if !qubit_inputs.contains(q) {
+            errors.push(CheckError {
+                check_name: "linearity",
+                message: format!(
+                    "Function '{}': qubit/qureg value {} is defined but never consumed (must be destructively measured or freed)",
+                    func_name, q
+                ),
+            });
+        }
     }
 }
 

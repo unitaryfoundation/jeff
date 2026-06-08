@@ -1,7 +1,7 @@
 //! Verification tool for jeff programs.
 //!
 //! Checks a jeff file for common issues including:
-//! - Required module attributes (entrypoint, tool name/version)
+//! - Required module attributes (entrypoint)
 //! - SSA validity (all values defined before use)
 //! - Type consistency for operations
 //! - Qubit linearity (qubits consumed at most once)

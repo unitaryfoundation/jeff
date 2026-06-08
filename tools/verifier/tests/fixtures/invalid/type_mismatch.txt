@@ -2,9 +2,23 @@
     version = 0,
     versionMinor = 2,
     versionPatch = 0,
+    entrypoint = 1,
     functions = [
         (
             name = 0,
+            definition = (
+                body = (
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 0))),
+                    ]
+                ),
+                values = [
+                    (type = (int = 32)),
+                ]
+            ),
+        ),
+        (
+            name = 1,
             definition = (
                 body = (
                     sources = [],
@@ -23,5 +37,5 @@
             ),
         ),
     ],
-    strings = ["main"]
+    strings = ["helper", "main"]
 )

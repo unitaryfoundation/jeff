@@ -21,18 +21,16 @@
             name = 1,
             definition = (
                 body = (
-                    sources = [],
-                    targets = [2],
                     operations = [
-                        (outputs = [0], instruction = (int = (const8 = 1))),
-                        (outputs = [1], instruction = (int = (const32 = 2))),
-                        (inputs = [0, 1], outputs = [2], instruction = (int = (add = void)))
+                        (outputs = [0], instruction = (float = (const32 = 1.0))),
+                        (outputs = [1], instruction = (float = (const64 = 2.0))),
+                        (inputs = [0, 1], outputs = [2], instruction = (float = (mul = void)))
                     ]
                 ),
                 values = [
-                    (type = (int = 8)),
-                    (type = (int = 32)),
-                    (type = (int = 32))
+                    (type = (float = float32)),
+                    (type = (float = float64)),
+                    (type = (float = float64))
                 ]
             ),
         ),

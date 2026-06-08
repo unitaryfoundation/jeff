@@ -32,34 +32,10 @@ fn fixture_path(name: &str) -> String {
 }
 
 #[test]
-fn valid_simple_qubits() {
-    // Uses existing example from ../../examples/qubits/qubits.jeff
-    let base = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let path = base.join("../../examples/qubits/qubits.jeff");
-    let (ok, output) = run_verifier(path.to_str().unwrap());
-    assert!(ok, "Valid qubits example should pass all checks.\n{output}");
-}
-
-#[test]
-fn valid_entangled_qs() {
-    let base = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let path = base.join("../../examples/entangled_qs/entangled_qs.jeff");
-    let (ok, output) = run_verifier(path.to_str().unwrap());
-    assert!(
-        ok,
-        "Valid entangled_qs example should pass all checks.\n{output}"
-    );
-}
-
-#[test]
-fn valid_entangled_calls() {
-    let base = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let path = base.join("../../examples/entangled_calls/entangled_calls.jeff");
-    let (ok, output) = run_verifier(path.to_str().unwrap());
-    assert!(
-        ok,
-        "Valid entangled_calls example should pass all checks.\n{output}"
-    );
+fn valid_basic() {
+    let path = fixture_path("valid/basic");
+    let (ok, output) = run_verifier(&path);
+    assert!(ok, "Valid basic example should pass all checks.\n{output}");
 }
 
 #[test]
@@ -126,6 +102,77 @@ fn invalid_float_precision() {
     let path = fixture_path("invalid/float_precision");
     let (ok, output) = run_verifier(&path);
     assert!(!ok, "float_precision should fail.\n{output}");
+    assert!(
+        output.contains("[types]"),
+        "Should report type error.\n{output}"
+    );
+    assert!(
+        output.contains("precision"),
+        "Should mention precision mismatch.\n{output}"
+    );
+}
+
+#[test]
+fn invalid_no_entrypoint() {
+    let path = fixture_path("invalid/no_entrypoint");
+    let (ok, output) = run_verifier(&path);
+    assert!(!ok, "no_entrypoint should fail.\n{output}");
+    assert!(
+        output.contains("[attributes]"),
+        "Should report attribute error.\n{output}"
+    );
+    assert!(
+        output.contains("not specified"),
+        "Should mention entrypoint not specified.\n{output}"
+    );
+}
+
+#[test]
+fn invalid_leaked_qubit() {
+    let path = fixture_path("invalid/leaked_qubit");
+    let (ok, output) = run_verifier(&path);
+    assert!(!ok, "leaked_qubit should fail.\n{output}");
+    assert!(
+        output.contains("[linearity]"),
+        "Should report linearity error.\n{output}"
+    );
+    assert!(
+        output.contains("never consumed"),
+        "Should mention leaked qubit.\n{output}"
+    );
+}
+
+#[test]
+fn invalid_region_escape() {
+    let path = fixture_path("invalid/region_escape");
+    let (ok, output) = run_verifier(&path);
+    assert!(!ok, "region_escape should fail.\n{output}");
+    assert!(
+        output.contains("[isolation]"),
+        "Should report isolation error.\n{output}"
+    );
+}
+
+#[test]
+fn invalid_int_sub_bitwidth() {
+    let path = fixture_path("invalid/int_sub_bitwidth");
+    let (ok, output) = run_verifier(&path);
+    assert!(!ok, "int_sub_bitwidth should fail.\n{output}");
+    assert!(
+        output.contains("[types]"),
+        "Should report type error.\n{output}"
+    );
+    assert!(
+        output.contains("bitwidth"),
+        "Should mention bitwidth mismatch.\n{output}"
+    );
+}
+
+#[test]
+fn invalid_float_mul_mismatch() {
+    let path = fixture_path("invalid/float_mul_mismatch");
+    let (ok, output) = run_verifier(&path);
+    assert!(!ok, "float_mul_mismatch should fail.\n{output}");
     assert!(
         output.contains("[types]"),
         "Should report type error.\n{output}"

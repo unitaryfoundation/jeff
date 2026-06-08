@@ -1,0 +1,23 @@
+(
+    version = 0,
+    versionMinor = 2,
+    versionPatch = 0,
+    functions = [
+        (
+            name = 0,
+            definition = (
+                body = (
+                    sources = [],
+                    targets = [0],
+                    operations = [
+                        (outputs = [0], instruction = (int = (const32 = 42)))
+                    ]
+                ),
+                values = [
+                    (type = (int = 32))
+                ]
+            ),
+        ),
+    ],
+    strings = ["main"]
+)

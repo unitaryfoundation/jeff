@@ -21,12 +21,10 @@
             name = 1,
             definition = (
                 body = (
-                    sources = [],
-                    targets = [2],
                     operations = [
-                        (outputs = [0], instruction = (int = (const8 = 1))),
-                        (outputs = [1], instruction = (int = (const32 = 2))),
-                        (inputs = [0, 1], outputs = [2], instruction = (int = (add = void)))
+                        (outputs = [0], instruction = (int = (const8 = 10))),
+                        (outputs = [1], instruction = (int = (const32 = 3))),
+                        (inputs = [0, 1], outputs = [2], instruction = (int = (sub = void)))
                     ]
                 ),
                 values = [
