@@ -10,6 +10,7 @@ test = [
     "pytest-cov ~=6.2",
     "pytest-notebook ~=0.10.0",
     "mypy ~=1.17",
+    "qiskit ~=1.1",
 ]
 
 [tool.mypy]
