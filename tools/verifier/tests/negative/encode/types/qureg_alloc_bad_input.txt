@@ -1,0 +1,23 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (float = (const64 = 5)) ),
+            ( inputs = [0],
+              outputs = [1],
+              instruction = (qureg = (alloc = void)) ) ] ),
+        values = [
+          (type = (float = float64)),
+          (type = (qureg = (dynamic = void))) ] ) ) ],
+  strings = ["f"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "",
+  versionMinor = 2,
+  versionPatch = 0 )

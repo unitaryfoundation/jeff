@@ -1,0 +1,32 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (int = (const32 = 1)) ),
+            ( inputs = [],
+              outputs = [1],
+              instruction = (int = (const32 = 0)) ),
+            ( inputs = [0],
+              outputs = [2],
+              instruction = (qureg = (alloc = void)) ),
+            ( inputs = [2, 1],
+              outputs = [3, 4],
+              instruction = (qureg = (extractIndex = void)) ) ] ),
+        values = [
+          (type = (int = 32)),
+          (type = (int = 32)),
+          (type = (qureg = (dynamic = void))),
+          (type = (qureg = (dynamic = void))),
+          (type = (int = 32)) ] ) ) ],
+  strings = ["f"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "",
+  versionMinor = 2,
+  versionPatch = 0 )

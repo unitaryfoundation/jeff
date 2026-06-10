@@ -12,11 +12,12 @@ pub mod value;
 
 pub mod optype;
 
-pub use function::{Function, FunctionId};
+pub use function::{Function, FunctionDeclaration, FunctionDefinition, FunctionId};
 pub use metadata::{HasMetadata, Metadata};
 pub use module::Module;
 pub use op::Operation;
 pub use region::Region;
+pub use value::{FunctionIOValue, ValueId, ValueTable, WireValue};
 
 use derive_more::derive::{Display, Error, From};
 

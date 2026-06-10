@@ -1,0 +1,12 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      declaration = (
+        inputs = [],
+        outputs = [] ) ) ],
+  strings = ["f"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "",
+  versionMinor = 2,
+  versionPatch = 0 )

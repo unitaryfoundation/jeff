@@ -1,0 +1,28 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (int = (const32 = 3)) ),
+            ( inputs = [0],
+              outputs = [1],
+              instruction = (qureg = (alloc = void)) ),
+            ( inputs = [1],
+              outputs = [2, 3],
+              instruction = (qureg = (length = void)) ) ] ),
+        values = [
+          (type = (int = 32)),
+          (type = (qureg = (dynamic = void))),
+          (type = (qureg = (dynamic = void))),
+          (type = (int = 64)) ] ) ) ],
+  strings = ["f"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "",
+  versionMinor = 2,
+  versionPatch = 0 )

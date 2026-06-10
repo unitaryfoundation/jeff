@@ -1,0 +1,32 @@
+( version = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [],
+              outputs = [0],
+              instruction = (int = (const32 = 10)) ),
+            ( inputs = [0, 0, 0, 0],
+              outputs = [1],
+              instruction = (
+                scf = (
+                  for = (
+                    sources = [2],
+                    targets = [99],
+                    operations = [
+                      ( inputs = [],
+                        outputs = [2],
+                        instruction = (int = (const32 = 1)) ) ] ) ) ) ) ] ),
+        values = [
+          (type = (int = 32)),
+          (type = (int = 32)),
+          (type = (int = 32)) ] ) ) ],
+  strings = ["f"],
+  entrypoint = 0,
+  tool = "",
+  toolVersion = "",
+  versionMinor = 2,
+  versionPatch = 0 )
