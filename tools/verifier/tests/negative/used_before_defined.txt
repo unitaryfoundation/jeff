@@ -1,0 +1,20 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [1],
+              outputs = [0],
+              instruction = (int = (not = void)) ),
+            ( outputs = [1],
+              instruction = (int = (const1 = false)) ) ] ),
+        values = [
+          (type = (int = 1)),
+          (type = (int = 1)) ] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )

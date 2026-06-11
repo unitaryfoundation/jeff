@@ -25,7 +25,7 @@ fn check_region_isolation(
 
     for op in region.operations() {
         for input in op.inputs().filter_map(|r| r.ok()) {
-            if outer_values.contains(&input.id()) && !locally_defined.contains(&input.id()) {
+            if outer_values.contains(&input.id()) {
                 errors.push(VerificationError::IsolationViolation {
                     value_id: input.id(),
                 });
@@ -47,7 +47,7 @@ fn check_region_isolation(
     }
 
     for target in region.targets().filter_map(|r| r.ok()) {
-        if outer_values.contains(&target.id()) && !locally_defined.contains(&target.id()) {
+        if outer_values.contains(&target.id()) {
             errors.push(VerificationError::IsolationViolation {
                 value_id: target.id(),
             });

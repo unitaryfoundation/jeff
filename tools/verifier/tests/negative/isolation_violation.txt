@@ -1,0 +1,29 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( outputs = [0],
+              instruction = (int = (const1 = false)) ),
+            ( outputs = [1],
+              instruction = (int = (const32 = 1)) ),
+            ( inputs = [1, 1, 1],
+              instruction = (scf = (for = (
+                sources = [2],
+                targets = [],
+                operations = [
+                  ( inputs = [0],
+                    outputs = [3],
+                    instruction = (int = (not = void)) ) ] ) )) ) ] ),
+        values = [
+          (type = (int = 1)),
+          (type = (int = 32)),
+          (type = (int = 32)),
+          (type = (int = 1)) ] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )

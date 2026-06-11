@@ -55,6 +55,80 @@ fn check_cf_region_types(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<Verificatio
     }
 }
 
+fn is_int(ty: &Type) -> bool {
+    matches!(ty, Type::Int { .. })
+}
+
+fn is_float(ty: &Type) -> bool {
+    matches!(ty, Type::Float { .. })
+}
+
+fn is_qubit(ty: &Type) -> bool {
+    *ty == Type::Qubit
+}
+
+fn is_qureg(ty: &Type) -> bool {
+    matches!(ty, Type::QubitRegister { .. })
+}
+
+fn is_i1(ty: &Type) -> bool {
+    *ty == (Type::Int { bits: 1 })
+}
+
+fn is_i32(ty: &Type) -> bool {
+    *ty == (Type::Int { bits: 32 })
+}
+
+fn expect_input(
+    inputs: &[Type],
+    idx: usize,
+    pred: fn(&Type) -> bool,
+    op: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if inputs.get(idx).is_some_and(|ty| !pred(ty)) {
+        errors.push(VerificationError::InvalidInputType { operation: op });
+    }
+}
+
+fn expect_output(
+    outputs: &[Type],
+    idx: usize,
+    pred: fn(&Type) -> bool,
+    op: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if outputs.get(idx).is_some_and(|ty| !pred(ty)) {
+        errors.push(VerificationError::InvalidOutputType { operation: op });
+    }
+}
+
+fn check_const_int_output(outputs: &[Type], bits: u8, errors: &mut Vec<VerificationError>) {
+    if outputs
+        .first()
+        .is_some_and(|ty| *ty != (Type::Int { bits }))
+    {
+        errors.push(VerificationError::InvalidOutputType {
+            operation: "int const",
+        });
+    }
+}
+
+fn check_const_float_output(
+    outputs: &[Type],
+    precision: FloatPrecision,
+    errors: &mut Vec<VerificationError>,
+) {
+    if outputs
+        .first()
+        .is_some_and(|ty| *ty != (Type::Float { precision }))
+    {
+        errors.push(VerificationError::InvalidOutputType {
+            operation: "float const",
+        });
+    }
+}
+
 fn check_uniform_int(
     inputs: &[Type],
     outputs: &[Type],
@@ -62,13 +136,13 @@ fn check_uniform_int(
     errors: &mut Vec<VerificationError>,
 ) {
     for ty in inputs {
-        if !matches!(ty, Type::Int { .. }) {
+        if !is_int(ty) {
             errors.push(VerificationError::InvalidInputType { operation: name });
             return;
         }
     }
     for ty in outputs {
-        if !matches!(ty, Type::Int { .. }) {
+        if !is_int(ty) {
             errors.push(VerificationError::InvalidOutputType { operation: name });
             return;
         }
@@ -95,13 +169,13 @@ fn check_uniform_float(
     errors: &mut Vec<VerificationError>,
 ) {
     for ty in inputs {
-        if !matches!(ty, Type::Float { .. }) {
+        if !is_float(ty) {
             errors.push(VerificationError::InvalidInputType { operation: name });
             return;
         }
     }
     for ty in outputs {
-        if !matches!(ty, Type::Float { .. }) {
+        if !is_float(ty) {
             errors.push(VerificationError::InvalidOutputType { operation: name });
             return;
         }
@@ -128,56 +202,11 @@ fn check_int_op(
     errors: &mut Vec<VerificationError>,
 ) {
     match int_op {
-        IntOp::Const1(_) => {
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 1 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int const",
-                });
-            }
-        }
-        IntOp::Const8(_) => {
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 8 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int const",
-                });
-            }
-        }
-        IntOp::Const16(_) => {
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 16 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int const",
-                });
-            }
-        }
-        IntOp::Const32(_) => {
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int const",
-                });
-            }
-        }
-        IntOp::Const64(_) => {
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 64 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int const",
-                });
-            }
-        }
+        IntOp::Const1(_) => check_const_int_output(outputs, 1, errors),
+        IntOp::Const8(_) => check_const_int_output(outputs, 8, errors),
+        IntOp::Const16(_) => check_const_int_output(outputs, 16, errors),
+        IntOp::Const32(_) => check_const_int_output(outputs, 32, errors),
+        IntOp::Const64(_) => check_const_int_output(outputs, 64, errors),
         IntOp::Add
         | IntOp::Sub
         | IntOp::Mul
@@ -201,14 +230,7 @@ fn check_int_op(
         }
         IntOp::Eq | IntOp::LtS | IntOp::LteS | IntOp::LtU | IntOp::LteU => {
             check_uniform_int(inputs, &[], "int comparison", errors);
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 1 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "int comparison",
-                });
-            }
+            expect_output(outputs, 0, is_i1, "int comparison", errors);
         }
         _ => {}
     }
@@ -222,26 +244,10 @@ fn check_float_op(
 ) {
     match float_op {
         FloatOp::Const32(_) => {
-            if outputs.first().is_some_and(|ty| {
-                *ty != (Type::Float {
-                    precision: FloatPrecision::Float32,
-                })
-            }) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "float const",
-                });
-            }
+            check_const_float_output(outputs, FloatPrecision::Float32, errors);
         }
         FloatOp::Const64(_) => {
-            if outputs.first().is_some_and(|ty| {
-                *ty != (Type::Float {
-                    precision: FloatPrecision::Float64,
-                })
-            }) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "float const",
-                });
-            }
+            check_const_float_output(outputs, FloatPrecision::Float64, errors);
         }
         FloatOp::Add
         | FloatOp::Sub
@@ -272,14 +278,7 @@ fn check_float_op(
         }
         FloatOp::Eq | FloatOp::Lt | FloatOp::Lte | FloatOp::IsNan | FloatOp::IsInf => {
             check_uniform_float(inputs, &[], "float predicate", errors);
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 1 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "float predicate",
-                });
-            }
+            expect_output(outputs, 0, is_i1, "float predicate", errors);
         }
         _ => {}
     }
@@ -296,16 +295,10 @@ fn check_qubit_op(
             if !inputs.is_empty() {
                 errors.push(VerificationError::InvalidInputType { operation: "Alloc" });
             }
-            if outputs.first().is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidOutputType { operation: "Alloc" });
-            }
+            expect_output(outputs, 0, is_qubit, "Alloc", errors);
         }
         QubitOp::Free | QubitOp::FreeZero | QubitOp::Reset => {
-            if inputs.first().is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qubit free/reset",
-                });
-            }
+            expect_input(inputs, 0, is_qubit, "qubit free/reset", errors);
             if !outputs.is_empty() {
                 errors.push(VerificationError::InvalidOutputType {
                     operation: "qubit free/reset",
@@ -313,38 +306,13 @@ fn check_qubit_op(
             }
         }
         QubitOp::Measure => {
-            if inputs.first().is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "Measure",
-                });
-            }
-            if outputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 1 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "Measure",
-                });
-            }
+            expect_input(inputs, 0, is_qubit, "Measure", errors);
+            expect_output(outputs, 0, is_i1, "Measure", errors);
         }
         QubitOp::MeasureNd => {
-            if inputs.first().is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "MeasureNd",
-                });
-            }
-            if outputs.len() >= 2 {
-                if outputs[0] != Type::Qubit {
-                    errors.push(VerificationError::InvalidOutputType {
-                        operation: "MeasureNd",
-                    });
-                }
-                if outputs[1] != (Type::Int { bits: 1 }) {
-                    errors.push(VerificationError::InvalidOutputType {
-                        operation: "MeasureNd",
-                    });
-                }
-            }
+            expect_input(inputs, 0, is_qubit, "MeasureNd", errors);
+            expect_output(outputs, 0, is_qubit, "MeasureNd", errors);
+            expect_output(outputs, 1, is_i1, "MeasureNd", errors);
         }
         QubitOp::Gate(gate) => {
             let num_qubits = gate.num_qubits();
@@ -357,25 +325,21 @@ fn check_qubit_op(
             }
             for (i, ty) in inputs.iter().enumerate() {
                 if i < num_qubits {
-                    if *ty != Type::Qubit {
+                    if !is_qubit(ty) {
                         errors.push(VerificationError::InvalidInputType { operation: "Gate" });
                     }
-                } else if i < num_qubits + num_params && !matches!(ty, Type::Float { .. }) {
+                } else if i < num_qubits + num_params && !is_float(ty) {
                     errors.push(VerificationError::InvalidInputType { operation: "Gate" });
                 }
             }
             for ty in outputs.iter().take(num_qubits) {
-                if *ty != Type::Qubit {
+                if !is_qubit(ty) {
                     errors.push(VerificationError::InvalidOutputType { operation: "Gate" });
                 }
             }
         }
         _ => {}
     }
-}
-
-fn is_qureg(ty: &Type) -> bool {
-    matches!(ty, Type::QubitRegister { .. })
 }
 
 fn check_qureg_op(
@@ -386,192 +350,62 @@ fn check_qureg_op(
 ) {
     match qureg_op {
         QubitRegisterOp::Alloc => {
-            if inputs
-                .first()
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg alloc",
-                });
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg alloc",
-                });
-            }
+            expect_input(inputs, 0, is_i32, "qureg alloc", errors);
+            expect_output(outputs, 0, is_qureg, "qureg alloc", errors);
         }
         QubitRegisterOp::Free | QubitRegisterOp::FreeZero => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg free",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg free", errors);
         }
         QubitRegisterOp::ExtractIndex => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg extractIndex",
-                });
-            }
-            if inputs
-                .get(1)
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg extractIndex",
-                });
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg extractIndex",
-                });
-            }
-            if outputs.get(1).is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg extractIndex",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg extractIndex", errors);
+            expect_input(inputs, 1, is_i32, "qureg extractIndex", errors);
+            expect_output(outputs, 0, is_qureg, "qureg extractIndex", errors);
+            expect_output(outputs, 1, is_qubit, "qureg extractIndex", errors);
         }
         QubitRegisterOp::InsertIndex => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertIndex",
-                });
-            }
-            if inputs
-                .get(1)
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertIndex",
-                });
-            }
-            if inputs.get(2).is_some_and(|ty| *ty != Type::Qubit) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertIndex",
-                });
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg insertIndex",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg insertIndex", errors);
+            expect_input(inputs, 1, is_i32, "qureg insertIndex", errors);
+            expect_input(inputs, 2, is_qubit, "qureg insertIndex", errors);
+            expect_output(outputs, 0, is_qureg, "qureg insertIndex", errors);
         }
         QubitRegisterOp::ExtractSlice => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg extractSlice",
-                });
-            }
-            for ty in inputs.iter().skip(1).take(2) {
-                if *ty != (Type::Int { bits: 32 }) {
-                    errors.push(VerificationError::InvalidInputType {
-                        operation: "qureg extractSlice",
-                    });
-                }
-            }
-            for ty in outputs.iter().take(2) {
-                if !is_qureg(ty) {
-                    errors.push(VerificationError::InvalidOutputType {
-                        operation: "qureg extractSlice",
-                    });
-                }
-            }
+            expect_input(inputs, 0, is_qureg, "qureg extractSlice", errors);
+            expect_input(inputs, 1, is_i32, "qureg extractSlice", errors);
+            expect_input(inputs, 2, is_i32, "qureg extractSlice", errors);
+            expect_output(outputs, 0, is_qureg, "qureg extractSlice", errors);
+            expect_output(outputs, 1, is_qureg, "qureg extractSlice", errors);
         }
         QubitRegisterOp::InsertSlice => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertSlice",
-                });
-            }
-            if inputs
-                .get(1)
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertSlice",
-                });
-            }
-            if inputs.get(2).is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg insertSlice",
-                });
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg insertSlice",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg insertSlice", errors);
+            expect_input(inputs, 1, is_i32, "qureg insertSlice", errors);
+            expect_input(inputs, 2, is_qureg, "qureg insertSlice", errors);
+            expect_output(outputs, 0, is_qureg, "qureg insertSlice", errors);
         }
         QubitRegisterOp::Length => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg length",
-                });
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg length",
-                });
-            }
-            if outputs
-                .get(1)
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg length",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg length", errors);
+            expect_output(outputs, 0, is_qureg, "qureg length", errors);
+            expect_output(outputs, 1, is_i32, "qureg length", errors);
         }
         QubitRegisterOp::Split => {
-            if inputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg split",
-                });
-            }
-            if inputs
-                .get(1)
-                .is_some_and(|ty| *ty != (Type::Int { bits: 32 }))
-            {
-                errors.push(VerificationError::InvalidInputType {
-                    operation: "qureg split",
-                });
-            }
-            for ty in outputs.iter().take(2) {
-                if !is_qureg(ty) {
-                    errors.push(VerificationError::InvalidOutputType {
-                        operation: "qureg split",
-                    });
-                }
-            }
+            expect_input(inputs, 0, is_qureg, "qureg split", errors);
+            expect_input(inputs, 1, is_i32, "qureg split", errors);
+            expect_output(outputs, 0, is_qureg, "qureg split", errors);
+            expect_output(outputs, 1, is_qureg, "qureg split", errors);
         }
         QubitRegisterOp::Join => {
-            for ty in inputs.iter().take(2) {
-                if !is_qureg(ty) {
-                    errors.push(VerificationError::InvalidInputType {
-                        operation: "qureg join",
-                    });
-                }
-            }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg join",
-                });
-            }
+            expect_input(inputs, 0, is_qureg, "qureg join", errors);
+            expect_input(inputs, 1, is_qureg, "qureg join", errors);
+            expect_output(outputs, 0, is_qureg, "qureg join", errors);
         }
         QubitRegisterOp::Create => {
             for ty in inputs.iter() {
-                if *ty != Type::Qubit {
+                if !is_qubit(ty) {
                     errors.push(VerificationError::InvalidInputType {
                         operation: "qureg create",
                     });
                 }
             }
-            if outputs.first().is_some_and(|ty| !is_qureg(ty)) {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qureg create",
-                });
-            }
+            expect_output(outputs, 0, is_qureg, "qureg create", errors);
         }
         #[allow(unreachable_patterns)]
         _ => {}

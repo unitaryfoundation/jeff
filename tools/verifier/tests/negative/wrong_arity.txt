@@ -1,0 +1,18 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( outputs = [0],
+              instruction = (qubit = (alloc = void)) ),
+            ( inputs = [0],
+              instruction = (qubit = (gate = (custom = (name = 1, numQubits = 1, numParams = 0), controlQubits = 0, adjoint = false, power = 1))) ) ] ),
+        values = [
+          (type = (qubit = void)) ] ) ) ],
+  strings = ["main", "H"],
+  entrypoint = 0 )

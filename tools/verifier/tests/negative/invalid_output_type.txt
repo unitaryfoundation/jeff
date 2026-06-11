@@ -1,0 +1,16 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( outputs = [0],
+              instruction = (qubit = (alloc = void)) ) ] ),
+        values = [
+          (type = (int = 32)) ] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )

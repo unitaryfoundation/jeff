@@ -1,0 +1,42 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [5],
+          operations = [
+            ( outputs = [0],
+              instruction = (qubit = (alloc = void)) ),
+            ( outputs = [1],
+              instruction = (int = (const32 = 0)) ),
+            ( outputs = [2],
+              instruction = (int = (const32 = 1)) ),
+            ( outputs = [3],
+              instruction = (int = (const32 = 1)) ),
+            ( inputs = [1, 2, 3, 0],
+              outputs = [4],
+              instruction = (scf = (for = (
+                sources = [6, 7],
+                targets = [8],
+                operations = [
+                  ( inputs = [7],
+                    outputs = [8],
+                    instruction = (qubit = (gate = (custom = (name = 1, numQubits = 1, numParams = 0), controlQubits = 0, adjoint = false, power = 1))) ) ] ) )) ),
+            ( inputs = [4],
+              outputs = [5],
+              instruction = (qubit = (measure = void)) ) ] ),
+        values = [
+          (type = (qubit = void)),
+          (type = (int = 32)),
+          (type = (int = 32)),
+          (type = (int = 32)),
+          (type = (qubit = void)),
+          (type = (int = 1)),
+          (type = (int = 32)),
+          (type = (qubit = void)),
+          (type = (qubit = void)) ] ) ) ],
+  strings = ["main", "H"],
+  entrypoint = 0 )

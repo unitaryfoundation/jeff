@@ -6,6 +6,9 @@ pub enum VerificationError {
     /// The module version is unset (0.0.0).
     MissingVersion,
 
+    /// The module version is set but does not match the version supported by this verifier.
+    IncompatibleVersion,
+
     /// The module's entrypoint does not refer to a function definition.
     InvalidEntrypoint,
 
@@ -23,8 +26,9 @@ pub enum VerificationError {
         value_id: u32,
     },
 
-    /// A linear value (qubit or qureg) is produced by more than one operation.
-    LinearValueProducedMultipleTimes {
+    /// A value is produced by more than one operation.
+    /// In jeff's SSA value semantics, every value must have exactly one producer.
+    ValueProducedMultipleTimes {
         /// The value produced multiple times.
         value_id: u32,
         /// The number of producing operations.
@@ -83,6 +87,9 @@ impl fmt::Display for VerificationError {
             Self::MissingVersion => {
                 write!(f, "module version is unset (0.0.0)")
             }
+            Self::IncompatibleVersion => {
+                write!(f, "module version is incompatible with the jeff program")
+            }
             Self::InvalidEntrypoint => {
                 write!(
                     f,
@@ -101,13 +108,13 @@ impl fmt::Display for VerificationError {
             Self::UsedBeforeDefined { value_id } => {
                 write!(f, "value {value_id} is used before it is defined")
             }
-            Self::LinearValueProducedMultipleTimes {
+            Self::ValueProducedMultipleTimes {
                 value_id,
                 producers,
             } => {
                 write!(
                     f,
-                    "linear value {value_id} is produced {producers} times (must be exactly once)"
+                    "value {value_id} is produced {producers} times (must be exactly once)"
                 )
             }
             Self::LinearValueConsumedMultipleTimes {

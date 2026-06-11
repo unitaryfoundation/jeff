@@ -14,19 +14,19 @@ pub fn verify_value_checks(def: FunctionDefinition<'_>, errors: &mut Vec<Verific
     let values = def.values();
     let num_values = values.len();
 
-    check_region_ordering(def.body(), errors);
+    check_region_ordering(def.body(), &HashSet::new(), errors);
 
     match build_value_stats(def.body(), num_values) {
         Ok(stats) => {
             for (id, value) in values.iter() {
+                let stat = &stats[id as usize];
+                if stat.producers > 1 {
+                    errors.push(VerificationError::ValueProducedMultipleTimes {
+                        value_id: id,
+                        producers: stat.producers,
+                    });
+                }
                 if is_linear(value.ty()) {
-                    let stat = &stats[id as usize];
-                    if stat.producers > 1 {
-                        errors.push(VerificationError::LinearValueProducedMultipleTimes {
-                            value_id: id,
-                            producers: stat.producers,
-                        });
-                    }
                     if stat.consumers > 1 {
                         errors.push(VerificationError::LinearValueConsumedMultipleTimes {
                             value_id: id,
@@ -56,8 +56,12 @@ fn push_oob(e: ReadError, errors: &mut Vec<VerificationError>) {
     }
 }
 
-fn check_region_ordering(region: Region<'_>, errors: &mut Vec<VerificationError>) {
-    let mut defined: HashSet<ValueId> = HashSet::new();
+fn check_region_ordering(
+    region: Region<'_>,
+    outer_defined: &HashSet<ValueId>,
+    errors: &mut Vec<VerificationError>,
+) {
+    let mut defined: HashSet<ValueId> = outer_defined.clone();
 
     for result in region.sources() {
         match result {
@@ -89,7 +93,7 @@ fn check_region_ordering(region: Region<'_>, errors: &mut Vec<VerificationError>
         }
 
         if let OpType::ControlFlowOp(cf_op) = op.op_type() {
-            check_cf_ordering(cf_op.as_ref(), errors);
+            check_cf_ordering(cf_op.as_ref(), &defined, errors);
         }
     }
 
@@ -104,23 +108,27 @@ fn check_region_ordering(region: Region<'_>, errors: &mut Vec<VerificationError>
     }
 }
 
-fn check_cf_ordering(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<VerificationError>) {
+fn check_cf_ordering(
+    cf_op: &ControlFlowOp<'_>,
+    outer_defined: &HashSet<ValueId>,
+    errors: &mut Vec<VerificationError>,
+) {
     match cf_op {
-        ControlFlowOp::For { region } => check_region_ordering(*region, errors),
+        ControlFlowOp::For { region } => check_region_ordering(*region, outer_defined, errors),
         ControlFlowOp::While { condition, body } => {
-            check_region_ordering(*condition, errors);
-            check_region_ordering(*body, errors);
+            check_region_ordering(*condition, outer_defined, errors);
+            check_region_ordering(*body, outer_defined, errors);
         }
         ControlFlowOp::DoWhile { body, condition } => {
-            check_region_ordering(*body, errors);
-            check_region_ordering(*condition, errors);
+            check_region_ordering(*body, outer_defined, errors);
+            check_region_ordering(*condition, outer_defined, errors);
         }
         ControlFlowOp::Switch(switch_op) => {
             for branch in switch_op.branches() {
-                check_region_ordering(branch, errors);
+                check_region_ordering(branch, outer_defined, errors);
             }
             if let Some(default) = switch_op.default_branch() {
-                check_region_ordering(default, errors);
+                check_region_ordering(default, outer_defined, errors);
             }
         }
     }

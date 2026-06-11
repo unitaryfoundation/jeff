@@ -1,0 +1,13 @@
+( version = 0,
+  versionMinor = 1,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [] ),
+        values = [] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )
