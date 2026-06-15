@@ -1,6 +1,8 @@
 //! Checks for correct input/output types and bitwidth/precision uniformity.
 
-use jeff::reader::optype::{ControlFlowOp, FloatOp, IntOp, OpType, QubitOp, QubitRegisterOp};
+use jeff::reader::optype::{
+    ControlFlowOp, FloatArrayOp, FloatOp, IntArrayOp, IntOp, OpType, QubitOp, QubitRegisterOp,
+};
 use jeff::reader::Region;
 use jeff::types::{FloatPrecision, Type};
 
@@ -19,7 +21,6 @@ fn check_region_types(region: Region<'_>, errors: &mut Vec<VerificationError>) {
             .filter_map(|r| r.ok())
             .map(|v| v.ty())
             .collect();
-
         match op.op_type() {
             OpType::IntOp(int_op) => check_int_op(int_op, &inputs, &outputs, errors),
             OpType::FloatOp(float_op) => check_float_op(float_op, &inputs, &outputs, errors),
@@ -28,6 +29,12 @@ fn check_region_types(region: Region<'_>, errors: &mut Vec<VerificationError>) {
                 check_qureg_op(qureg_op, &inputs, &outputs, errors);
             }
             OpType::ControlFlowOp(cf_op) => check_cf_region_types(cf_op.as_ref(), errors),
+            OpType::IntArrayOp(int_array_op) => {
+                check_int_array_op(int_array_op, &inputs, &outputs, errors);
+            }
+            OpType::FloatArrayOp(float_array_op) => {
+                check_float_array_op(float_array_op, &inputs, &outputs, errors);
+            }
             _ => {}
         }
     }
@@ -55,34 +62,40 @@ fn check_cf_region_types(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<Verificatio
     }
 }
 
-fn is_int(ty: &Type) -> bool {
-    matches!(ty, Type::Int { .. })
+fn is_int(ty: &Type, bits: impl Into<Option<u8>>) -> bool {
+    match bits.into() {
+        Some(b) => matches!(ty, Type::Int { bits: x } if *x == b),
+        None => matches!(ty, Type::Int { .. }),
+    }
 }
 
-fn is_float(ty: &Type) -> bool {
-    matches!(ty, Type::Float { .. })
+fn is_float(ty: &Type, precision: impl Into<Option<FloatPrecision>>) -> bool {
+    match precision.into() {
+        Some(p) => matches!(ty, Type::Float { precision: x } if *x == p),
+        None => matches!(ty, Type::Float { .. }),
+    }
 }
 
 fn is_qubit(ty: &Type) -> bool {
-    *ty == Type::Qubit
+    matches!(ty, Type::Qubit)
 }
 
 fn is_qureg(ty: &Type) -> bool {
     matches!(ty, Type::QubitRegister { .. })
 }
 
-fn is_i1(ty: &Type) -> bool {
-    *ty == (Type::Int { bits: 1 })
+fn is_int_array(ty: &Type) -> bool {
+    matches!(ty, Type::IntArray { .. })
 }
 
-fn is_i32(ty: &Type) -> bool {
-    *ty == (Type::Int { bits: 32 })
+fn is_float_array(ty: &Type) -> bool {
+    matches!(ty, Type::FloatArray { .. })
 }
 
 fn expect_input(
     inputs: &[Type],
     idx: usize,
-    pred: fn(&Type) -> bool,
+    pred: impl Fn(&Type) -> bool,
     op: &'static str,
     errors: &mut Vec<VerificationError>,
 ) {
@@ -94,7 +107,7 @@ fn expect_input(
 fn expect_output(
     outputs: &[Type],
     idx: usize,
-    pred: fn(&Type) -> bool,
+    pred: impl Fn(&Type) -> bool,
     op: &'static str,
     errors: &mut Vec<VerificationError>,
 ) {
@@ -103,29 +116,16 @@ fn expect_output(
     }
 }
 
-fn check_const_int_output(outputs: &[Type], bits: u8, errors: &mut Vec<VerificationError>) {
-    if outputs
-        .first()
-        .is_some_and(|ty| *ty != (Type::Int { bits }))
-    {
-        errors.push(VerificationError::InvalidOutputType {
-            operation: "int const",
-        });
-    }
-}
-
-fn check_const_float_output(
+fn check_arity(
+    inputs: &[Type],
+    expected_inputs: usize,
     outputs: &[Type],
-    precision: FloatPrecision,
+    expected_outputs: usize,
+    op: &'static str,
     errors: &mut Vec<VerificationError>,
 ) {
-    if outputs
-        .first()
-        .is_some_and(|ty| *ty != (Type::Float { precision }))
-    {
-        errors.push(VerificationError::InvalidOutputType {
-            operation: "float const",
-        });
+    if inputs.len() != expected_inputs || outputs.len() != expected_outputs {
+        errors.push(VerificationError::WrongArity { operation: op });
     }
 }
 
@@ -136,13 +136,13 @@ fn check_uniform_int(
     errors: &mut Vec<VerificationError>,
 ) {
     for ty in inputs {
-        if !is_int(ty) {
+        if !is_int(ty, None) {
             errors.push(VerificationError::InvalidInputType { operation: name });
             return;
         }
     }
     for ty in outputs {
-        if !is_int(ty) {
+        if !is_int(ty, None) {
             errors.push(VerificationError::InvalidOutputType { operation: name });
             return;
         }
@@ -169,13 +169,13 @@ fn check_uniform_float(
     errors: &mut Vec<VerificationError>,
 ) {
     for ty in inputs {
-        if !is_float(ty) {
+        if !is_float(ty, None) {
             errors.push(VerificationError::InvalidInputType { operation: name });
             return;
         }
     }
     for ty in outputs {
-        if !is_float(ty) {
+        if !is_float(ty, None) {
             errors.push(VerificationError::InvalidOutputType { operation: name });
             return;
         }
@@ -202,11 +202,26 @@ fn check_int_op(
     errors: &mut Vec<VerificationError>,
 ) {
     match int_op {
-        IntOp::Const1(_) => check_const_int_output(outputs, 1, errors),
-        IntOp::Const8(_) => check_const_int_output(outputs, 8, errors),
-        IntOp::Const16(_) => check_const_int_output(outputs, 16, errors),
-        IntOp::Const32(_) => check_const_int_output(outputs, 32, errors),
-        IntOp::Const64(_) => check_const_int_output(outputs, 64, errors),
+        IntOp::Const1(_) => {
+            check_arity(inputs, 0, outputs, 1, "int const", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 1), "int const", errors);
+        }
+        IntOp::Const8(_) => {
+            check_arity(inputs, 0, outputs, 1, "int const", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 8), "int const", errors);
+        }
+        IntOp::Const16(_) => {
+            check_arity(inputs, 0, outputs, 1, "int const", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 16), "int const", errors);
+        }
+        IntOp::Const32(_) => {
+            check_arity(inputs, 0, outputs, 1, "int const", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 32), "int const", errors);
+        }
+        IntOp::Const64(_) => {
+            check_arity(inputs, 0, outputs, 1, "int const", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 64), "int const", errors);
+        }
         IntOp::Add
         | IntOp::Sub
         | IntOp::Mul
@@ -223,14 +238,18 @@ fn check_int_op(
         | IntOp::RemS
         | IntOp::RemU
         | IntOp::Shl
-        | IntOp::Shr
-        | IntOp::Not
-        | IntOp::Abs => {
+        | IntOp::Shr => {
+            check_arity(inputs, 2, outputs, 1, "int arithmetic", errors);
+            check_uniform_int(inputs, outputs, "int arithmetic", errors);
+        }
+        IntOp::Not | IntOp::Abs => {
+            check_arity(inputs, 1, outputs, 1, "int arithmetic", errors);
             check_uniform_int(inputs, outputs, "int arithmetic", errors);
         }
         IntOp::Eq | IntOp::LtS | IntOp::LteS | IntOp::LtU | IntOp::LteU => {
+            check_arity(inputs, 2, outputs, 1, "int comparison", errors);
             check_uniform_int(inputs, &[], "int comparison", errors);
-            expect_output(outputs, 0, is_i1, "int comparison", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 1), "int comparison", errors);
         }
         _ => {}
     }
@@ -244,19 +263,36 @@ fn check_float_op(
 ) {
     match float_op {
         FloatOp::Const32(_) => {
-            check_const_float_output(outputs, FloatPrecision::Float32, errors);
+            check_arity(inputs, 0, outputs, 1, "float const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| is_float(ty, FloatPrecision::Float32),
+                "float const",
+                errors,
+            );
         }
         FloatOp::Const64(_) => {
-            check_const_float_output(outputs, FloatPrecision::Float64, errors);
+            check_arity(inputs, 0, outputs, 1, "float const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| is_float(ty, FloatPrecision::Float64),
+                "float const",
+                errors,
+            );
         }
         FloatOp::Add
         | FloatOp::Sub
         | FloatOp::Mul
         | FloatOp::Pow
-        | FloatOp::Max
-        | FloatOp::Min
         | FloatOp::Atan2
-        | FloatOp::Sqrt
+        | FloatOp::Max
+        | FloatOp::Min => {
+            check_arity(inputs, 2, outputs, 1, "float op", errors);
+            check_uniform_float(inputs, outputs, "float op", errors);
+        }
+        FloatOp::Sqrt
         | FloatOp::Abs
         | FloatOp::Ceil
         | FloatOp::Floor
@@ -274,11 +310,18 @@ fn check_float_op(
         | FloatOp::Asinh
         | FloatOp::Acosh
         | FloatOp::Atanh => {
+            check_arity(inputs, 1, outputs, 1, "float op", errors);
             check_uniform_float(inputs, outputs, "float op", errors);
         }
-        FloatOp::Eq | FloatOp::Lt | FloatOp::Lte | FloatOp::IsNan | FloatOp::IsInf => {
+        FloatOp::Eq | FloatOp::Lt | FloatOp::Lte => {
+            check_arity(inputs, 2, outputs, 1, "float predicate", errors);
             check_uniform_float(inputs, &[], "float predicate", errors);
-            expect_output(outputs, 0, is_i1, "float predicate", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 1), "float predicate", errors);
+        }
+        FloatOp::IsNan | FloatOp::IsInf => {
+            check_arity(inputs, 1, outputs, 1, "float predicate", errors);
+            check_uniform_float(inputs, &[], "float predicate", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 1), "float predicate", errors);
         }
         _ => {}
     }
@@ -292,27 +335,28 @@ fn check_qubit_op(
 ) {
     match qubit_op {
         QubitOp::Alloc => {
-            if !inputs.is_empty() {
-                errors.push(VerificationError::InvalidInputType { operation: "Alloc" });
-            }
+            check_arity(inputs, 0, outputs, 1, "Alloc", errors);
             expect_output(outputs, 0, is_qubit, "Alloc", errors);
         }
-        QubitOp::Free | QubitOp::FreeZero | QubitOp::Reset => {
-            expect_input(inputs, 0, is_qubit, "qubit free/reset", errors);
-            if !outputs.is_empty() {
-                errors.push(VerificationError::InvalidOutputType {
-                    operation: "qubit free/reset",
-                });
-            }
+        QubitOp::Free | QubitOp::FreeZero => {
+            check_arity(inputs, 1, outputs, 0, "qubit free", errors);
+            expect_input(inputs, 0, is_qubit, "qubit free", errors);
+        }
+        QubitOp::Reset => {
+            check_arity(inputs, 1, outputs, 1, "Reset", errors);
+            expect_input(inputs, 0, is_qubit, "Reset", errors);
+            expect_output(outputs, 0, is_qubit, "Reset", errors);
         }
         QubitOp::Measure => {
+            check_arity(inputs, 1, outputs, 1, "Measure", errors);
             expect_input(inputs, 0, is_qubit, "Measure", errors);
-            expect_output(outputs, 0, is_i1, "Measure", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 1), "Measure", errors);
         }
         QubitOp::MeasureNd => {
+            check_arity(inputs, 1, outputs, 2, "MeasureNd", errors);
             expect_input(inputs, 0, is_qubit, "MeasureNd", errors);
             expect_output(outputs, 0, is_qubit, "MeasureNd", errors);
-            expect_output(outputs, 1, is_i1, "MeasureNd", errors);
+            expect_output(outputs, 1, |ty| is_int(ty, 1), "MeasureNd", errors);
         }
         QubitOp::Gate(gate) => {
             let num_qubits = gate.num_qubits();
@@ -328,7 +372,7 @@ fn check_qubit_op(
                     if !is_qubit(ty) {
                         errors.push(VerificationError::InvalidInputType { operation: "Gate" });
                     }
-                } else if i < num_qubits + num_params && !is_float(ty) {
+                } else if i < num_qubits + num_params && !is_float(ty, None) {
                     errors.push(VerificationError::InvalidInputType { operation: "Gate" });
                 }
             }
@@ -350,54 +394,68 @@ fn check_qureg_op(
 ) {
     match qureg_op {
         QubitRegisterOp::Alloc => {
-            expect_input(inputs, 0, is_i32, "qureg alloc", errors);
+            check_arity(inputs, 1, outputs, 1, "qureg alloc", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, 32), "qureg alloc", errors);
             expect_output(outputs, 0, is_qureg, "qureg alloc", errors);
         }
         QubitRegisterOp::Free | QubitRegisterOp::FreeZero => {
+            check_arity(inputs, 1, outputs, 0, "qureg free", errors);
             expect_input(inputs, 0, is_qureg, "qureg free", errors);
         }
         QubitRegisterOp::ExtractIndex => {
+            check_arity(inputs, 2, outputs, 2, "qureg extractIndex", errors);
             expect_input(inputs, 0, is_qureg, "qureg extractIndex", errors);
-            expect_input(inputs, 1, is_i32, "qureg extractIndex", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "qureg extractIndex", errors);
             expect_output(outputs, 0, is_qureg, "qureg extractIndex", errors);
             expect_output(outputs, 1, is_qubit, "qureg extractIndex", errors);
         }
         QubitRegisterOp::InsertIndex => {
+            check_arity(inputs, 3, outputs, 1, "qureg insertIndex", errors);
             expect_input(inputs, 0, is_qureg, "qureg insertIndex", errors);
-            expect_input(inputs, 1, is_i32, "qureg insertIndex", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "qureg insertIndex", errors);
             expect_input(inputs, 2, is_qubit, "qureg insertIndex", errors);
             expect_output(outputs, 0, is_qureg, "qureg insertIndex", errors);
         }
         QubitRegisterOp::ExtractSlice => {
+            check_arity(inputs, 3, outputs, 2, "qureg extractSlice", errors);
             expect_input(inputs, 0, is_qureg, "qureg extractSlice", errors);
-            expect_input(inputs, 1, is_i32, "qureg extractSlice", errors);
-            expect_input(inputs, 2, is_i32, "qureg extractSlice", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "qureg extractSlice", errors);
+            expect_input(inputs, 2, |ty| is_int(ty, 32), "qureg extractSlice", errors);
             expect_output(outputs, 0, is_qureg, "qureg extractSlice", errors);
             expect_output(outputs, 1, is_qureg, "qureg extractSlice", errors);
         }
         QubitRegisterOp::InsertSlice => {
+            check_arity(inputs, 3, outputs, 1, "qureg insertSlice", errors);
             expect_input(inputs, 0, is_qureg, "qureg insertSlice", errors);
-            expect_input(inputs, 1, is_i32, "qureg insertSlice", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "qureg insertSlice", errors);
             expect_input(inputs, 2, is_qureg, "qureg insertSlice", errors);
             expect_output(outputs, 0, is_qureg, "qureg insertSlice", errors);
         }
         QubitRegisterOp::Length => {
+            check_arity(inputs, 1, outputs, 2, "qureg length", errors);
             expect_input(inputs, 0, is_qureg, "qureg length", errors);
             expect_output(outputs, 0, is_qureg, "qureg length", errors);
-            expect_output(outputs, 1, is_i32, "qureg length", errors);
+            expect_output(outputs, 1, |ty| is_int(ty, 32), "qureg length", errors);
         }
         QubitRegisterOp::Split => {
+            check_arity(inputs, 2, outputs, 2, "qureg split", errors);
             expect_input(inputs, 0, is_qureg, "qureg split", errors);
-            expect_input(inputs, 1, is_i32, "qureg split", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "qureg split", errors);
             expect_output(outputs, 0, is_qureg, "qureg split", errors);
             expect_output(outputs, 1, is_qureg, "qureg split", errors);
         }
         QubitRegisterOp::Join => {
+            check_arity(inputs, 2, outputs, 1, "qureg join", errors);
             expect_input(inputs, 0, is_qureg, "qureg join", errors);
             expect_input(inputs, 1, is_qureg, "qureg join", errors);
             expect_output(outputs, 0, is_qureg, "qureg join", errors);
         }
         QubitRegisterOp::Create => {
+            if outputs.len() != 1 {
+                errors.push(VerificationError::WrongArity {
+                    operation: "qureg create",
+                });
+            }
             for ty in inputs.iter() {
                 if !is_qubit(ty) {
                     errors.push(VerificationError::InvalidInputType {
@@ -407,7 +465,271 @@ fn check_qureg_op(
             }
             expect_output(outputs, 0, is_qureg, "qureg create", errors);
         }
-        #[allow(unreachable_patterns)]
+        _ => {}
+    }
+}
+
+fn check_int_array_op(
+    int_array_op: IntArrayOp<'_>,
+    inputs: &[Type],
+    outputs: &[Type],
+    errors: &mut Vec<VerificationError>,
+) {
+    match int_array_op {
+        IntArrayOp::ConstArray1(_) => {
+            check_arity(inputs, 0, outputs, 1, "int array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: 1, .. }),
+                "int array const",
+                errors,
+            );
+        }
+        IntArrayOp::ConstArray8(_) => {
+            check_arity(inputs, 0, outputs, 1, "int array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: 8, .. }),
+                "int array const",
+                errors,
+            );
+        }
+        IntArrayOp::ConstArray16(_) => {
+            check_arity(inputs, 0, outputs, 1, "int array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: 16, .. }),
+                "int array const",
+                errors,
+            );
+        }
+        IntArrayOp::ConstArray32(_) => {
+            check_arity(inputs, 0, outputs, 1, "int array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: 32, .. }),
+                "int array const",
+                errors,
+            );
+        }
+        IntArrayOp::ConstArray64(_) => {
+            check_arity(inputs, 0, outputs, 1, "int array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: 64, .. }),
+                "int array const",
+                errors,
+            );
+        }
+        IntArrayOp::Zero { bits } => {
+            check_arity(inputs, 1, outputs, 1, "int array zero", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, 32), "int array zero", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::IntArray { bits: b, .. } if *b == bits),
+                "int array zero",
+                errors,
+            );
+        }
+        IntArrayOp::GetIndex => {
+            check_arity(inputs, 2, outputs, 1, "int array getIndex", errors);
+            expect_input(inputs, 0, is_int_array, "int array getIndex", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "int array getIndex", errors);
+            if let (Some(Type::IntArray { bits, .. }), Some(out_ty)) =
+                (inputs.first(), outputs.first())
+            {
+                if !is_int(out_ty, *bits) {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "int array getIndex",
+                    });
+                }
+            }
+        }
+        IntArrayOp::SetIndex => {
+            check_arity(inputs, 3, outputs, 1, "int array setIndex", errors);
+            expect_input(inputs, 0, is_int_array, "int array setIndex", errors);
+            expect_input(inputs, 1, |ty| is_int(ty, 32), "int array setIndex", errors);
+            if let Some(Type::IntArray { bits, .. }) = inputs.first() {
+                let bits = *bits;
+                if inputs.get(2).is_some_and(|ty| !is_int(ty, bits)) {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "int array setIndex",
+                    });
+                }
+                if outputs
+                    .first()
+                    .is_some_and(|ty| !matches!(ty, Type::IntArray { bits: b, .. } if *b == bits))
+                {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "int array setIndex",
+                    });
+                }
+            }
+        }
+        IntArrayOp::Length => {
+            check_arity(inputs, 1, outputs, 1, "int array length", errors);
+            expect_input(inputs, 0, is_int_array, "int array length", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, 32), "int array length", errors);
+        }
+        IntArrayOp::Create => {
+            if outputs.len() != 1 {
+                errors.push(VerificationError::WrongArity {
+                    operation: "int array create",
+                });
+            }
+            expect_output(outputs, 0, is_int_array, "int array create", errors);
+            if let Some(Type::IntArray { bits, .. }) = outputs.first() {
+                let bits = *bits;
+                for ty in inputs.iter() {
+                    if !is_int(ty, bits) {
+                        errors.push(VerificationError::TypeMismatch {
+                            operation: "int array create",
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+fn check_float_array_op(
+    float_array_op: FloatArrayOp<'_>,
+    inputs: &[Type],
+    outputs: &[Type],
+    errors: &mut Vec<VerificationError>,
+) {
+    match float_array_op {
+        FloatArrayOp::Const32(_) => {
+            check_arity(inputs, 0, outputs, 1, "float array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| {
+                    matches!(
+                        ty,
+                        Type::FloatArray {
+                            precision: FloatPrecision::Float32,
+                            ..
+                        }
+                    )
+                },
+                "float array const",
+                errors,
+            );
+        }
+        FloatArrayOp::Const64(_) => {
+            check_arity(inputs, 0, outputs, 1, "float array const", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| {
+                    matches!(
+                        ty,
+                        Type::FloatArray {
+                            precision: FloatPrecision::Float64,
+                            ..
+                        }
+                    )
+                },
+                "float array const",
+                errors,
+            );
+        }
+        FloatArrayOp::Zero { precision } => {
+            check_arity(inputs, 1, outputs, 1, "float array zero", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, 32), "float array zero", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| matches!(ty, Type::FloatArray { precision: p, .. } if *p == precision),
+                "float array zero",
+                errors,
+            );
+        }
+        FloatArrayOp::GetIndex => {
+            check_arity(inputs, 2, outputs, 1, "float array getIndex", errors);
+            expect_input(inputs, 0, is_float_array, "float array getIndex", errors);
+            expect_input(
+                inputs,
+                1,
+                |ty| is_int(ty, 32),
+                "float array getIndex",
+                errors,
+            );
+            if let (Some(Type::FloatArray { precision, .. }), Some(out_ty)) =
+                (inputs.first(), outputs.first())
+            {
+                if !is_float(out_ty, *precision) {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "float array getIndex",
+                    });
+                }
+            }
+        }
+        FloatArrayOp::SetIndex => {
+            check_arity(inputs, 3, outputs, 1, "float array setIndex", errors);
+            expect_input(inputs, 0, is_float_array, "float array setIndex", errors);
+            expect_input(
+                inputs,
+                1,
+                |ty| is_int(ty, 32),
+                "float array setIndex",
+                errors,
+            );
+            if let Some(Type::FloatArray { precision, .. }) = inputs.first() {
+                let precision = *precision;
+                if inputs.get(2).is_some_and(|ty| !is_float(ty, precision)) {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "float array setIndex",
+                    });
+                }
+                if outputs.first().is_some_and(
+                    |ty| !matches!(ty, Type::FloatArray { precision: p, .. } if *p == precision),
+                ) {
+                    errors.push(VerificationError::TypeMismatch {
+                        operation: "float array setIndex",
+                    });
+                }
+            }
+        }
+        FloatArrayOp::Length => {
+            check_arity(inputs, 1, outputs, 1, "float array length", errors);
+            expect_input(inputs, 0, is_float_array, "float array length", errors);
+            expect_output(
+                outputs,
+                0,
+                |ty| is_int(ty, 32),
+                "float array length",
+                errors,
+            );
+        }
+        FloatArrayOp::Create => {
+            if outputs.len() != 1 {
+                errors.push(VerificationError::WrongArity {
+                    operation: "float array create",
+                });
+            }
+            expect_output(outputs, 0, is_float_array, "float array create", errors);
+            if let Some(Type::FloatArray { precision, .. }) = outputs.first() {
+                let precision = *precision;
+                for ty in inputs.iter() {
+                    if !is_float(ty, precision) {
+                        errors.push(VerificationError::TypeMismatch {
+                            operation: "float array create",
+                        });
+                        break;
+                    }
+                }
+            }
+        }
         _ => {}
     }
 }

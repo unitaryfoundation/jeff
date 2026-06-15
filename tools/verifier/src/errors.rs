@@ -67,7 +67,7 @@ pub enum VerificationError {
         operation: &'static str,
     },
 
-    /// A gate operation has the wrong number of inputs or outputs for its declared arity.
+    /// An operation has the wrong number of inputs or outputs for its declared arity.
     WrongArity {
         /// The name of the operation with the wrong arity.
         operation: &'static str,
