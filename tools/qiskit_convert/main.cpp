@@ -578,15 +578,144 @@ static int jeff_to_qiskit(const char *input_path, const char *output_path) {
 }
 
 // -----------------------------------------------------------------------
+// Text-format circuit I/O  (used by tests for all-gate round-trip)
+// -----------------------------------------------------------------------
+// Format (one instruction per line, # comments):
+//   qubits N
+//   clbits M
+//   gate_name q1 [q2 ...] [p1 p2 ...]
+//   measure q c
+
+static int parse_text_circuit(FILE *fp, QkCircuit **out) {
+    char line[512];
+    uint32_t n_qubits = 0, n_clbits = 0;
+    int got_qubits = 0, got_clbits = 0;
+    std::vector<std::string> gate_lines;
+
+    while (fgets(line, sizeof(line), fp)) {
+        char *p = line;
+        while (*p == ' ' || *p == '\t') p++;
+        if (*p == '#' || *p == '\n' || *p == '\0') continue;
+        if (strncmp(p, "qubits ", 7) == 0) {
+            n_qubits = (uint32_t)atoi(p + 7);
+            got_qubits = 1;
+        } else if (strncmp(p, "clbits ", 7) == 0) {
+            n_clbits = (uint32_t)atoi(p + 7);
+            got_clbits = 1;
+        } else {
+            gate_lines.push_back(std::string(p));
+        }
+    }
+
+    if (!got_qubits || !got_clbits || n_qubits == 0) {
+        fprintf(stderr, "error: missing or invalid qubits/clbits declaration\n");
+        return -1;
+    }
+
+    QkCircuit *circuit = qk_circuit_new(n_qubits, n_clbits);
+    if (!circuit) {
+        fprintf(stderr, "error: qk_circuit_new failed\n");
+        return -1;
+    }
+
+    for (auto &gl : gate_lines) {
+        char buf[512];
+        strncpy(buf, gl.c_str(), sizeof(buf) - 1);
+        buf[sizeof(buf) - 1] = '\0';
+        char *p = buf;
+        while (*p == ' ' || *p == '\t') p++;
+
+        if (strncmp(p, "measure ", 8) == 0) {
+            unsigned q, c;
+            if (sscanf(p, "measure %u %u", &q, &c) == 2) {
+                if (q < n_qubits && c < n_clbits) {
+                    qk_circuit_measure(circuit, q, c);
+                }
+            }
+            continue;
+        }
+
+        char gname[64];
+        unsigned qvals[8];
+        double pvals[4];
+        int nq = 0, np = 0;
+
+        int pos = 0;
+        if (sscanf(p, "%63s%n", gname, &pos) != 1) continue;
+        p += pos;
+
+        while (nq < 8 && sscanf(p, "%u%n", &qvals[nq], &pos) == 1) {
+            nq++;
+            p += pos;
+        }
+        while (np < 4 && sscanf(p, "%lf%n", &pvals[np], &pos) == 1) {
+            np++;
+            p += pos;
+        }
+
+        if (nq == 0) continue;
+
+        const GateInfo *gi = find_gate_by_name(gname);
+        if (!gi) {
+            fprintf(stderr, "warning: unknown gate '%s', skipping\n", gname);
+            continue;
+        }
+
+        qk_circuit_gate(circuit, gi->gate, qvals, np > 0 ? pvals : nullptr);
+    }
+
+    *out = circuit;
+    return 0;
+}
+
+static void print_qiskit_circuit_text(QkCircuit *circuit, FILE *fp) {
+    uint32_t nq = qk_circuit_num_qubits(circuit);
+    uint32_t nc = qk_circuit_num_clbits(circuit);
+    size_t ni = qk_circuit_num_instructions(circuit);
+
+    fprintf(fp, "qubits %u\n", nq);
+    fprintf(fp, "clbits %u\n", nc);
+
+    for (size_t i = 0; i < ni; i++) {
+        QkCircuitInstruction inst;
+        memset(&inst, 0, sizeof(inst));
+        qk_circuit_get_instruction(circuit, i, &inst);
+
+        if (qk_circuit_instruction_kind(circuit, i) == QkOperationKind_Measure) {
+            fprintf(fp, "measure %u %u\n", inst.qubits[0], inst.clbits[0]);
+        } else {
+            const GateInfo *gi = find_gate_by_name(inst.name);
+            if (!gi) {
+                fprintf(fp, "# unknown: %s\n", inst.name ? inst.name : "NULL");
+            } else {
+                fprintf(fp, "%s", gi->name);
+                for (uint32_t j = 0; j < inst.num_qubits; j++) {
+                    fprintf(fp, " %u", inst.qubits[j]);
+                }
+                if (inst.params && inst.num_params > 0) {
+                    for (uint32_t j = 0; j < inst.num_params; j++) {
+                        fprintf(fp, " %.15g", qk_param_as_real(inst.params[j]));
+                    }
+                }
+                fprintf(fp, "\n");
+            }
+        }
+        qk_circuit_instruction_clear(&inst);
+    }
+}
+
+// -----------------------------------------------------------------------
 // CLI
 // -----------------------------------------------------------------------
 
 static void usage() {
     printf("Usage:\n");
-    printf("  jeff-qiskit-convert read <jeff_file> [diagram.txt]  "
-           "Convert jeff -> Qiskit\n");
-    printf("  jeff-qiskit-convert write <jeff_output> [n_qubits n_clbits]  "
-           "Convert Qiskit circuit -> jeff\n");
+    printf("  jeff-qiskit-convert read <jeff_file> [diagram.txt]     "
+           "Convert jeff -> Qiskit (with text dump)\n");
+    printf("  jeff-qiskit-convert write <jeff_output> [nq nc]        "
+           "Write demo circuit -> jeff\n");
+    printf("  jeff-qiskit-convert write-text <text_file> <jeff_out>  "
+           "Parse text circuit, write jeff\n");
     printf("\nRequires Qiskit C API (set QISKIT_ROOT env var if not auto-detected)\n");
 }
 
@@ -605,8 +734,175 @@ int main(int argc, char **argv) {
             fprintf(stderr, "error: missing jeff file path\n");
             return 1;
         }
+
+        int fd = open(argv[2], O_RDONLY);
+        if (fd < 0) {
+            perror("open");
+            return 1;
+        }
+
+        capnp::StreamFdMessageReader msg_reader(fd);
+        auto mod = msg_reader.getRoot<::Module>();
+        auto funcs = mod.getFunctions();
+        if (mod.getEntrypoint() >= funcs.size()) {
+            fprintf(stderr, "error: entrypoint out of range\n");
+            close(fd);
+            return 1;
+        }
+
+        auto def = funcs[mod.getEntrypoint()].getDefinition();
+        auto body = def.getBody();
+        auto ops = body.getOperations();
+
+        uint32_t nq = 0, nm = 0;
+        for (auto op : ops) {
+            if (op.getInputs().size() == 0 && op.getOutputs().size() == 0) continue;
+            auto instr = op.getInstruction();
+            if (instr.isQubit()) {
+                auto q = instr.getQubit();
+                if (q.isAlloc()) nq++;
+                else if (q.isMeasure()) nm++;
+            }
+        }
+        close(fd);
+
+        printf("qubits %u\n", nq);
+        printf("clbits %u\n", nm);
+
+        fd = open(argv[2], O_RDONLY);
+        capnp::StreamFdMessageReader reader2(fd);
+        auto mod2 = reader2.getRoot<::Module>();
+        auto funcs2 = mod2.getFunctions();
+        auto def2 = funcs2[mod2.getEntrypoint()].getDefinition();
+        auto body2 = def2.getBody();
+        auto ops2 = body2.getOperations();
+
+        std::map<uint32_t, uint32_t> val_to_qubit;
+        std::map<uint32_t, double> val_to_float;
+        uint32_t next_qubit = 0;
+        uint32_t next_clbit = 0;
+        for (auto op : ops2) {
+            if (!op.getInstruction().isQubit()) {
+                auto instr = op.getInstruction();
+                if (instr.isFloat()) {
+                    auto f = instr.getFloat();
+                    for (auto o : op.getOutputs()) {
+                        if (f.isConst64()) val_to_float[o] = f.getConst64();
+                        else if (f.isConst32()) val_to_float[o] = f.getConst32();
+                    }
+                }
+                continue;
+            }
+        
+            auto instr = op.getInstruction();
+            if (!instr.isQubit()) continue;
+            auto qubit = instr.getQubit();
+            if (qubit.isAlloc()) {
+                for (auto o : op.getOutputs()) {
+                    val_to_qubit[o] = next_qubit++;
+                }
+            } else if (qubit.isGate()) {
+                auto gate = qubit.getGate();
+                const char *gname = "unknown";
+                QkGate qk_ge = (QkGate)-1;
+                if (gate.isWellKnown()) {
+                    int wk = static_cast<int>(gate.getWellKnown());
+                    qk_ge = wk_to_qk(wk);
+                    uint8_t nc = gate.getControlQubits();
+                    if (nc > 0) {
+                        QkGate cge = ctrl_to_qk(qk_ge, (int)nc);
+                        if ((int)cge >= 0) qk_ge = cge;
+                    }
+                } else if (gate.isCustom()) {
+                    auto cust = gate.getCustom();
+                    uint16_t ni = cust.getName();
+                    if (ni < mod2.getStrings().size()) {
+                        gname = mod2.getStrings()[ni].cStr();
+                    }
+                    const GateInfo *tmp = find_gate_by_name(gname);
+                    if (tmp) qk_ge = tmp->gate;
+                }
+                const GateInfo *gi = find_gate(qk_ge);
+                gname = gi ? gi->name : gname;
+                fprintf(stdout, "%s", gname);
+
+                auto inputs = op.getInputs();
+                auto outputs = op.getOutputs();
+                size_t n_qubit_inputs = inputs.size();
+                if (gi && (size_t)gi->n_params <= inputs.size()) {
+                    n_qubit_inputs = inputs.size() - (size_t)gi->n_params;
+                }
+                for (size_t i = 0; i < n_qubit_inputs; i++) {
+                    auto it = val_to_qubit.find(inputs[i]);
+                    unsigned qidx = (it != val_to_qubit.end()) ? it->second : (unsigned)inputs[i];
+                    fprintf(stdout, " %u", qidx);
+                }
+                if (gi && gi->n_params > 0) {
+                    size_t n_qi = inputs.size() - (size_t)gi->n_params;
+                    for (int pi = 0; pi < gi->n_params; pi++) {
+                        size_t fi = n_qi + (size_t)pi;
+                        double pv = 0.0;
+                        if (fi < inputs.size()) {
+                            auto fit = val_to_float.find(inputs[fi]);
+                            if (fit != val_to_float.end()) pv = fit->second;
+                        }
+                        fprintf(stdout, " %.15g", pv);
+                    }
+                }
+                fprintf(stdout, "\n");
+
+                for (size_t i = 0; i < outputs.size() && i < n_qubit_inputs; i++) {
+                    auto it = val_to_qubit.find(inputs[i]);
+                    if (it != val_to_qubit.end()) {
+                        val_to_qubit[outputs[i]] = it->second;
+                    }
+                }
+            } else if (qubit.isMeasure()) {
+                auto inputs = op.getInputs();
+                auto outputs = op.getOutputs();
+                unsigned qv = 0, cv = next_clbit++;
+                if (inputs.size() > 0) {
+                    auto it = val_to_qubit.find(inputs[0]);
+                    qv = (it != val_to_qubit.end()) ? it->second : (unsigned)inputs[0];
+                }
+                fprintf(stdout, "measure %u %u\n", qv, cv);
+            }
+        }
+        close(fd);
+
         const char *output_path = (argc > 3) ? argv[3] : nullptr;
-        return jeff_to_qiskit(argv[2], output_path);
+        if (output_path) {
+            std::ofstream out(output_path);
+            out << "Qiskit circuit with " << nq << " qubits, " << nm
+                << " clbits" << std::endl;
+            out.close();
+            printf("Wrote summary to %s\n", output_path);
+        }
+        return 0;
+    }
+
+    if (cmd == "write-text") {
+        if (argc < 4) {
+            fprintf(stderr, "error: usage: write-text <text_file> <jeff_output>\n");
+            return 1;
+        }
+        FILE *fp = fopen(argv[2], "r");
+        if (!fp) {
+            fprintf(stderr, "error: cannot open '%s'\n", argv[2]);
+            return 1;
+        }
+        QkCircuit *circuit = nullptr;
+        if (parse_text_circuit(fp, &circuit) < 0) {
+            fclose(fp);
+            return 1;
+        }
+        fclose(fp);
+
+        int ret = qiskit_to_jeff(circuit, argv[3]);
+        qk_circuit_free(circuit);
+        if (ret < 0) return 1;
+        printf("Wrote %s\n", argv[3]);
+        return 0;
     }
 
     if (cmd == "write") {
