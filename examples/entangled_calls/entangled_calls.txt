@@ -10,7 +10,7 @@
                     sources = [],
                     targets = [49],
                     operations = [
-                        (outputs = [0], instruction = (int = (const8 = 1))),
+                        (outputs = [0], instruction = (int = (const1 = true))),
                         (outputs = [1], instruction = (qubit = (alloc = void))),
                         (outputs = [2], instruction = (qubit = (alloc = void))),
                         (outputs = [3], instruction = (qubit = (alloc = void))),
@@ -21,7 +21,7 @@
                         (inputs = [8, 3], outputs = [9, 10], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 1), controlQubits = 1)))),
                         (inputs = [10, 4], outputs = [11, 12], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 1), controlQubits = 1)))),
                         (inputs = [12, 5], outputs = [13, 14], instruction = (qubit = (gate = (custom = (name = 5, numQubits = 1), controlQubits = 1)))),
-                        (outputs = [15], instruction = (intArray = (const8 = [0, 0, 0, 0, 0]))),
+                        (outputs = [15], instruction = (intArray = (const1 = [false, false, false, false, false]))),
                         (inputs = [7], outputs = [16], instruction = (qubit = (measure = void))),
                         (outputs = [17], instruction = (int = (const32 = 0))),
                         (inputs = [15, 17, 16], outputs = [18], instruction = (intArray = (setIndex = void))),
@@ -59,23 +59,23 @@
                     ]
                 ),
                 values = [
-                    (type = (int = 8)), (type = (qubit = void)), (type = (qubit = void)),
+                    (type = (int = 1)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
-                    (type = (intArray = (bitwidth = 8, length = (static = 5)))), (type = (int = 32)), (type = (int = 8)),
-                    (type = (int = 8)), (type = (int = 32)), (type = (int = 8)),
-                    (type = (int = 8)), (type = (int = 8)), (type = (int = 32)),
-                    (type = (int = 8)), (type = (int = 8)), (type = (int = 8)),
-                    (type = (int = 32)), (type = (int = 8)), (type = (int = 8)),
-                    (type = (int = 8)), (type = (int = 32)), (type = (int = 8)),
-                    (type = (int = 8)), (type = (int = 8))
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 1)), (type = (int = 32)),
+                    (type = (intArray = (bitwidth = 1, length = (static = 5)))), (type = (int = 32)), (type = (int = 1)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (int = 1)),
+                    (type = (int = 1)), (type = (int = 1)), (type = (int = 32)),
+                    (type = (int = 1)), (type = (int = 1)), (type = (int = 1)),
+                    (type = (int = 32)), (type = (int = 1)), (type = (int = 1)),
+                    (type = (int = 1)), (type = (int = 32)), (type = (int = 1)),
+                    (type = (int = 1)), (type = (int = 1))
                 ]
             ),
         ),
@@ -90,7 +90,7 @@
                     ]
                 ),
                 values = [
-                    (type = (int = 8))
+                    (type = (int = 1))
                 ]
             ),
         ),
@@ -118,7 +118,7 @@
                     operations = []
                 ),
                 values = [
-                    (type = (int = 8))
+                    (type = (int = 1))
                 ]
             ),
         ),

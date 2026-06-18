@@ -1,0 +1,15 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [],
+          operations = [
+            ( inputs = [0],
+              instruction = (qubit = (free = void)) ) ] ),
+        values = [] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )

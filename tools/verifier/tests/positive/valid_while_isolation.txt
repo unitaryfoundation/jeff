@@ -1,0 +1,38 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      definition = (
+        body = (
+          sources = [],
+          targets = [1],
+          operations = [
+            ( outputs = [0],
+              instruction = (int = (const1 = false)) ),
+            ( inputs = [0],
+              outputs = [1],
+              instruction = (scf = (while = (
+                condition = (
+                  sources = [2],
+                  targets = [3],
+                  operations = [
+                    ( inputs = [2],
+                      outputs = [3],
+                      instruction = (int = (not = void)) ) ] ),
+                body = (
+                  sources = [4],
+                  targets = [5],
+                  operations = [
+                    ( inputs = [4],
+                      outputs = [5],
+                      instruction = (int = (not = void)) ) ] ) ) )) ) ] ),
+        values = [
+          (type = (int = 1)),
+          (type = (int = 1)),
+          (type = (int = 1)),
+          (type = (int = 1)),
+          (type = (int = 1)),
+          (type = (int = 1)) ] ) ) ],
+  strings = ["main"],
+  entrypoint = 0 )

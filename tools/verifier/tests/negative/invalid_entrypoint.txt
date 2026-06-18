@@ -1,0 +1,8 @@
+( version = 0,
+  versionMinor = 2,
+  versionPatch = 0,
+  functions = [
+    ( name = 0,
+      declaration = (inputs = [], outputs = []) ) ],
+  strings = ["f"],
+  entrypoint = 0 )

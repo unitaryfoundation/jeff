@@ -18,7 +18,7 @@
                         (inputs = [7, 2], outputs = [8, 9], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 1), controlQubits = 1)))),
                         (inputs = [9, 3], outputs = [10, 11], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 1), controlQubits = 1)))),
                         (inputs = [11, 4], outputs = [12, 13], instruction = (qubit = (gate = (custom = (name = 2, numQubits = 1), controlQubits = 1)))),
-                        (outputs = [14], instruction = (intArray = (const8 = [0, 0, 0, 0, 0]))),
+                        (outputs = [14], instruction = (intArray = (const1 = [false, false, false, false, false]))),
                         (inputs = [6], outputs = [15], instruction = (qubit = (measure = void))),
                         (outputs = [16], instruction = (int = (const32 = 0))),
                         (inputs = [14, 16, 15], outputs = [17], instruction = (intArray = (setIndex = void))),
@@ -41,12 +41,12 @@
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
                     (type = (qubit = void)), (type = (qubit = void)), (type = (qubit = void)),
-                    (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5)))),
-                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 8, length = (static = 5))))
+                    (type = (qubit = void)), (type = (qubit = void)), (type = (intArray = (bitwidth = 1, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 1, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 1, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 1, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 1, length = (static = 5)))),
+                    (type = (int = 1)), (type = (int = 32)), (type = (intArray = (bitwidth = 1, length = (static = 5))))
                 ]
             ),
         )
