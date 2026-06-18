@@ -35,12 +35,18 @@ fn check_region_types(region: Region<'_>, errors: &mut Vec<VerificationError>) {
             OpType::FloatArrayOp(float_array_op) => {
                 check_float_array_op(float_array_op, &inputs, &outputs, errors);
             }
-            _ => {}
+            // FuncOp only has a function index so type checking calls require to find the
+            // callee signature at Module level, but this pass is only scoped to a Region.
+            // TODO: Scope Module into this pass / add a helper pass to build a
+            // function table for a signature lookup and check out of bounds index
+            OpType::FuncOp(_) => {}
+            _ => panic!("Unknown optype"),
         }
     }
 }
 
 fn check_cf_region_types(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<VerificationError>) {
+    // TODO: Verify that SCF node input/output types.
     match cf_op {
         ControlFlowOp::For { region } => check_region_types(*region, errors),
         ControlFlowOp::While { condition, body } => {
