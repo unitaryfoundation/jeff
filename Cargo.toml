@@ -18,7 +18,7 @@ missing_docs = "warn"
 
 [workspace.dependencies]
 insta = { version = "1.34.0" }
-capnp = "0.25.0"
+capnp = "0.26.0"
 cool_asserts = "2.0.3"
 criterion = "0.5.1"
 derive_more = "2.0.1"
