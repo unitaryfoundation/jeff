@@ -21,6 +21,7 @@ python: &python
   - *schema-def
   - ".github/workflows/ci-py.yml"
   - "impl/py/**"
+  - "tools/**"
   - "pyproject.toml"
   - "uv.lock"
   - "examples/**/*.py"

@@ -44,3 +44,6 @@ venv/
 
 # MacOS
 *.DS_Store
+
+# CMake build directory
+build/
