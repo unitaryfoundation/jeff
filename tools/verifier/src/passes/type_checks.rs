@@ -49,13 +49,9 @@ fn check_cf_region_types(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<Verificatio
     // TODO: Verify that SCF node input/output types.
     match cf_op {
         ControlFlowOp::For { region } => check_region_types(*region, errors),
-        ControlFlowOp::While { condition, body } => {
-            check_region_types(*condition, errors);
-            check_region_types(*body, errors);
-        }
-        ControlFlowOp::DoWhile { body, condition } => {
-            check_region_types(*body, errors);
-            check_region_types(*condition, errors);
+        ControlFlowOp::While { before, after } => {
+            check_region_types(*before, errors);
+            check_region_types(*after, errors);
         }
         ControlFlowOp::Switch(switch_op) => {
             for branch in switch_op.branches() {

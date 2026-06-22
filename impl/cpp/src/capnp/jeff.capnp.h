@@ -80,7 +80,6 @@ CAPNP_DECLARE_SCHEMA(9b4cc3fe98f8a54a);
 CAPNP_DECLARE_SCHEMA(913d28bca6afcb86);
 CAPNP_DECLARE_SCHEMA(f14bb0418f1e8273);
 CAPNP_DECLARE_SCHEMA(e2b1243940691d9e);
-CAPNP_DECLARE_SCHEMA(c29091e9aba6a350);
 CAPNP_DECLARE_SCHEMA(bfefb4a58d54b4fe);
 
 }  // namespace schemas
@@ -89,7 +88,7 @@ CAPNP_DECLARE_SCHEMA(bfefb4a58d54b4fe);
 namespace jeff {
 
 static constexpr  ::uint32_t SCHEMA_VERSION_MAJOR = 0u;
-static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 2u;
+static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 3u;
 static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 0u;
 typedef ::capnp::schemas::FloatPrecision_ff11858a5d46ba79 FloatPrecision;
 
@@ -624,11 +623,9 @@ struct ScfOp {
     SWITCH,
     FOR,
     WHILE,
-    DO_WHILE,
   };
   struct Switch;
   struct While;
-  struct DoWhile;
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(913d28bca6afcb86, 1, 2)
@@ -662,21 +659,6 @@ struct ScfOp::While {
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(e2b1243940691d9e, 1, 2)
-    #if !CAPNP_LITE
-    static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
-    #endif  // !CAPNP_LITE
-  };
-};
-
-struct ScfOp::DoWhile {
-  DoWhile() = delete;
-
-  class Reader;
-  class Builder;
-  class Pipeline;
-
-  struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(c29091e9aba6a350, 1, 2)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -3695,9 +3677,6 @@ public:
   inline bool isWhile() const;
   inline typename While::Reader getWhile() const;
 
-  inline bool isDoWhile() const;
-  inline typename DoWhile::Reader getDoWhile() const;
-
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -3742,10 +3721,6 @@ public:
   inline bool isWhile();
   inline typename While::Builder getWhile();
   inline typename While::Builder initWhile();
-
-  inline bool isDoWhile();
-  inline typename DoWhile::Builder getDoWhile();
-  inline typename DoWhile::Builder initDoWhile();
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3882,11 +3857,11 @@ public:
   }
 #endif  // !CAPNP_LITE
 
-  inline bool hasCondition() const;
-  inline  ::jeff::Region::Reader getCondition() const;
+  inline bool hasBefore() const;
+  inline  ::jeff::Region::Reader getBefore() const;
 
-  inline bool hasBody() const;
-  inline  ::jeff::Region::Reader getBody() const;
+  inline bool hasAfter() const;
+  inline  ::jeff::Region::Reader getAfter() const;
 
 private:
   ::capnp::_::StructReader _reader;
@@ -3916,19 +3891,19 @@ public:
   inline ::kj::StringTree toString() const { return asReader().toString(); }
 #endif  // !CAPNP_LITE
 
-  inline bool hasCondition();
-  inline  ::jeff::Region::Builder getCondition();
-  inline void setCondition( ::jeff::Region::Reader value);
-  inline  ::jeff::Region::Builder initCondition();
-  inline void adoptCondition(::capnp::Orphan< ::jeff::Region>&& value);
-  inline ::capnp::Orphan< ::jeff::Region> disownCondition();
+  inline bool hasBefore();
+  inline  ::jeff::Region::Builder getBefore();
+  inline void setBefore( ::jeff::Region::Reader value);
+  inline  ::jeff::Region::Builder initBefore();
+  inline void adoptBefore(::capnp::Orphan< ::jeff::Region>&& value);
+  inline ::capnp::Orphan< ::jeff::Region> disownBefore();
 
-  inline bool hasBody();
-  inline  ::jeff::Region::Builder getBody();
-  inline void setBody( ::jeff::Region::Reader value);
-  inline  ::jeff::Region::Builder initBody();
-  inline void adoptBody(::capnp::Orphan< ::jeff::Region>&& value);
-  inline ::capnp::Orphan< ::jeff::Region> disownBody();
+  inline bool hasAfter();
+  inline  ::jeff::Region::Builder getAfter();
+  inline void setAfter( ::jeff::Region::Reader value);
+  inline  ::jeff::Region::Builder initAfter();
+  inline void adoptAfter(::capnp::Orphan< ::jeff::Region>&& value);
+  inline ::capnp::Orphan< ::jeff::Region> disownAfter();
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3948,101 +3923,8 @@ public:
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
       : _typeless(kj::mv(typeless)) {}
 
-  inline  ::jeff::Region::Pipeline getCondition();
-  inline  ::jeff::Region::Pipeline getBody();
-private:
-  ::capnp::AnyPointer::Pipeline _typeless;
-  friend class ::capnp::PipelineHook;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-};
-#endif  // !CAPNP_LITE
-
-class ScfOp::DoWhile::Reader {
-public:
-  typedef DoWhile Reads;
-
-  Reader() = default;
-  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
-
-  inline ::capnp::MessageSize totalSize() const {
-    return _reader.totalSize().asPublic();
-  }
-
-#if !CAPNP_LITE
-  inline ::kj::StringTree toString() const {
-    return ::capnp::_::structString(_reader, *_capnpPrivate::brand());
-  }
-#endif  // !CAPNP_LITE
-
-  inline bool hasBody() const;
-  inline  ::jeff::Region::Reader getBody() const;
-
-  inline bool hasCondition() const;
-  inline  ::jeff::Region::Reader getCondition() const;
-
-private:
-  ::capnp::_::StructReader _reader;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::_::PointerHelpers;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::List;
-  friend class ::capnp::MessageBuilder;
-  friend class ::capnp::Orphanage;
-};
-
-class ScfOp::DoWhile::Builder {
-public:
-  typedef DoWhile Builds;
-
-  Builder() = delete;  // Deleted to discourage incorrect usage.
-                       // You can explicitly initialize to nullptr instead.
-  inline Builder(decltype(nullptr)) {}
-  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
-  inline operator Reader() const { return Reader(_builder.asReader()); }
-  inline Reader asReader() const { return *this; }
-
-  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
-#if !CAPNP_LITE
-  inline ::kj::StringTree toString() const { return asReader().toString(); }
-#endif  // !CAPNP_LITE
-
-  inline bool hasBody();
-  inline  ::jeff::Region::Builder getBody();
-  inline void setBody( ::jeff::Region::Reader value);
-  inline  ::jeff::Region::Builder initBody();
-  inline void adoptBody(::capnp::Orphan< ::jeff::Region>&& value);
-  inline ::capnp::Orphan< ::jeff::Region> disownBody();
-
-  inline bool hasCondition();
-  inline  ::jeff::Region::Builder getCondition();
-  inline void setCondition( ::jeff::Region::Reader value);
-  inline  ::jeff::Region::Builder initCondition();
-  inline void adoptCondition(::capnp::Orphan< ::jeff::Region>&& value);
-  inline ::capnp::Orphan< ::jeff::Region> disownCondition();
-
-private:
-  ::capnp::_::StructBuilder _builder;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::ToDynamic_;
-  friend class ::capnp::Orphanage;
-  template <typename, ::capnp::Kind>
-  friend struct ::capnp::_::PointerHelpers;
-};
-
-#if !CAPNP_LITE
-class ScfOp::DoWhile::Pipeline {
-public:
-  typedef DoWhile Pipelines;
-
-  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
-  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
-      : _typeless(kj::mv(typeless)) {}
-
-  inline  ::jeff::Region::Pipeline getBody();
-  inline  ::jeff::Region::Pipeline getCondition();
+  inline  ::jeff::Region::Pipeline getBefore();
+  inline  ::jeff::Region::Pipeline getAfter();
 private:
   ::capnp::AnyPointer::Pipeline _typeless;
   friend class ::capnp::PipelineHook;
@@ -8953,29 +8835,6 @@ inline typename ScfOp::While::Builder ScfOp::Builder::initWhile() {
   _builder.getPointerField(::capnp::bounded<1>() * ::capnp::POINTERS).clear();
   return typename ScfOp::While::Builder(_builder);
 }
-inline bool ScfOp::Reader::isDoWhile() const {
-  return which() == ScfOp::DO_WHILE;
-}
-inline bool ScfOp::Builder::isDoWhile() {
-  return which() == ScfOp::DO_WHILE;
-}
-inline typename ScfOp::DoWhile::Reader ScfOp::Reader::getDoWhile() const {
-  KJ_IREQUIRE((which() == ScfOp::DO_WHILE),
-              "Must check which() before get()ing a union member.");
-  return typename ScfOp::DoWhile::Reader(_reader);
-}
-inline typename ScfOp::DoWhile::Builder ScfOp::Builder::getDoWhile() {
-  KJ_IREQUIRE((which() == ScfOp::DO_WHILE),
-              "Must check which() before get()ing a union member.");
-  return typename ScfOp::DoWhile::Builder(_builder);
-}
-inline typename ScfOp::DoWhile::Builder ScfOp::Builder::initDoWhile() {
-  _builder.setDataField<ScfOp::Which>(
-      ::capnp::bounded<0>() * ::capnp::ELEMENTS, ScfOp::DO_WHILE);
-  _builder.getPointerField(::capnp::bounded<0>() * ::capnp::POINTERS).clear();
-  _builder.getPointerField(::capnp::bounded<1>() * ::capnp::POINTERS).clear();
-  return typename ScfOp::DoWhile::Builder(_builder);
-}
 inline bool ScfOp::Switch::Reader::hasBranches() const {
   return !_reader.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
@@ -9049,158 +8908,80 @@ inline ::capnp::Orphan< ::jeff::Region> ScfOp::Switch::Builder::disownDefault() 
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
 
-inline bool ScfOp::While::Reader::hasCondition() const {
+inline bool ScfOp::While::Reader::hasBefore() const {
   return !_reader.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
 }
-inline bool ScfOp::While::Builder::hasCondition() {
+inline bool ScfOp::While::Builder::hasBefore() {
   return !_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
 }
-inline  ::jeff::Region::Reader ScfOp::While::Reader::getCondition() const {
+inline  ::jeff::Region::Reader ScfOp::While::Reader::getBefore() const {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_reader.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline  ::jeff::Region::Builder ScfOp::While::Builder::getCondition() {
+inline  ::jeff::Region::Builder ScfOp::While::Builder::getBefore() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 #if !CAPNP_LITE
-inline  ::jeff::Region::Pipeline ScfOp::While::Pipeline::getCondition() {
+inline  ::jeff::Region::Pipeline ScfOp::While::Pipeline::getBefore() {
   return  ::jeff::Region::Pipeline(_typeless.getPointerField(0));
 }
 #endif  // !CAPNP_LITE
-inline void ScfOp::While::Builder::setCondition( ::jeff::Region::Reader value) {
+inline void ScfOp::While::Builder::setBefore( ::jeff::Region::Reader value) {
   ::capnp::_::PointerHelpers< ::jeff::Region>::set(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), value);
 }
-inline  ::jeff::Region::Builder ScfOp::While::Builder::initCondition() {
+inline  ::jeff::Region::Builder ScfOp::While::Builder::initBefore() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::init(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline void ScfOp::While::Builder::adoptCondition(
+inline void ScfOp::While::Builder::adoptBefore(
     ::capnp::Orphan< ::jeff::Region>&& value) {
   ::capnp::_::PointerHelpers< ::jeff::Region>::adopt(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
 }
-inline ::capnp::Orphan< ::jeff::Region> ScfOp::While::Builder::disownCondition() {
+inline ::capnp::Orphan< ::jeff::Region> ScfOp::While::Builder::disownBefore() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::disown(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 
-inline bool ScfOp::While::Reader::hasBody() const {
+inline bool ScfOp::While::Reader::hasAfter() const {
   return !_reader.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
 }
-inline bool ScfOp::While::Builder::hasBody() {
+inline bool ScfOp::While::Builder::hasAfter() {
   return !_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
 }
-inline  ::jeff::Region::Reader ScfOp::While::Reader::getBody() const {
+inline  ::jeff::Region::Reader ScfOp::While::Reader::getAfter() const {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_reader.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
-inline  ::jeff::Region::Builder ScfOp::While::Builder::getBody() {
+inline  ::jeff::Region::Builder ScfOp::While::Builder::getAfter() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
 #if !CAPNP_LITE
-inline  ::jeff::Region::Pipeline ScfOp::While::Pipeline::getBody() {
+inline  ::jeff::Region::Pipeline ScfOp::While::Pipeline::getAfter() {
   return  ::jeff::Region::Pipeline(_typeless.getPointerField(1));
 }
 #endif  // !CAPNP_LITE
-inline void ScfOp::While::Builder::setBody( ::jeff::Region::Reader value) {
+inline void ScfOp::While::Builder::setAfter( ::jeff::Region::Reader value) {
   ::capnp::_::PointerHelpers< ::jeff::Region>::set(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS), value);
 }
-inline  ::jeff::Region::Builder ScfOp::While::Builder::initBody() {
+inline  ::jeff::Region::Builder ScfOp::While::Builder::initAfter() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::init(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
-inline void ScfOp::While::Builder::adoptBody(
+inline void ScfOp::While::Builder::adoptAfter(
     ::capnp::Orphan< ::jeff::Region>&& value) {
   ::capnp::_::PointerHelpers< ::jeff::Region>::adopt(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS), kj::mv(value));
 }
-inline ::capnp::Orphan< ::jeff::Region> ScfOp::While::Builder::disownBody() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::disown(_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS));
-}
-
-inline bool ScfOp::DoWhile::Reader::hasBody() const {
-  return !_reader.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
-}
-inline bool ScfOp::DoWhile::Builder::hasBody() {
-  return !_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
-}
-inline  ::jeff::Region::Reader ScfOp::DoWhile::Reader::getBody() const {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_reader.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS));
-}
-inline  ::jeff::Region::Builder ScfOp::DoWhile::Builder::getBody() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS));
-}
-#if !CAPNP_LITE
-inline  ::jeff::Region::Pipeline ScfOp::DoWhile::Pipeline::getBody() {
-  return  ::jeff::Region::Pipeline(_typeless.getPointerField(0));
-}
-#endif  // !CAPNP_LITE
-inline void ScfOp::DoWhile::Builder::setBody( ::jeff::Region::Reader value) {
-  ::capnp::_::PointerHelpers< ::jeff::Region>::set(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS), value);
-}
-inline  ::jeff::Region::Builder ScfOp::DoWhile::Builder::initBody() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::init(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS));
-}
-inline void ScfOp::DoWhile::Builder::adoptBody(
-    ::capnp::Orphan< ::jeff::Region>&& value) {
-  ::capnp::_::PointerHelpers< ::jeff::Region>::adopt(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
-}
-inline ::capnp::Orphan< ::jeff::Region> ScfOp::DoWhile::Builder::disownBody() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::disown(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS));
-}
-
-inline bool ScfOp::DoWhile::Reader::hasCondition() const {
-  return !_reader.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
-}
-inline bool ScfOp::DoWhile::Builder::hasCondition() {
-  return !_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
-}
-inline  ::jeff::Region::Reader ScfOp::DoWhile::Reader::getCondition() const {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_reader.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS));
-}
-inline  ::jeff::Region::Builder ScfOp::DoWhile::Builder::getCondition() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::get(_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS));
-}
-#if !CAPNP_LITE
-inline  ::jeff::Region::Pipeline ScfOp::DoWhile::Pipeline::getCondition() {
-  return  ::jeff::Region::Pipeline(_typeless.getPointerField(1));
-}
-#endif  // !CAPNP_LITE
-inline void ScfOp::DoWhile::Builder::setCondition( ::jeff::Region::Reader value) {
-  ::capnp::_::PointerHelpers< ::jeff::Region>::set(_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS), value);
-}
-inline  ::jeff::Region::Builder ScfOp::DoWhile::Builder::initCondition() {
-  return ::capnp::_::PointerHelpers< ::jeff::Region>::init(_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS));
-}
-inline void ScfOp::DoWhile::Builder::adoptCondition(
-    ::capnp::Orphan< ::jeff::Region>&& value) {
-  ::capnp::_::PointerHelpers< ::jeff::Region>::adopt(_builder.getPointerField(
-      ::capnp::bounded<1>() * ::capnp::POINTERS), kj::mv(value));
-}
-inline ::capnp::Orphan< ::jeff::Region> ScfOp::DoWhile::Builder::disownCondition() {
+inline ::capnp::Orphan< ::jeff::Region> ScfOp::While::Builder::disownAfter() {
   return ::capnp::_::PointerHelpers< ::jeff::Region>::disown(_builder.getPointerField(
       ::capnp::bounded<1>() * ::capnp::POINTERS));
 }
