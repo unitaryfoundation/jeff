@@ -1446,7 +1446,7 @@ struct ScfOp {
             # - `... inputs`: Any number of values that are passed to the `before` region.
             #
             # Outputs:
-            # - `... inputs`: Any number of values that are returned from the `before` region.
+            # - `... outputs`: Any number of values that are returned from the `before` region.
 
             before @3 :Region;
             # The region that evaluates whether the condition is met.
