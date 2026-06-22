@@ -3,7 +3,7 @@
 use jeff::reader::optype::{
     ControlFlowOp, FloatArrayOp, FloatOp, IntArrayOp, IntOp, OpType, QubitOp, QubitRegisterOp,
 };
-use jeff::reader::Region;
+use jeff::reader::{Operation, Region};
 use jeff::types::{FloatPrecision, Type};
 
 use crate::VerificationError;
@@ -28,7 +28,7 @@ fn check_region_types(region: Region<'_>, errors: &mut Vec<VerificationError>) {
             OpType::QubitRegisterOp(qureg_op) => {
                 check_qureg_op(qureg_op, &inputs, &outputs, errors);
             }
-            OpType::ControlFlowOp(cf_op) => check_cf_region_types(cf_op.as_ref(), errors),
+            OpType::ControlFlowOp(cf_op) => check_cf_region_types(cf_op.as_ref(), op, errors),
             OpType::IntArrayOp(int_array_op) => {
                 check_int_array_op(int_array_op, &inputs, &outputs, errors);
             }
@@ -45,22 +45,132 @@ fn check_region_types(region: Region<'_>, errors: &mut Vec<VerificationError>) {
     }
 }
 
-fn check_cf_region_types(cf_op: &ControlFlowOp<'_>, errors: &mut Vec<VerificationError>) {
-    // TODO: Verify that SCF node input/output types.
+fn check_cf_region_types(
+    cf_op: &ControlFlowOp<'_>,
+    op: Operation<'_>,
+    errors: &mut Vec<VerificationError>,
+) {
     match cf_op {
-        ControlFlowOp::For { region } => check_region_types(*region, errors),
+        ControlFlowOp::For { region } => {
+            check_for_op(*region, op, errors);
+        }
         ControlFlowOp::While { before, after } => {
-            check_region_types(*before, errors);
-            check_region_types(*after, errors);
+            check_while_op(*before, *after, op, errors);
         }
         ControlFlowOp::Switch(switch_op) => {
-            for branch in switch_op.branches() {
-                check_region_types(branch, errors);
-            }
-            if let Some(default) = switch_op.default_branch() {
-                check_region_types(default, errors);
-            }
+            check_switch_op(switch_op, op, errors);
         }
+    }
+}
+
+fn get_input_types(op: Operation<'_>) -> Vec<Type> {
+    op.inputs().filter_map(|r| r.ok()).map(|v| v.ty()).collect()
+}
+
+fn get_output_types(op: Operation<'_>) -> Vec<Type> {
+    op.outputs()
+        .filter_map(|r| r.ok())
+        .map(|v| v.ty())
+        .collect()
+}
+
+fn get_source_types(region: Region<'_>) -> Vec<Type> {
+    region
+        .sources()
+        .filter_map(|r| r.ok())
+        .map(|v| v.ty())
+        .collect()
+}
+
+fn get_target_types(region: Region<'_>) -> Vec<Type> {
+    region
+        .targets()
+        .filter_map(|r| r.ok())
+        .map(|v| v.ty())
+        .collect()
+}
+
+fn check_for_op(region: Region<'_>, op: Operation<'_>, errors: &mut Vec<VerificationError>) {
+    let input_types: Vec<Type> = get_input_types(op);
+    let output_types: Vec<Type> = get_output_types(op);
+
+    let region_source_types: Vec<Type> = get_source_types(region);
+    let region_target_types: Vec<Type> = get_target_types(region);
+
+    if !matches!(region_source_types.first(), Some(Type::Int { bits: 32 }))
+        || region_source_types.get(1..) != input_types.get(3..)
+        || region_source_types.get(1..) != Some(region_target_types.as_slice())
+        || region_target_types != output_types
+    {
+        errors.push(VerificationError::RegionTypeMismatch { operation: "for" });
+    }
+
+    check_region_types(region, errors);
+}
+
+fn check_while_op(
+    before: Region<'_>,
+    after: Region<'_>,
+    op: Operation<'_>,
+    errors: &mut Vec<VerificationError>,
+) {
+    let input_types: Vec<Type> = get_input_types(op);
+    let output_types: Vec<Type> = get_output_types(op);
+
+    let before_source_types: Vec<Type> = get_source_types(before);
+    let before_target_types: Vec<Type> = get_target_types(before);
+    let after_source_types: Vec<Type> = get_source_types(after);
+    let after_target_types: Vec<Type> = get_target_types(after);
+
+    if before_source_types != input_types
+        || before_source_types != after_target_types
+        || !matches!(before_target_types.first(), Some(Type::Int { bits: 1 }))
+        || before_target_types.get(1..) != Some(output_types.as_slice())
+        || before_target_types.get(1..) != Some(after_source_types.as_slice())
+    {
+        errors.push(VerificationError::RegionTypeMismatch { operation: "while" });
+    }
+
+    check_region_types(before, errors);
+    check_region_types(after, errors);
+}
+
+fn check_switch_op(
+    switch_op: &jeff::reader::optype::SwitchOp<'_>,
+    op: Operation<'_>,
+    errors: &mut Vec<VerificationError>,
+) {
+    let input_types: Vec<Type> = get_input_types(op);
+    let output_types: Vec<Type> = get_output_types(op);
+
+    for branch in switch_op.branches() {
+        let branch_source_types: Vec<Type> = get_source_types(branch);
+        let branch_target_types: Vec<Type> = get_target_types(branch);
+
+        if Some(branch_source_types.as_slice()) != input_types.get(1..)
+            || branch_target_types != output_types
+        {
+            errors.push(VerificationError::RegionTypeMismatch {
+                operation: "switch",
+            });
+        }
+
+        check_region_types(branch, errors);
+    }
+
+    if let Some(default) = switch_op.default_branch() {
+        let default_source_types: Vec<Type> = get_source_types(default);
+        let default_target_types: Vec<Type> = get_target_types(default);
+
+        if Some(default_source_types.as_slice()) != input_types.get(1..)
+            || default_target_types != output_types
+        {
+            errors.push(VerificationError::RegionTypeMismatch {
+                operation: "switch",
+            });
+        }
+
+        check_region_types(default, errors);
     }
 }
 

@@ -73,6 +73,12 @@ pub enum VerificationError {
         operation: &'static str,
     },
 
+    /// The source and target types of a region are not consistent.
+    RegionTypeMismatch {
+        /// The name of the operation whose region has inconsistent types.
+        operation: &'static str,
+    },
+
     /// An operation inside a nested region directly references a value from an outer scope
     /// without the value being explicitly passed in via the region's sources.
     IsolationViolation {
@@ -143,6 +149,9 @@ impl fmt::Display for VerificationError {
             }
             Self::WrongArity { operation } => {
                 write!(f, "'{operation}' has the wrong number of inputs or outputs for its declared arity")
+            }
+            Self::RegionTypeMismatch { operation } => {
+                write!(f, "'{operation}' has a region with inconsistent types")
             }
             Self::IsolationViolation { value_id } => {
                 write!(
