@@ -1,9 +1,10 @@
 # Fully entangled 5-qubit
 
-An example of a very simple kernel, with no inputs and no outputs. It allocates 5 qubits and fully entangles them, performing a measurement into a classical int array.
+An example of a very simple kernel, with no inputs and no outputs.
+It allocates 5 qubits and fully entangles them,
+performing a measurement into a classical int array.
 
-
-### Pseudocode
+## Pseudocode
 
 ```python
 def main():

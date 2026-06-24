@@ -1,8 +1,13 @@
 # Fully entangled 5-qubit w/ Func Calls
 
-An example of a more complex set of functions, directly translated from C++. The main function allocates 5 qubits and fully entangles them, performing a measurement into a classical int array. It then collects all the measurements into a single int by shl+adding them and returns the result. The wrapping function simply calls the main one.
+An example of a more complex set of functions, directly translated from C++.
+The main function allocates 5 qubits and fully entangles them,
+performing a measurement into a classical int array.
+It then collects all the measurements into a single int by shl+adding them
+and returns the result.
+The wrapping function simply calls the main one.
 
-### Pseudocode
+## Pseudocode
 
 ```python
 def main():

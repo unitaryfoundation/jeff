@@ -1,0 +1,14 @@
+[per-file-ignores]
+# The RFCs deliberatively have a non-compliant format
+"rfcs/**" = ["MD025", "MD041", "MD053"]
+# The README starts with an image and may include HTML tags
+"README.md" = ["MD033", "MD041"]
+
+
+[MD013]
+line-length = 80
+reflow = true
+reflow-mode = "semantic-line-breaks"
+
+[MD060]
+enabled = true

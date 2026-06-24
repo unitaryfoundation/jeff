@@ -7,21 +7,24 @@ The package major versions match the `jeff` version they implement.
 
 ## Schema definition
 
-The serialization schema is defined using the [Cap'n Proto](https://capnproto.org) serialization protocol.
+The serialization schema is defined using the
+[Cap'n Proto](https://capnproto.org) serialization protocol.
 
 See the [capnp](capnp) directory for the schema definition.
 
-Although the current implementation is in Cap'n Proto, we may consider switching to protobuf in the future.
+Although the current implementation is in Cap'n Proto,
+we may consider switching to protobuf in the future.
 
 ## Languages
 
 We publish implementations in the following languages:
 
--  [C++](cpp)
--  [Rust](rs)
--  [Python](py)
+- [C++][cpp]
+- [Rust][rs]
+- [Python][py]
 
-See the [DEVELOPMENT] guide for instructions on how to setup the development environment.
+See the [DEVELOPMENT] guide
+for instructions on how to setup the development environment.
 
 [capnp]: https://github.com/unitaryfoundation/jeff/blob/main/impl/capnp/jeff.capnp
 [cpp]: https://github.com/unitaryfoundation/jeff/tree/main/impl/cpp

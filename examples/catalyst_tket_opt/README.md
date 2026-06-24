@@ -1,17 +1,19 @@
 # Optimizing Catalyst IR with TKET
 
-This example demonstrates the ability to optimize Catalyst IR through the `jeff` interchange format
-and the TKET compiler. The optimization applied to the example is Matthew Amy's
+This example demonstrates the ability to optimize Catalyst IR through the `jeff`
+interchange format and the TKET compiler.
+The optimization applied to the example is Matthew Amy's
 [phase polynomial optimization across control flow](https://dl.acm.org/doi/10.1145/3704873).
 
-The demo only involves one translation direction, since the reverse path has not been implemented
-in Catalyst/HUGR yet.
+The demo only involves one translation direction,
+since the reverse path has not been implemented in Catalyst/HUGR yet.
 
-The Catalyst converter prototype can be found [here](https://github.com/PennyLaneAI/catalyst-jeff).
-The HUGR converter prototype can be found [here](https://github.com/quantinuum/hugr-jeff).
+The Catalyst converter prototype can be found at
+[PennyLaneAI/catalyst-jeff](https://github.com/PennyLaneAI/catalyst-jeff).
+The HUGR converter prototype can be found at
+[quantinuum/hugr-jeff](https://github.com/quantinuum/hugr-jeff).
 
-
-### Catalyst MLIR
+## Catalyst MLIR
 
 Source program admitting phase optimizations through CNOT and control flow:
 
@@ -68,14 +70,12 @@ capnp decode jeff.capnp Module < catalyst_tket_opt.jeff
 The generated `jeff` is available as `catalyst_tket_opt.jeff` (encoded)
 and `catalyst_tket_opt.txt` (decoded).
 
-
 ### HUGR
-![](catalyst_tket_opt_before.svg)
 
-
+![Program graph before optimization](catalyst_tket_opt_before.svg)
 
 ### Optimization
 
 The two T gates are merged into an S gate:
 
-![](catalyst_tket_opt_after.svg)
+![Program graph after optimization](catalyst_tket_opt_after.svg)
