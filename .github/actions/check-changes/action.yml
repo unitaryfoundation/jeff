@@ -46,7 +46,7 @@ runs:
         OVERRIDE_LABEL: ${{ github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'S-run-thorough-ci-tests') }}
         DEFAULT_BRANCH: ${{ github.ref_name == github.event.repository.default_branch }}
     - if: steps.override.outputs.out != 'true'
-      uses: dorny/paths-filter@v3
+      uses: dorny/paths-filter@v4
       id: change-filters
       with:
         filters: .github/change-filters.yml
