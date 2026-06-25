@@ -21,6 +21,9 @@ outputs:
   python:
     description: "Python files have changed"
     value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.python == 'true' }}
+  markdown:
+    description: "Markdown files have changed"
+    value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.markdown == 'true' }}
 
 runs:
   using: composite
