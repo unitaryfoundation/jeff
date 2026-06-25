@@ -207,8 +207,8 @@ and generate changelog entries based on the
 [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) labels.
 Release PRs are created automatically for each package
 when new changes are merged into the `main` branch.
-Once the PR is approved by someone in the [release team](./.github/CODEOWNERS)
-and is merged, the new package is published on PyPI or crates.io as appropriate.
+Once the PR is approved by someone in the release team and subsequently merged,
+the new package is published on PyPI or crates.io as appropriate.
 
 The changelog can be manually edited before merging the release PR.
 Note however that modifying the diff
