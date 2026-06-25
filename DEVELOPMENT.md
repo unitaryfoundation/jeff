@@ -70,7 +70,6 @@ as a one-time step to allow `direnv` to trigger `nix develop` for you.
 Nix will now manage the toolchain and dev environment for you.
 
 > [!NOTE]
->
 > Unfortunately, Mac OS X also requires XCode tooling to be installed
 > and configured externally.
 > While `darwin.xcode_XX` packages exist,

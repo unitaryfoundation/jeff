@@ -65,16 +65,16 @@ To obtain the human-readable (.txt) form:
 capnp decode jeff.capnp Module < catalyst_tket_opt.jeff
 ```
 
-### Catalyst `jeff`
+## Catalyst `jeff`
 
 The generated `jeff` is available as `catalyst_tket_opt.jeff` (encoded)
 and `catalyst_tket_opt.txt` (decoded).
 
-### HUGR
+## HUGR
 
 ![Program graph before optimization](catalyst_tket_opt_before.svg)
 
-### Optimization
+## Optimization
 
 The two T gates are merged into an S gate:
 
