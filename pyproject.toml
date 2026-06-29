@@ -32,7 +32,7 @@ strict = true
 [tool.rumdl.MD013]
 line-length = 80
 reflow = true
-reflow-mode = "semantic-line-breaks"
+reflow-mode = "normalize"
 
 [tool.rumdl.MD060]
 enabled = true

@@ -1,8 +1,8 @@
 # Simple test circuit from Catalyst
 
 This example tests basic features in the Catalyst -> `jeff` conversion,
-including functions, numeric constants, quantum registers,
-and basic and parametrized gates as well as measurement.
+including functions, numeric constants, quantum registers, and basic and
+parametrized gates as well as measurement.
 
 The Catalyst converter prototype can be found at
 [PennyLaneAI/catalyst-jeff](https://github.com/PennyLaneAI/catalyst-jeff).

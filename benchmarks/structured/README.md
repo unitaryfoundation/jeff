@@ -1,20 +1,19 @@
 # Structured Benchmark Programs
 
-This directory contains a collection of benchmark programs
-that use structured control-flow primitives.
-These programs should be used as a set of challenges
+This directory contains a collection of benchmark programs that use structured
+control-flow primitives. These programs should be used as a set of challenges
 for quantum compilers to drive the development of more advanced compilation
 techniques.
 
 ## Benchmark Program Tracker
 
-This section tracks the current programs of benchmark program implementation
-and indicates important features about the provided programs.
+This section tracks the current programs of benchmark program implementation and
+indicates important features about the provided programs.
 
 ### Implemented Benchmark Programs
 
-The following table lists the currently implemented benchmark programs
-and indicates the different formats the program is available in.
+The following table lists the currently implemented benchmark programs and
+indicates the different formats the program is available in.
 
 | Program                                                        | `jeff` | OpenQASM 3                               |
 | -------------------------------------------------------------- | ------ | ---------------------------------------- |
