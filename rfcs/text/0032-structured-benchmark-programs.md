@@ -3,28 +3,25 @@
 - RFC PR:
   [unitaryfoundation/jeff#0032](https://github.com/unitaryfoundation/jeff/pull/0032)
 
-# Summary
+## Summary
 
 [summary]: #summary
 
-Quantum programs involving structured control flow operations such as `if`
-and `for` can only be represented in severely limited ways through existing
-quantum program formats.
-Qiskit does not allow dynamic qubit indexing,
-which is crucial for semantic `for` loops.
-Similarly, while OpenQASM 3 does not explicitly prohibit dynamic indexing,
-it leaves it open as an optional feature that many backends do not support.
-`jeff`, on the other hand, has the ability to represent such programs,
-making it the ideal format
-for expressing a set of structured benchmark programs.
-These programs can then be used as a set of challenges
-for quantum compilers to drive the development of more advanced compilation
+Quantum programs involving structured control flow operations such as `if` and
+`for` can only be represented in severely limited ways through existing quantum
+program formats. Qiskit does not allow dynamic qubit indexing, which is crucial
+for semantic `for` loops. Similarly, while OpenQASM 3 does not explicitly
+prohibit dynamic indexing, it leaves it open as an optional feature that many
+backends do not support. `jeff`, on the other hand, has the ability to represent
+such programs, making it the ideal format for expressing a set of structured
+benchmark programs.These programs can then be used as a set of challenges for
+quantum compilers to drive the development of more advanced compilation
 techniques.
 
 This RFC proposes to:
 
-- gather and provide a list of important patterns and algorithms
-  that contain structure and/or dynamism.
+- gather and provide a list of important patterns and algorithms that contain
+  structure and/or dynamism.
 - create a collection of artifacts representing these patterns/algorithms using
   various existing software program representations, and determine ecosystem
   support.
@@ -32,26 +29,23 @@ This RFC proposes to:
   such programs efficiently by adding support and optimizations for them to
   their toolchains.
 
-# Motivation
+## Motivation
 
 [motivation]: #motivation
 
 Many programs can be greatly simplified through the use of structured control
-flow operations.
-This includes simple loops for repeated operations,
+flow operations. This includes simple loops for repeated operations,
 conditionals to implement classically controlled quantum operations in a natural
 way, and more complex loops and control flow structures that depend on
 measurement results and access qubits dynamically.
 
 Furthermore, some programs may even *require* structured program representation
 (e.g., those where loop iterations are dynamic and dependent on measurement
-values).
-In these cases, unrolling the program into a flat sequence of gates is either
-impossible or leads to an exponential blow-up in program size.
+values). In these cases, unrolling the program into a flat sequence of gates is
+either impossible or leads to an exponential blow-up in program size.
 
 However, a large number of existing quantum compiler toolchains still do not
-support some or even all of these features.
-Proposing a set of such programs
+support some or even all of these features. Proposing a set of such programs
 as benchmarks can not only help users evaluate the capabilities of different
 toolchains, but also serve as a motivation for compiler developers to implement
 features such as the compilation of such programs *without unrolling* the
@@ -60,69 +54,62 @@ representation for quantum compilation - can they do better and result in more
 optimized programs by taking into account the additional information available
 from the structure?
 
-Furthermore, it can also increase the visibility of `jeff`
-as a quantum program format that can express these advanced features,
-encouraging more users to adopt it for their quantum programming needs.
+Furthermore, it can also increase the visibility of `jeff` as a quantum program
+format that can express these advanced features, encouraging more users to adopt
+it for their quantum programming needs.
 
-# Guide-level explanation
+## Guide-level explanation
 
 [guide-level-explanation]: #guide-level-explanation
 
-## File Locations and Formats
+### File Locations and Formats
 
 A new directory, `benchmarks/structured` is introduced in the `jeff` repository.
-It contains a set of sub-directories
-for each individual structured benchmark program.
-These sub-directories may contain implementations of the respective program in
-different *intermediate* representations, such as `jeff` or OpenQASM 3.
+It contains a set of sub-directories for each individual structured benchmark
+program. These sub-directories may contain implementations of the respective
+program in different *intermediate* representations, such as `jeff` or OpenQASM
+3.
 
-Implementations in higher-level frameworks such as Qiskit
-or PennyLane may also be included,
-but they should be actively divided specifically into the directory
+Implementations in higher-level frameworks such as Qiskit or PennyLane may also
+be included, but they should be actively divided specifically into the directory
 `benchmarks/_recipes/structured/` to indicate that they are not to be used as
-generalized benchmark formats, but rather as "recipes" for generating them.
-In this case, reprodubility of the `jeff` programs generated from them has to be
-ensured, e.g., by specifying framework versions and random seeds.
-The directory is once again subdivided into sub-directories
-for each individual structured benchmark program,
-which in turn contain an additional sub-directory
-for each development front-end used
-(e.g. `benchmarks/_recipes/structured/quantum_teleportation/qiskit/`).
+generalized benchmark formats, but rather as "recipes" for generating them. In
+this case, reprodubility of the `jeff` programs generated from them has to be
+ensured, e.g., by specifying framework versions and random seeds. The directory
+is once again subdivided into sub-directories for each individual structured
+benchmark program, which in turn contain an additional sub-directory for each
+development front-end used (e.g.
+`benchmarks/_recipes/structured/quantum_teleportation/qiskit/`).
 
-The modular directory structure allows future adaptations
-and extensions of the benchmark suite,
-either by adding other structured programs
-or by also including entirely new categories of benchmarks.
+The modular directory structure allows future adaptations and extensions of the
+benchmark suite, either by adding other structured programs or by also including
+entirely new categories of benchmarks.
 
-## Benchmark Program Structure
+### Benchmark Program Structure
 
-In cases where the programs are adaptive in their size,
-the benchmark definitions use dynamic input parameters to keep the program
-implementation agnostic of the specifically desired size.
-This may include examples such as arbitrarily sized GHZ state preparation,
-where the number of qubits is specified as an input parameter at runtime.
-Similarly, programs that require classical input data such
-as rotation angles use input parameters to allow users to specify the data at
-runtime.
-An example of this might be a VQA ansatz
-that is repeated several times using `for` loops.
+In cases where the programs are adaptive in their size, the benchmark
+definitions use dynamic input parameters to keep the program implementation
+agnostic of the specifically desired size. This may include examples such as
+arbitrarily sized GHZ state preparation, where the number of qubits is specified
+as an input parameter at runtime. Similarly, programs that require classical
+input data such as rotation angles use input parameters to allow users to
+specify the data at runtime. An example of this might be a VQA ansatz that is
+repeated several times using `for` loops.
 
-In contrast, some programs are provided with fixed sizes and parameters,
-either because they cannot easily be generalized or because they are intended
-as simpler test scenarios for basic compiler functionality.
-Examples of this include simple Quantum Teleportation programs,
-or predefined instances of Grover's search algorithm.
+In contrast, some programs are provided with fixed sizes and parameters, either
+because they cannot easily be generalized or because they are intended as
+simpler test scenarios for basic compiler functionality. Examples of this
+include simple Quantum Teleportation programs, or predefined instances of
+Grover's search algorithm.
 
-## Further Information
+### Further Information
 
 Additionally, a `README.md` file is included in the `benchmarks/structured`
-directory.
-This file provides an overview of the available benchmarks,
-including descriptions of each program
-and the structured control flow features they utilize.
-It is used to track the progress of implementing the benchmarks and serves
-as a reference for users looking to understand the capabilities of different
-quantum compilers.
+directory. This file provides an overview of the available benchmarks, including
+descriptions of each program and the structured control flow features they
+utilize. It is used to track the progress of implementing the benchmarks and
+serves as a reference for users looking to understand the capabilities of
+different quantum compilers.
 
 The README file also includes information on what particular structured control
 flow features are supported by different existing formats and toolchains,
@@ -130,11 +117,11 @@ helping users to identify which tools are best suited for the corresponding
 needs.
 
 While the desired results proposed in this RFC may not directly impact the way
-many users interact with `jeff`, they provide a valuable resource for evaluating
-and improving quantum compilers and test their compatibility with `jeff` and
-advanced quantum programming features.
+many users interact with `jeff`, they provide a valuable resource for
+evaluatingand improving quantum compilers and test their compatibility with
+`jeff` and advanced quantum programming features.
 
-# Implementation-level explanation
+## Implementation-level explanation
 
 [implementation-level-explanation]: #implementation-level-explanation
 
@@ -180,7 +167,7 @@ that follow the table.
 | VQE                                          | ✔️                       | ❌                        | ❌                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | ❌          | [Paper](https://arxiv.org/abs/1304.3061)                                                            | ✔️             | ✔️        |
 | Measurement-based quantum computation        | 🟦                       | ❌                        | 🟦                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | 🟦          | [Wikipedia](https://en.wikipedia.org/wiki/One-way_quantum_computer)                                 | ❌             | 🟦        |
 
-## Symbol Legend
+### Symbol Legend
 
 | Symbol | Description |
 | -------- | ------------- |
@@ -189,7 +176,7 @@ that follow the table.
 | 🟦 | Feature may be used depending on specific implementation |
 | ❓ | Requires some further research |
 
-### Category Details
+#### Category Details
 
 | Category                                    | Description                                                                                                         |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -206,7 +193,7 @@ that follow the table.
 
 The following sections provide more details on each program type.
 
-## Statically Bounded Loops without Dynamic Qubit Indexing
+### Statically Bounded Loops without Dynamic Qubit Indexing
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do not** depend on values computed at runtime.*
@@ -225,7 +212,7 @@ that **do not** depend on values computed at runtime.*
   and mixer Hamiltonians in a loop with a fixed number of layers.
   ([Farhi et al., 2014](https://arxiv.org/abs/1411.4028))
 
-## Statically Bounded Loops with Dynamic Qubit Indexing
+### Statically Bounded Loops with Dynamic Qubit Indexing
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do not** depend on values computed at runtime.*
@@ -252,121 +239,107 @@ the loop parameter).*
   based on [this paper](https://arxiv.org/abs/2405.11015)
   (<https://pennylane.ai/qml/demos/tutorial_xas>).
 
-## Dynamically Bounded Loops
+### Dynamically Bounded Loops
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do** depend on values computed at runtime, such as measurement outcomes.*
 *Operations may also be dynamically indexed.*
 
-- *Grover's Search with Weak Measurement*:
-  Measurements on an ancilla qubit are utilized to determine
-  whether to continue with another iteration of Grover's search or to stop
-  as amplitude amplification has succeeded.
+- *Grover's Search with Weak Measurement*: Measurements on an ancilla qubit are
+  utilized to determine whether to continue with another iteration of Grover's
+  search or to stop as amplitude amplification has succeeded.
   ([Andrés-Martínez et al.](https://iopscience.iop.org/article/10.1088/2058-9565/ac47f1/meta))
-- *Repeat-Until-Success*:
-  Specific operations are applied repeatedly
-  until a desired measurement outcome is achieved,
-  indicating that a desired complex operation has been successfully implemented.
+- *Repeat-Until-Success*: Specific operations are applied repeatedly until a
+  desired measurement outcome is achieved, indicating that a desired complex
+  operation has been successfully implemented.
 - *Quantum Metropolis Sampling*:
   [Temme et al., 2011](https://arxiv.org/abs/0911.3635)
 - *ML-QAE*: [Suzuki et al., 2020](https://arxiv.org/abs/1904.10246)
 
-## Conditionals
+### Conditionals
 
 *This class of benchmark programs utilizes conditionals (such as `if`) to
 implement protocols or algorithms.*
 
-- *Quantum Teleportation*:
-  Quantum teleportation is a canonical primitive for quantum communication
-  and distributed computing.
-  It utilizes conditionals based on measurement results to apply the appropriate
-  correction operations.
+- *Quantum Teleportation*: Quantum teleportation is a canonical primitive for
+  quantum communication and distributed computing. It utilizes conditionals
+  based on measurement results to apply the appropriate correction operations.
   ([Bennett et al., 1993](https://doi.org/10.1103/PhysRevLett.70.1895))
-- *Block Encoding*: Block encoding embeds classical data
-  or operators into quantum states.
-  It underpins advanced algorithms like QSVT.
-  It utilizes conditionals to apply different operations.
+- *Block Encoding*: Block encoding embeds classical data or operators into
+  quantum states. It underpins advanced algorithms like QSVT. It utilizes
+  conditionals to apply different operations.
   ([Quantum Singular Value Transformation (QSVT)](https://arxiv.org/abs/1806.01838),
   [Low & Chuang, 2016](https://arxiv.org/abs/1606.02685))
 
-## Mixed Control Flow
+### Mixed Control Flow
 
 *This class of benchmark programs combines loops and conditionals to implement
 more complex algorithms or protocols.*
 
-- *Quantum Multiplexers*:
-  Quantum multiplexers apply different unitary operations based on the state of
-  control qubits, effectively implementing conditionals in quantum circuits.
+- *Quantum Multiplexers*: Quantum multiplexers apply different unitary
+  operations based on the state of control qubits, effectively implementing
+  conditionals in quantum circuits.
   ([Quantum multiplexers in circuit synthesis](https://arxiv.org/abs/quant-ph/0410066))
 
-## Dynamic Qubit (Re-)Allocation
+### Dynamic Qubit (Re-)Allocation
 
 *This class of benchmark programs allocates qubits dynamically during execution,
 based on runtime conditions or within loop bodies.*
 
-- *Iterative Quantum Fourier Transform (iQFT)*:
-  Rather than allocating all qubits upfront,
-  just a single qubit is allocated at the start of execution
-  and then reset during each loop iteration of QFT.
-- *Iterative Quantum Phase Estimation (iQPE)*: Similar to iQFT,
-  iQPE allocates a single qubit
-  (in addition to the phase qubit "psi")
-  and reuses it across iterations to estimate the phase of a unitary operator.
+- *Iterative Quantum Fourier Transform (iQFT)*: Rather than allocating all
+  qubits upfront, just a single qubit is allocated at the start of execution and
+  then reset during each loop iteration of QFT.
+- *Iterative Quantum Phase Estimation (iQPE)*: Similar to iQFT, iQPE allocates a
+  single qubit (in addition to the phase qubit "psi") and reuses it across
+  iterations to estimate the phase of a unitary operator.
 - *Shor's Algorithm*: The primitives used in Shor's algorithm can similarly be
   implemented using dynamic qubit reallocation to minimize the total number of
   qubits required.
-- *Toffoli-heavy Circuits*:
-  Toffoli gates in quantum circuits can be implemented more efficiently using
-  ancilla qubits.
-  Circuits using a larger number of Toffoli gates,
-  such as many arithmetic circuits,
-  can benefit from dynamic qubit allocation to allocate
-  and deallocate ancilla qubits repeatedly inside loop bodies.
+- *Toffoli-heavy Circuits*: Toffoli gates in quantum circuits can be implemented
+  more efficiently using ancilla qubits. Circuits using a larger number of
+  Toffoli gates, such as many arithmetic circuits, can benefit from dynamic
+  qubit allocation to allocate and deallocate ancilla qubits repeatedly inside
+  loop bodies.
 
-## Loosely Coupled Hybrid Programs
+### Loosely Coupled Hybrid Programs
 
 *Variational and hybrid algorithms naturally combine quantum circuits with
-classical optimization loops.*
-*They are loosely coupled because the quantum and classical parts interact only
-at well-defined synchronization points.*
+classical optimization loops.* *They are loosely coupled because the quantum and
+classical parts interact only at well-defined synchronization points.*
 
-- *VQE*: A variational quantum eigensolver algorithm
-  that uses a classical optimizer to minimize the energy of a parameterized
-  quantum circuit which implements several iterations of some ansatz.
+- *VQE*: A variational quantum eigensolver algorithm that uses a classical
+  optimizer to minimize the energy of a parameterized quantum circuit which
+  implements several iterations of some ansatz.
   ([Peruzzo et al., 2014](https://arxiv.org/abs/1304.3061))
-- *QAOA*: A quantum approximate optimization algorithm
-  that uses a classical optimizer to find optimal parameters
-  for a parameterized quantum circuit.
-  It iteratively applies a "problem" and "mixer" operator using loop structures.
+- *QAOA*: A quantum approximate optimization algorithm that uses a classical
+  optimizer to find optimal parameters for a parameterized quantum circuit. It
+  iteratively applies a "problem" and "mixer" operator using loop structures.
   ([Farhi et al., 2014](https://arxiv.org/abs/1411.4028))
 
-## Fault-Tolerant State Preparation and Error Correction
+### Fault-Tolerant State Preparation and Error Correction
 
 *Quantum Error Correction (QEC) is one of the most important applications of
-structured control flow in quantum computing.*
-*These benchmark programs implement QEC protocols that involve structured
-operations at any point in the program.*
+structured control flow in quantum computing.* *These benchmark programs
+implement QEC protocols that involve structured operations at any point in the
+program.*
 
-- *Magic State Distillation*:
-  Magic state distillation protocols utilize loops
-  and conditionals to iteratively improve the fidelity of magic states,
-  which are essential for fault-tolerant quantum computing.
+- *Magic State Distillation*: Magic state distillation protocols utilize loops
+  and conditionals to iteratively improve the fidelity of magic states, which
+  are essential for fault-tolerant quantum computing.
   ([Bravyi & Kitaev, 2005](https://arxiv.org/abs/quant-ph/0403025))
-- *Logical Sate Preparation*:
-  Preparing logical qubits in specific states using QEC codes involves
-  structured operations to ensure fault tolerance.
-- *Syndrome Measurement and Correction*:
-  QEC protocols involve measuring error syndromes
-  and applying corrections based on the measurement outcomes,
+- *Logical Sate Preparation*: Preparing logical qubits in specific states using
+  QEC codes involves structured operations to ensure fault tolerance.
+- *Syndrome Measurement and Correction*: QEC protocols involve measuring error
+  syndromes and applying corrections based on the measurement outcomes,
   utilizing conditionals to determine the appropriate corrective actions.
 
 ---
 
-Each of the benchmark programs listed above should be implemented individually
-to achieve a comprehensive suite that covers a wide range of structured control
+Each of the benchmark programs listed above should be implemented individuall to
+achieve a comprehensive suite that covers a wide range of structured control
 flow scenarios.
 
-# Drawbacks
+## Drawbacks
 
 [drawbacks]: #drawbacks
 
@@ -381,112 +354,97 @@ There are several potential drawbacks to consider with this proposal:
 - Limited Adoption: If the benchmarks are not widely adopted by the quantum
   computing community, their impact may be limited, reducing the incentive for
   compiler developers to implement support for structured control flow.
-- Comparisons are not simple: For users,
-  it might not be straightforward to know what to compare against
-  when compiling these structured programs.
-  For a full, fair evaluation,
-  a meaningful baseline needs to be established and a more precise methodology
-  for comparison is likely necessary.
+- Comparisons are not simple: For users, it might not be straightforward to know
+  what to compare against when compiling these structured programs. For a full,
+  fair evaluation, a meaningful baseline needs to be established and a more
+  precise methodology for comparison is likely necessary.
 
-# Rationale and alternatives
+## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
 Potential alternatives include:
 
-- *Implementing structured benchmarks using OpenQASM 3*:
-  While it is possible to represent all desired structured program features in
-  OpenQASM 3, many of these features are only optional and not widely supported
-  by existing backends.
+- *Implementing structured benchmarks using OpenQASM 3*: While it is possible to
+  represent all desired structured program features in OpenQASM 3, many of these
+  features are only optional and not widely supported by existing backends.
   Furthermore, using such a representation runs the risk of larger specification
   changes in the future that could break compatibility.
-- *Using more involved quantum programming frameworks like PennyLane*:
-  While frameworks like PennyLane can express structured quantum programs,
-  they often come with additional abstractions and dependencies
-  that are not easily translatable to arbitrary other representations.
-  As the goal of `jeff` is to be a widely compatible exchange format,
-  it mitigates this risk by allowing easier compatibility with different
-  representations.
-- *Not implementing structured benchmarks at all*: Sooner or later,
-  the quantum computing community will need to address the challenges of
-  structured control flow in quantum programs.
-  By not providing a benchmark suite,
-  we risk slowing down the progress in this area
-  and missing out on opportunities to drive compiler development.
+- *Using more involved quantum programming frameworks like PennyLane*: While
+  frameworks like PennyLane can express structured quantum programs, they often
+  come with additional abstractions and dependencies that are not easily
+  translatable to arbitrary other representations. As the goal of `jeff` is to
+  be a widely compatible exchange format, it mitigates this risk by allowing
+  easier compatibility with different representations.
+- *Not implementing structured benchmarks at all*: Sooner or later, the quantum
+  computing community will need to address the challenges of structured control
+  flow in quantum programs. By not providing a benchmark suite, we risk slowing
+  down the progress in this area and missing out on opportunities to drive
+  compiler development.
 
-As the reasoning above shows,
-the proposed design of structured benchmark programs in `jeff` is the most
-effective way to address the need for evaluating and improving quantum
-compilers' support for advanced control flow features.
+As the reasoning above shows, the proposed design of structured benchmark
+programs in `jeff` is the most effective way to address the need for evaluating
+and improving quantum compilers' support for advanced control flow features.
 
-# Prior art
+## Prior art
 
 [prior-art]: #prior-art
 
 A variety of benchmark suites exist already in the quantum computing community,
 such as:
 
-- [UCC Bench](https://github.com/unitaryfoundation/ucc-bench):
-  A command-line utility designed to benchmark
-  and compare the performance of various quantum compilers,
-  with a particular focus on the ucc compiler.
-- [MQT Bench](https://github.com/munich-quantum-toolkit/bench):
-  A collection of benchmark circuits in qiskit format to evaluate quantum
-  software tools.
-- [metriq-gym](https://github.com/unitaryfoundation/metriq-gym):
-  A framework for implementing and running standard quantum benchmarks.
+- [UCC Bench](https://github.com/unitaryfoundation/ucc-bench): A command-line
+  utility designed to benchmark and compare the performance of various quantum
+  compilers, with a particular focus on the ucc compiler.
+- [MQT Bench](https://github.com/munich-quantum-toolkit/bench): A collection of
+  benchmark circuits in qiskit format to evaluate quantum software tools.
+- [metriq-gym](https://github.com/unitaryfoundation/metriq-gym): A framework for
+  implementing and running standard quantum benchmarks.
 
-While many of these benchmark suites are widely used
-and provide valuable insights into quantum compiler performance,
-they often lack support for structured control flow features such
-as dynamic loops and conditionals.
+While many of these benchmark suites are widely used and provide valuable
+insights into quantum compiler performance, they often lack support for
+structured control flow features such as dynamic loops and conditionals.
 
-To the best of our knowledge,
-there is currently no widely adopted benchmark suite
-that specifically targets the evaluation of quantum compilers' support
-for structured control flow operations,
-although the topic has been discussed in various community gatherings
-and conferences.
+To the best of our knowledge, there is currently no widely adopted benchmark
+suite that specifically targets the evaluation of quantum compilers' support for
+structured control flow operations, although the topic has been discussed in
+various community gatherings and conferences.
 
-# Unresolved questions
+## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-- Are there any additional structured benchmark programs
-  that should be included in the initial release?
-- How do we define and/or produce these programs?
-  What development "front end" should be used?
+- Are there any additional structured benchmark programs that should be included
+  in the initial release?
+- How do we define and/or produce these programs? What development "front end"
+  should be used?
 - How can we best facilitate the adoption of these benchmarks by the quantum
   computing community?
 - Does `jeff` already support all necessary features to accurately represent the
   proposed structured benchmark programs?
-- In setting a compilation challenge,
-  what is the benchmark for compilation of these *unrolled* programs
-  (where possible) that a user should compare against?
+- In setting a compilation challenge, what is the benchmark for compilation of
+  these *unrolled* programs (where possible) that a user should compare against?
 
-# Future possibilities
+## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
-As the field of quantum computing continues to evolve,
-there are several potential future directions
-for the structured benchmark programs:
+As the field of quantum computing continues to evolve, there are several
+potential future directions for the structured benchmark programs:
 
-- Addition of further benchmark programs:
-  As structured control flow becomes more prevalent in quantum programming,
-  new algorithms may emerge that utilize these features in novel ways.
-  The benchmark suite can be expanded to include these new algorithms,
-  providing a more comprehensive evaluation of compiler capabilities.
-- Addition of further types of structured control flow:
-  Additional benchmark programs may be defined
-  that include further features from classical programming,
-  such as `switch` statements, more complex data structures, exception handling,
-  concurrency, or even function calls and recursion.
-  These features could further challenge quantum compilers
-  and drive advancements in their capabilities.
+- Addition of further benchmark programs: As structured control flow becomes
+  more prevalent in quantum programming, new algorithms may emerge that utilize
+  these features in novel ways. The benchmark suite can be expanded to include
+  these new algorithms, providing a more comprehensive evaluation of compiler
+  capabilities.
+- Addition of further types of structured control flow: Additional benchmark
+  programs may be defined that include further features from classical
+  programming, such as `switch` statements, more complex data structures,
+  exception handling, concurrency, or even function calls and recursion. These
+  features could further challenge quantum compilers and drive advancements in
+  their capabilities.
 
 For the time being, it should already be more than sufficient to cover the types
-of programs listed above.
-The goal should be, first and foremost,
-to quickly and efficiently set up a solid foundation
-for the development of compilers with structured control flow support.
+of programs listed above. The goal should be, first and foremost, to quickly and
+efficiently set up a solid foundation for the development of compilers with
+structured control flow support.
