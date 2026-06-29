@@ -1,6 +1,6 @@
 # `jeff` Specification
 
-This document describes the `jeff` quantum program format—
+This document describes the `jeff` quantum program format —
 a binary exchange format for quantum programs designed for efficiency
 and compiler interoperability.
 The format is defined using [Cap'n Proto](https://capnproto.org),
@@ -135,7 +135,7 @@ enabling representation of quantum-classical hybrid algorithms.
   (satisfying the no-cloning and no-deleting theorems of quantum mechanics).
   Structurally, a `qubit` value must be used exactly once as an input
   after being produced as an output.
-- `qureg`: A quantum register—a dynamically sized array of qubits.
+- `qureg`: A quantum register — a dynamically sized array of qubits.
   Also treated linearly: the entire register must be used exactly once.
   The length of a quantum register is not known at compile time,
   but can be queried at runtime.

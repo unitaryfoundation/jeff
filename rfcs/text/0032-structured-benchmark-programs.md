@@ -3,7 +3,7 @@
 - RFC PR:
   [unitaryfoundation/jeff#0032](https://github.com/unitaryfoundation/jeff/pull/0032)
 
-# Summary
+## Summary
 
 [summary]: #summary
 
@@ -32,7 +32,7 @@ This RFC proposes to:
   such programs efficiently by adding support and optimizations for them to
   their toolchains.
 
-# Motivation
+## Motivation
 
 [motivation]: #motivation
 
@@ -64,11 +64,11 @@ Furthermore, it can also increase the visibility of `jeff`
 as a quantum program format that can express these advanced features,
 encouraging more users to adopt it for their quantum programming needs.
 
-# Guide-level explanation
+## Guide-level explanation
 
 [guide-level-explanation]: #guide-level-explanation
 
-## File Locations and Formats
+### File Locations and Formats
 
 A new directory, `benchmarks/structured` is introduced in the `jeff` repository.
 It contains a set of sub-directories
@@ -94,7 +94,7 @@ and extensions of the benchmark suite,
 either by adding other structured programs
 or by also including entirely new categories of benchmarks.
 
-## Benchmark Program Structure
+### Benchmark Program Structure
 
 In cases where the programs are adaptive in their size,
 the benchmark definitions use dynamic input parameters to keep the program
@@ -113,7 +113,7 @@ as simpler test scenarios for basic compiler functionality.
 Examples of this include simple Quantum Teleportation programs,
 or predefined instances of Grover's search algorithm.
 
-## Further Information
+### Further Information
 
 Additionally, a `README.md` file is included in the `benchmarks/structured`
 directory.
@@ -134,7 +134,7 @@ many users interact with `jeff`, they provide a valuable resource for evaluating
 and improving quantum compilers and test their compatibility with `jeff` and
 advanced quantum programming features.
 
-# Implementation-level explanation
+## Implementation-level explanation
 
 [implementation-level-explanation]: #implementation-level-explanation
 
@@ -180,7 +180,7 @@ that follow the table.
 | VQE                                          | ✔️                       | ❌                        | ❌                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | ❌          | [Paper](https://arxiv.org/abs/1304.3061)                                                            | ✔️             | ✔️        |
 | Measurement-based quantum computation        | 🟦                       | ❌                        | 🟦                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | 🟦          | [Wikipedia](https://en.wikipedia.org/wiki/One-way_quantum_computer)                                 | ❌             | 🟦        |
 
-## Symbol Legend
+### Symbol Legend
 
 | Symbol | Description |
 | -------- | ------------- |
@@ -189,7 +189,7 @@ that follow the table.
 | 🟦 | Feature may be used depending on specific implementation |
 | ❓ | Requires some further research |
 
-### Category Details
+#### Category Details
 
 | Category                                    | Description                                                                                                         |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -206,7 +206,7 @@ that follow the table.
 
 The following sections provide more details on each program type.
 
-## Statically Bounded Loops without Dynamic Qubit Indexing
+### Statically Bounded Loops without Dynamic Qubit Indexing
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do not** depend on values computed at runtime.*
@@ -225,7 +225,7 @@ that **do not** depend on values computed at runtime.*
   and mixer Hamiltonians in a loop with a fixed number of layers.
   ([Farhi et al., 2014](https://arxiv.org/abs/1411.4028))
 
-## Statically Bounded Loops with Dynamic Qubit Indexing
+### Statically Bounded Loops with Dynamic Qubit Indexing
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do not** depend on values computed at runtime.*
@@ -252,7 +252,7 @@ the loop parameter).*
   based on [this paper](https://arxiv.org/abs/2405.11015)
   (<https://pennylane.ai/qml/demos/tutorial_xas>).
 
-## Dynamically Bounded Loops
+### Dynamically Bounded Loops
 
 *This class of benchmark programs utilizes loops (such as `for` and `while`)
 that **do** depend on values computed at runtime, such as measurement outcomes.*
@@ -271,7 +271,7 @@ that **do** depend on values computed at runtime, such as measurement outcomes.*
   [Temme et al., 2011](https://arxiv.org/abs/0911.3635)
 - *ML-QAE*: [Suzuki et al., 2020](https://arxiv.org/abs/1904.10246)
 
-## Conditionals
+### Conditionals
 
 *This class of benchmark programs utilizes conditionals (such as `if`) to
 implement protocols or algorithms.*
@@ -289,7 +289,7 @@ implement protocols or algorithms.*
   ([Quantum Singular Value Transformation (QSVT)](https://arxiv.org/abs/1806.01838),
   [Low & Chuang, 2016](https://arxiv.org/abs/1606.02685))
 
-## Mixed Control Flow
+### Mixed Control Flow
 
 *This class of benchmark programs combines loops and conditionals to implement
 more complex algorithms or protocols.*
@@ -299,7 +299,7 @@ more complex algorithms or protocols.*
   control qubits, effectively implementing conditionals in quantum circuits.
   ([Quantum multiplexers in circuit synthesis](https://arxiv.org/abs/quant-ph/0410066))
 
-## Dynamic Qubit (Re-)Allocation
+### Dynamic Qubit (Re-)Allocation
 
 *This class of benchmark programs allocates qubits dynamically during execution,
 based on runtime conditions or within loop bodies.*
@@ -323,7 +323,7 @@ based on runtime conditions or within loop bodies.*
   can benefit from dynamic qubit allocation to allocate
   and deallocate ancilla qubits repeatedly inside loop bodies.
 
-## Loosely Coupled Hybrid Programs
+### Loosely Coupled Hybrid Programs
 
 *Variational and hybrid algorithms naturally combine quantum circuits with
 classical optimization loops.*
@@ -340,7 +340,7 @@ at well-defined synchronization points.*
   It iteratively applies a "problem" and "mixer" operator using loop structures.
   ([Farhi et al., 2014](https://arxiv.org/abs/1411.4028))
 
-## Fault-Tolerant State Preparation and Error Correction
+### Fault-Tolerant State Preparation and Error Correction
 
 *Quantum Error Correction (QEC) is one of the most important applications of
 structured control flow in quantum computing.*
@@ -366,7 +366,7 @@ Each of the benchmark programs listed above should be implemented individually
 to achieve a comprehensive suite that covers a wide range of structured control
 flow scenarios.
 
-# Drawbacks
+## Drawbacks
 
 [drawbacks]: #drawbacks
 
@@ -388,7 +388,7 @@ There are several potential drawbacks to consider with this proposal:
   a meaningful baseline needs to be established and a more precise methodology
   for comparison is likely necessary.
 
-# Rationale and alternatives
+## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
@@ -419,7 +419,7 @@ the proposed design of structured benchmark programs in `jeff` is the most
 effective way to address the need for evaluating and improving quantum
 compilers' support for advanced control flow features.
 
-# Prior art
+## Prior art
 
 [prior-art]: #prior-art
 
@@ -448,7 +448,7 @@ for structured control flow operations,
 although the topic has been discussed in various community gatherings
 and conferences.
 
-# Unresolved questions
+## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
@@ -464,7 +464,7 @@ and conferences.
   what is the benchmark for compilation of these *unrolled* programs
   (where possible) that a user should compare against?
 
-# Future possibilities
+## Future possibilities
 
 [future-possibilities]: #future-possibilities
 

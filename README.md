@@ -24,7 +24,7 @@ for compilers to communicate.
   transform, and export.
 
 - **Extensible by design**:
-  The `jeff` schema is designed to allow maximum extensibility --- it can be
+  The `jeff` schema is designed to allow maximum extensibility — it can be
   easily extended with new features or metadata, ensuring it can grow with the
   field.
 

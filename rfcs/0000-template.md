@@ -6,13 +6,13 @@
   [unitaryfoundation/jeff#0000](https://github.com/unitaryfoundation/jeff/issues/0000)
   (if applicable)
 
-# Summary
+## Summary
 
 [summary]: #summary
 
 One paragraph explanation of the feature.
 
-# Motivation
+## Motivation
 
 [motivation]: #motivation
 
@@ -28,7 +28,7 @@ This can then be used to guide the design of the feature.
 This section is one of the most important sections of any RFC,
 and can be lengthy.
 
-# Guide-level explanation
+## Guide-level explanation
 
 [guide-level-explanation]: #guide-level-explanation
 
@@ -50,7 +50,7 @@ and give examples of its concrete impact.
 For policy RFCs, this section should provide an example-driven introduction to
 the policy, and explain its impact in concrete terms.
 
-# Implementation-level explanation
+## Implementation-level explanation
 
 [implementation-level-explanation]: #implementation-level-explanation
 
@@ -66,13 +66,13 @@ Explain the design in sufficient detail that:
 The section should return to the examples given in the previous section,
 and explain more fully how the detailed proposal makes those examples work.
 
-# Drawbacks
+## Drawbacks
 
 [drawbacks]: #drawbacks
 
 Why should we *not* do this?
 
-# Rationale and alternatives
+## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
@@ -83,7 +83,7 @@ Why should we *not* do this?
 - If this is a schema change,
   how common is the use case and how likely is it to be used by other users?
 
-# Prior art
+## Prior art
 
 [prior-art]: #prior-art
 
@@ -111,7 +111,7 @@ Please also take into consideration
 that `jeff` sometimes intentionally diverges from common program
 representations.
 
-# Unresolved questions
+## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
@@ -123,7 +123,7 @@ representations.
   that could be addressed in the future independently of the solution
   that comes out of this RFC?
 
-# Future possibilities
+## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
