@@ -17,8 +17,6 @@ The HUGR converter prototype can be found at
 
 Source program admitting phase optimizations through CNOT and control flow:
 
-<!-- rumdl-disable MD013 -->
-
 ```mlir
 func.func @optimize_me() -> (i1, i1) {
     %c0 = arith.constant 0 : i64
@@ -54,8 +52,6 @@ func.func @optimize_me() -> (i1, i1) {
     func.return %m1, %m2 : i1, i1
 }
 ```
-
-<!-- rumdl-disable MD013 -->
 
 This input can be run through Catalyst's `opt` tool to generate the encoded IR:
 
