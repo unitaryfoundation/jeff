@@ -8,7 +8,7 @@ lint = [
     "ruff~=0.12.10",
     "mypy~=1.17",
     "nb-clean~=4.0.1",
-    "rumdl~=0.2.22",
+    "rumdl~=0.2.26",
 ]
 test = [
     "ipykernel~=6.29",

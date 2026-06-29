@@ -121,8 +121,8 @@ and may be implemented with the goal of eventual inclusion into `jeff`.
 [Implementing an RFC]: #implementing-an-rfc
 
 If the RFC requires changes to be made in the repository,
-an associated issue for the RFC's implementation will be created in the
-[`jeff` repository].
+an associated issue for the RFC's implementation will be created in the [`jeff`
+repository].
 
 The author of an RFC is not obligated to implement it.
 Of course, the RFC author

@@ -431,8 +431,8 @@ such as:
   and compare the performance of various quantum compilers,
   with a particular focus on the ucc compiler.
 - [MQT Bench](https://github.com/munich-quantum-toolkit/bench):
-  A collection of benchmark circuits in qiskit format to evaluate quantum
-  software tools.
+  A collection of benchmark circuits in qiskit format to evaluate quantum software
+  tools.
 - [metriq-gym](https://github.com/unitaryfoundation/metriq-gym):
   A framework for implementing and running standard quantum benchmarks.
 
