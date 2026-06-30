@@ -25,3 +25,6 @@ python: &python
   - "uv.lock"
   - "examples/**/*.py"
   - "examples/**/*.ipynb"
+
+markdown: &markdown
+  - "*.md"
