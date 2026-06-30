@@ -23,7 +23,7 @@ maintainers.
 - [Before creating an RFC]
 - [What the process is]
 - [Implementing an RFC]
-- [Help this is all too informal!]
+- [Help this is all too informal]
 - [License]
 
 ## When you need to follow this process
@@ -115,7 +115,7 @@ the RFC has been accepted.
 
 ### Help this is all too informal
 
-[Help this is all too informal!]: #help-this-is-all-too-informal
+[Help this is all too informal]: #help-this-is-all-too-informal
 
 The process is intended to be as lightweight as reasonable for the present
 circumstances. As usual, we are trying to let the process be driven by consensus
