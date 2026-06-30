@@ -1,31 +1,12 @@
 #![allow(missing_docs)]
-use jeff::reader::ReadJeff;
-use jeff::Jeff;
-use std::fs::File;
 use std::path::Path;
-use verifier::{verify_module, VerificationError};
+use verifier::{verify_file, VerificationError};
 
 fn load_negative(name: &str) -> Vec<VerificationError> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/negative")
         .join(name);
-    let file = File::open(&path).unwrap_or_else(|_| panic!("missing fixture: {path:?}"));
-    verify_module(
-        Jeff::read(file)
-            .expect("failed to parse jeff file")
-            .module(),
-    )
-}
-
-#[test]
-fn missing_version() {
-    let errors = load_negative("missing_version.jeff");
-    assert!(
-        errors
-            .iter()
-            .any(|e| matches!(e, VerificationError::MissingVersion)),
-        "expected MissingVersion, got: {errors:?}"
-    );
+    verify_file(&path)
 }
 
 #[test]

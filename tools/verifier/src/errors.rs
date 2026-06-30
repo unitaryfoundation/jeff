@@ -3,9 +3,6 @@ use std::fmt;
 /// An error detected during verification of a jeff module.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VerificationError {
-    /// The module version is unset (0.0.0).
-    MissingVersion,
-
     /// The module version is set but does not match the version supported by this verifier.
     IncompatibleVersion,
 
@@ -90,9 +87,6 @@ pub enum VerificationError {
 impl fmt::Display for VerificationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::MissingVersion => {
-                write!(f, "module version is unset (0.0.0)")
-            }
             Self::IncompatibleVersion => {
                 write!(f, "module version is incompatible with the jeff program")
             }

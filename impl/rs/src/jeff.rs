@@ -39,7 +39,7 @@ impl<'a> Jeff<'a> {
     pub const VERSION: semver::Version = crate::SCHEMA_VERSION;
 
     /// The minimum version of the jeff format supported by this reader.
-    pub const MIN_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 0, 0);
+    pub const MIN_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 3, 0);
     /// The maximum version of the jeff format supported by this reader.
     pub const MAX_COMPATIBLE_VERSION: semver::Version = semver::Version::new(0, 3, u64::MAX);
 

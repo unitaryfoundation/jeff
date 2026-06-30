@@ -1,32 +1,19 @@
 #![allow(missing_docs)]
-use jeff::reader::ReadJeff;
-use jeff::Jeff;
-use std::fs::File;
 use std::path::Path;
-use verifier::{verify_module, VerificationError};
+use verifier::{verify_file, VerificationError};
 
 fn load_positive(name: &str) -> Vec<VerificationError> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/positive")
         .join(name);
-    let file = File::open(&path).unwrap_or_else(|_| panic!("missing fixture: {path:?}"));
-    verify_module(
-        Jeff::read(file)
-            .expect("failed to parse jeff file")
-            .module(),
-    )
+    verify_file(&path)
 }
 
 fn load_example(rel: &str) -> Vec<VerificationError> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../examples")
         .join(rel);
-    let file = File::open(&path).unwrap_or_else(|_| panic!("missing example: {path:?}"));
-    verify_module(
-        Jeff::read(file)
-            .expect("failed to parse jeff file")
-            .module(),
-    )
+    verify_file(&path)
 }
 
 // positive tests
