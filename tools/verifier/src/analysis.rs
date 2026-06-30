@@ -52,13 +52,9 @@ fn collect_cf_value_stats(
         ControlFlowOp::For { region } => {
             collect_value_stats(*region, stats)?;
         }
-        ControlFlowOp::While { condition, body } => {
-            collect_value_stats(*condition, stats)?;
-            collect_value_stats(*body, stats)?;
-        }
-        ControlFlowOp::DoWhile { body, condition } => {
-            collect_value_stats(*body, stats)?;
-            collect_value_stats(*condition, stats)?;
+        ControlFlowOp::While { before, after } => {
+            collect_value_stats(*before, stats)?;
+            collect_value_stats(*after, stats)?;
         }
         ControlFlowOp::Switch(switch_op) => {
             for branch in switch_op.branches() {

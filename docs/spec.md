@@ -70,7 +70,7 @@ The `Function` struct includes:
   partial order is defined. Cycles in the dataflow graph are invalid.
   Lower-level tools may choose a specific execution order as long as
   dependencies are respected. Regions used in control flow operations (such as
-  `switch`, `for`, `while`, `doWhile`) are themselves dataflow graphs, and their
+  `switch`, `for`, `while`) are themselves dataflow graphs, and their
   inputs/outputs are wired according to the control flow operation's semantics.
 - `Op`: A single operation in the dataflow graph. Consumes `inputs` and produces
   `outputs`, which are indices into the function's `values` list. The specific
@@ -269,10 +269,10 @@ format's needs. Structured control flow operations include:
   a region (dataflow graph) whose inputs and outputs are determined by the
   control flow operation.
 - `for`: Classic for-loop that iterates from a start to a stop value with a
-  given step. Passes a loop state through its body `Region` (dataflow graph) on
+  given step. Passes a loop state through its `body` region (dataflow graph) on
   each iteration.
-- `while` / `doWhile`: Looping constructs that execute a `body` region (dataflow
-  graph) as long as a `condition` region evaluates to true.
+- `while`: Looping constructs that execute an `after` region (dataflow graph) as
+  long as a `before` region evaluates to true.
 
 ### Function Calls (`FuncOp`)
 

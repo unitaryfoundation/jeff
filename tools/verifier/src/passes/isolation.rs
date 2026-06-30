@@ -64,13 +64,9 @@ fn check_cf_isolation(
         ControlFlowOp::For { region } => {
             check_region_isolation(*region, outer_values, errors);
         }
-        ControlFlowOp::While { condition, body } => {
-            check_region_isolation(*condition, outer_values, errors);
-            check_region_isolation(*body, outer_values, errors);
-        }
-        ControlFlowOp::DoWhile { body, condition } => {
-            check_region_isolation(*body, outer_values, errors);
-            check_region_isolation(*condition, outer_values, errors);
+        ControlFlowOp::While { before, after } => {
+            check_region_isolation(*before, outer_values, errors);
+            check_region_isolation(*after, outer_values, errors);
         }
         ControlFlowOp::Switch(switch_op) => {
             for branch in switch_op.branches() {

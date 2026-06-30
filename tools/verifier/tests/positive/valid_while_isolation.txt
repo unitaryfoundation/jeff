@@ -1,5 +1,5 @@
 ( version = 0,
-  versionMinor = 2,
+  versionMinor = 3,
   versionPatch = 0,
   functions = [
     ( name = 0,
@@ -13,14 +13,14 @@
             ( inputs = [0],
               outputs = [1],
               instruction = (scf = (while = (
-                condition = (
+                before = (
                   sources = [2],
-                  targets = [3],
+                  targets = [3, 3],
                   operations = [
                     ( inputs = [2],
                       outputs = [3],
                       instruction = (int = (not = void)) ) ] ),
-                body = (
+                after = (
                   sources = [4],
                   targets = [5],
                   operations = [

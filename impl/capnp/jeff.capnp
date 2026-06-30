@@ -16,7 +16,7 @@ const schemaVersionMajor: UInt32 = 0;
 # Changelog: https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md
 #
 # Forms a semver version triplet with `schemaVersionMinor` and `schemaVersionPatch`.
-const schemaVersionMinor: UInt32 = 2;
+const schemaVersionMinor: UInt32 = 3;
 # The minor version of the format.
 #
 # Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionPatch`.
@@ -1434,61 +1434,31 @@ struct ScfOp {
         while :group {
             # While loop.
             #
-            # The condition is checked before each iteration.
-            # If the condition is true, the loop body is executed.
+            # The `before` region is executed at least once.
+            # If the condition is true, the `after` region is executed.
             # The loop maintains a state consisting of any number of values.
-            # Each iteration receives the state from the previous iteration,
+            # The `before` region receives the state from the `after` region,
             # or the initial state for the first iteration.
-            # When the loop finishes, the final state is returned.
+            # The `after` region receives the state from the `before` region.
+            # When the loop finishes, the final state is returned by the `before` region.
             #
             # Inputs:
-            # - `... state`: Any number of values that are passed to the condition and body.
+            # - `... inputs`: Any number of values that are passed to the `before` region.
             #
             # Outputs:
-            # - `... state`: Any number of values that are returned from the body.
+            # - `... outputs`: Any number of values that are returned from the `before` region.
 
-            condition @3 :Region;
-            # The condition region that determines whether to continue looping.
+            before @3 :Region;
+            # The region that evaluates whether the condition is met.
             #
-            # The region must have the signature `(... state) -> (int(1))`.
-            # The output is the condition result - true to continue, false to stop.
-            # The condition can only evaluate the state, not modify it.
+            # The region must have the signature `(... inputs) -> (int(1), ... outputs)`.
+            # If the condition is met, the `after` region is executed with the outputs.
+            # If the condition is not met, the operation returns the outputs.
 
-            body @4 :Region;
-            # The body region that is executed on each iteration.
+            after @4 :Region;
+            # The region that is executed if the condition is true.
             #
-            # The region must have the signature `(... state) -> (... state)`.
-            # The outputs are passed as inputs to the condition region for the next iteration.
-        }
-
-        doWhile :group {
-            # Do-while loop.
-            #
-            # The loop body is executed once, then the condition is checked.
-            # If the condition is true, the loop body is executed again.
-            # The loop maintains a state consisting of any number of values.
-            # Each iteration receives the state from the previous iteration,
-            # or the initial state for the first iteration.
-            # When the loop finishes, the final state is returned.
-            #
-            # Inputs:
-            # - `... state`: Any number of values that are passed to the condition and body.
-            #
-            # Outputs:
-            # - `... state`: Any number of values that are returned from the body.
-
-            body @5 :Region;
-            # The body region that is executed on each iteration.
-            #
-            # The region must have the signature `(... state) -> (... state)`.
-            # The outputs are passed as inputs to the condition region for the current iteration.
-
-            condition @6 :Region;
-            # The condition region that determines whether to continue looping.
-            #
-            # The region must have the signature `(... state) -> (int(1))`.
-            # The output is the condition result - true to continue, false to stop.
-            # The condition can only evaluate the state, not modify it.
+            # The region must have the signature `(... outputs) -> (... inputs)`.
         }
     }
 }

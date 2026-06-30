@@ -949,9 +949,9 @@ class FunctionDef(JeffFunc):
                         regions.append(data.default)
                 elif isinstance(data, ForSCF):
                     regions.append(data.body)
-                elif isinstance(data, (WhileSCF, DoWhileSCF)):
-                    regions.append(data.condition)
-                    regions.append(data.body)
+                elif isinstance(data, WhileSCF):
+                    regions.append(data.before)
+                    regions.append(data.after)
 
         return values
 
@@ -1222,9 +1222,9 @@ class JeffModule:
                         regions.append(data.default)
                 elif isinstance(data, ForSCF):
                     regions.append(data.body)
-                elif isinstance(data, (WhileSCF, DoWhileSCF)):
-                    regions.append(data.condition)
-                    regions.append(data.body)
+                elif isinstance(data, WhileSCF):
+                    regions.append(data.before)
+                    regions.append(data.after)
 
         return list(strings)
 
@@ -1643,7 +1643,6 @@ class JeffSCF(ABC):
             "switch": SwitchSCF,
             "for": ForSCF,
             "while": WhileSCF,
-            "doWhile": DoWhileSCF,
         }[str(scf.which)]
         obj = cls.__new__(cls)
         obj._raw_data = scf
@@ -1822,18 +1821,23 @@ class ForSCF(JeffSCF):
 
 class WhileSCF(JeffSCF):
     """While-loop specialization of the JeffSCF instruction data class.
-    While loop operations contain two regions: a condition region and a body region.
-    The condition region is executed before each iteration and accepts the state as input, but
-    only produces a bool as output. The body region takes the same state as input and output."""
+    While loop operations contain two regions: a `before` region and an `after` region.
+    The `before` region is executed at least once.
+    If the condition is true, the `after` region is executed.
+    The loop maintains a state consisting of any number of values.
+    The `before` region receives the state from the `after` region,
+    or the initial state for the first iteration.
+    The `after` region receives the state from the `before` region.
+    When the loop finishes, the final state is returned by the `before` region."""
 
-    _condition: JeffRegion = _Empty
-    _body: JeffRegion = _Empty
+    _before: JeffRegion = _Empty
+    _after: JeffRegion = _Empty
 
-    def __init__(self, condition: JeffRegion, body: JeffRegion):
-        condition._parent = self
-        self._condition = condition
-        body._parent = self
-        self._body = body
+    def __init__(self, before: JeffRegion, after: JeffRegion):
+        before._parent = self
+        self._before = before
+        after._parent = self
+        self._after = after
         self._mark_dirty()
 
     def _refresh(self, new_data: schema.ScfOp.Builder, string_table: list[str]):
@@ -1843,92 +1847,11 @@ class WhileSCF(JeffSCF):
         """
         whileloop = new_data.init("while")
 
-        _condition = self.condition
-        _condition._refresh(whileloop.condition, string_table)
+        _before = self.before
+        _before._refresh(whileloop.before, string_table)
 
-        _body = self.body
-        _body._refresh(whileloop.body, string_table)
-
-        self._raw_data = new_data.as_reader()
-        self._mark_clean()
-
-    def _update_cache(self):
-        """TESTING ONLY. Update the cached attributes of this object. This effectively transitions
-        the object from "reader" mode to "writer" mode, e.g. as part of building a new module."""
-
-        self._condition = self.condition
-        self._body = self.body
-        self._condition._update_cache()
-        self._body._update_cache()
-
-    # settable fields
-
-    @property
-    def condition(self) -> JeffRegion:
-        if self._condition is not _Empty:
-            return self._condition
-
-        return JeffRegion.from_encoding(
-            getattr(self._raw_data, "while").condition, self
-        )
-
-    @condition.setter
-    def condition(self, condition: JeffRegion):
-        condition._update_cache()
-        condition._parent = self
-        self._condition = condition
-        self._mark_dirty()
-
-    @property
-    def body(self) -> JeffRegion:
-        if self._body is not _Empty:
-            return self._body
-
-        return JeffRegion.from_encoding(getattr(self._raw_data, "while").body, self)
-
-    @body.setter
-    def body(self, body: JeffRegion):
-        body._update_cache()
-        body._parent = self
-        self._body = body
-        self._mark_dirty()
-
-    # Python integration
-
-    def __str__(self):
-        string = "\n"
-        string += "  while:\n"
-        string += f"{textwrap.indent(str(self.condition), '  ')}"
-        string += "  do:\n"
-        string += f"{textwrap.indent(str(self.body), '  ')}"
-        return string
-
-
-class DoWhileSCF(JeffSCF):
-    """Do-while-loop specialization of the JeffSCF instruction data class.
-    Do-while loop operations contain two regions: a body region and a condition region.
-    The body is executed first, then the condition is checked. The region sigantures are the same
-    as for the while loop."""
-
-    _body: JeffRegion = _Empty
-    _condition: JeffRegion = _Empty
-
-    def __init__(self, body: JeffRegion, condition: JeffRegion):
-        body._parent = self
-        self._body = body
-        condition._parent = self
-        self._condition = condition
-        self._mark_dirty()
-
-    def _refresh(self, new_data: schema.ScfOp.Builder, string_table: list[str]):
-        """Refresh this object's encoded data with cached modifications. Also refreshes all child
-        objects. This method guarantees that `is_dirty` is False after invocation.
-        When is `is_dirty` is already False, this method does nothing.
-        """
-        doWhile = new_data.init("doWhile")
-
-        self.body._refresh(doWhile.body, string_table)
-        self.condition._refresh(doWhile.condition, string_table)
+        _after = self.after
+        _after._refresh(whileloop.after, string_table)
 
         self._raw_data = new_data.as_reader()
         self._mark_clean()
@@ -1937,49 +1860,49 @@ class DoWhileSCF(JeffSCF):
         """TESTING ONLY. Update the cached attributes of this object. This effectively transitions
         the object from "reader" mode to "writer" mode, e.g. as part of building a new module."""
 
-        self._body = self.body
-        self._condition = self.condition
-        self._body._update_cache()
-        self._condition._update_cache()
+        self._before = self.before
+        self._after = self.after
+        self._before._update_cache()
+        self._after._update_cache()
 
     # settable fields
 
     @property
-    def body(self) -> JeffRegion:
-        if self._body is not _Empty:
-            return self._body
+    def before(self) -> JeffRegion:
+        if self._before is not _Empty:
+            return self._before
 
-        return JeffRegion.from_encoding(self._raw_data.doWhile.body, self)
+        return JeffRegion.from_encoding(getattr(self._raw_data, "while").before, self)
 
-    @body.setter
-    def body(self, body: JeffRegion):
-        body._update_cache()
-        body._parent = self
-        self._body = body
+    @before.setter
+    def before(self, before: JeffRegion):
+        before._update_cache()
+        before._parent = self
+        self._before = before
         self._mark_dirty()
 
     @property
-    def condition(self) -> JeffRegion:
-        if self._condition is not _Empty:
-            return self._condition
+    def after(self) -> JeffRegion:
+        if self._after is not _Empty:
+            return self._after
 
-        return JeffRegion.from_encoding(self._raw_data.doWhile.condition, self)
+        return JeffRegion.from_encoding(getattr(self._raw_data, "while").after, self)
 
-    @condition.setter
-    def condition(self, condition: JeffRegion):
-        condition._update_cache()
-        condition._parent = self
-        self._condition = condition
+    @after.setter
+    def after(self, after: JeffRegion):
+        after._update_cache()
+        after._parent = self
+        self._after = after
         self._mark_dirty()
 
     # Python integration
 
     def __str__(self):
         string = "\n"
-        string += "  do:\n"
-        string += f"{textwrap.indent(str(self.body), '  ')}"
         string += "  while:\n"
-        string += f"{textwrap.indent(str(self.condition), '  ')}"
+        string += f"{textwrap.indent(str(self.before), '  ')}"
+        string += "  do:\n"
+        string += f"{textwrap.indent(str(self.after), '  ')}"
         return string
 
 

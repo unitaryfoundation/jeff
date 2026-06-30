@@ -30,31 +30,18 @@ pub enum ControlFlowOp<'a> {
     },
     /// While loop.
     ///
-    /// The condition is checked before each iteration.
-    /// If the condition is true, the loop body is executed.
+    /// The `before` region is executed at least once.
+    /// If the condition is true, the `after` region is executed.
     /// The loop maintains a state consisting of any number of values.
-    /// Each iteration receives the state from the previous iteration,
+    /// The `before` region receives the state from the `after` region,
     /// or the initial state for the first iteration.
-    /// When the loop finishes, the final state is returned.
+    /// The `after` region receives the state from the `before` region.
+    /// When the loop finishes, the final state is returned by the `before` region.
     While {
-        /// The condition that determines whether to continue looping.
-        condition: reader::Region<'a>,
+        /// The region that evaluates whether the condition is met.
+        before: reader::Region<'a>,
         /// The body that is executed on each iteration.
-        body: reader::Region<'a>,
-    },
-    /// Do-while loop.
-    ///
-    /// The loop body is executed once, then the condition is checked.
-    /// If the condition is true, the loop body is executed again.
-    /// The loop maintains a state consisting of any number of values.
-    /// Each iteration receives the state from the previous iteration,
-    /// or the initial state for the first iteration.
-    /// When the loop finishes, the final state is returned.
-    DoWhile {
-        /// The body that is executed on each iteration.
-        body: reader::Region<'a>,
-        /// The condition that determines whether to continue looping.
-        condition: reader::Region<'a>,
+        after: reader::Region<'a>,
     },
 }
 
@@ -100,29 +87,17 @@ impl<'a> ControlFlowOp<'a> {
                 ),
             },
             jeff_capnp::scf_op::While(while_loop) => ControlFlowOp::While {
-                condition: reader::Region::read_capnp(
+                before: reader::Region::read_capnp(
                     while_loop
-                        .get_condition()
-                        .expect("Condition should be present"),
+                        .get_before()
+                        .expect("Before region should be present"),
                     strings,
                     values,
                 ),
-                body: reader::Region::read_capnp(
-                    while_loop.get_body().expect("Body should be present"),
-                    strings,
-                    values,
-                ),
-            },
-            jeff_capnp::scf_op::DoWhile(dowhile_loop) => ControlFlowOp::DoWhile {
-                body: reader::Region::read_capnp(
-                    dowhile_loop.get_body().expect("Body should be present"),
-                    strings,
-                    values,
-                ),
-                condition: reader::Region::read_capnp(
-                    dowhile_loop
-                        .get_condition()
-                        .expect("Condition should be present"),
+                after: reader::Region::read_capnp(
+                    while_loop
+                        .get_after()
+                        .expect("After region should be present"),
                     strings,
                     values,
                 ),

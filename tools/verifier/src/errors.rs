@@ -3,9 +3,6 @@ use std::fmt;
 /// An error detected during verification of a jeff module.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VerificationError {
-    /// The module version is unset (0.0.0).
-    MissingVersion,
-
     /// The module version is set but does not match the version supported by this verifier.
     IncompatibleVersion,
 
@@ -73,6 +70,12 @@ pub enum VerificationError {
         operation: &'static str,
     },
 
+    /// The source and target types of a region are not consistent.
+    RegionTypeMismatch {
+        /// The name of the operation whose region has inconsistent types.
+        operation: &'static str,
+    },
+
     /// An operation inside a nested region directly references a value from an outer scope
     /// without the value being explicitly passed in via the region's sources.
     IsolationViolation {
@@ -84,9 +87,6 @@ pub enum VerificationError {
 impl fmt::Display for VerificationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::MissingVersion => {
-                write!(f, "module version is unset (0.0.0)")
-            }
             Self::IncompatibleVersion => {
                 write!(f, "module version is incompatible with the jeff program")
             }
@@ -143,6 +143,9 @@ impl fmt::Display for VerificationError {
             }
             Self::WrongArity { operation } => {
                 write!(f, "'{operation}' has the wrong number of inputs or outputs for its declared arity")
+            }
+            Self::RegionTypeMismatch { operation } => {
+                write!(f, "'{operation}' has a region with inconsistent types")
             }
             Self::IsolationViolation { value_id } => {
                 write!(

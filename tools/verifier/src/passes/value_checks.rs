@@ -115,13 +115,9 @@ fn check_cf_ordering(
 ) {
     match cf_op {
         ControlFlowOp::For { region } => check_region_ordering(*region, outer_defined, errors),
-        ControlFlowOp::While { condition, body } => {
-            check_region_ordering(*condition, outer_defined, errors);
-            check_region_ordering(*body, outer_defined, errors);
-        }
-        ControlFlowOp::DoWhile { body, condition } => {
-            check_region_ordering(*body, outer_defined, errors);
-            check_region_ordering(*condition, outer_defined, errors);
+        ControlFlowOp::While { before, after } => {
+            check_region_ordering(*before, outer_defined, errors);
+            check_region_ordering(*after, outer_defined, errors);
         }
         ControlFlowOp::Switch(switch_op) => {
             for branch in switch_op.branches() {
