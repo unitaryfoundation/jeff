@@ -49,7 +49,7 @@ Refer to `direnv` install instructions for more help:
 Alternatively, if you already use `nix-darwin`, `home-manager`, etc. you can
 enable direnv in your config, e.g.:
 
-```
+```text
 {
   ...
   outputs = inputs@{ self, nix-darwin, nixpkgs }:
@@ -67,7 +67,6 @@ in the repository root as a one-time step to allow `direnv` to trigger
 you.
 
 > [!NOTE]
->
 > Unfortunately, Mac OS X also requires XCode tooling to be installed and
 > configured externally. While `darwin.xcode_XX` packages exist, they require
 > manual download and provide little to no benefit over managing externally.
@@ -76,10 +75,10 @@ you.
 
 To setup the environment manually you will need:
 
-- Just: https://just.systems/
-- Rust `>=1.85.0`: https://www.rust-lang.org/tools/install
-- uv `>=1`: https://docs.astral.sh/uv/getting-started/installation
-- capnproto `1.3.0`: https://capnproto.org/install.html
+- Just: <https://just.systems/>
+- Rust `>=1.85.0`: <https://www.rust-lang.org/tools/install>
+- uv `>=1`: <https://docs.astral.sh/uv/getting-started/installation>
+- capnproto `1.3.0`: <https://capnproto.org/install.html>
 
 Once you have these installed, you can install the required python dependencies
 and setup pre-commit hooks with:
@@ -160,8 +159,8 @@ just fix-py
 
 We welcome contributions to `jeff`! Please open
 [an issue](https://github.com/unitaryfoundation/jeff/new) or
-[pull request](https://github.com/unitaryfoundation/jeff/compare) if you have any questions
-or suggestions.
+[pull request](https://github.com/unitaryfoundation/jeff/compare) if you have
+any questions or suggestions.
 
 PRs should be made against the `main` branch, and should pass all CI checks
 before being merged. This includes using the
@@ -170,7 +169,7 @@ for the PR title.
 
 The general format of a contribution title should be:
 
-```
+```text
 <type>(<scope>)!: <description>
 ```
 
@@ -197,9 +196,9 @@ We use automation to bump the version number and generate changelog entries
 based on the
 [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) labels.
 Release PRs are created automatically for each package when new changes are
-merged into the `main` branch. Once the PR is approved by someone in the
-[release team](.github/CODEOWNERS) and is merged, the new package is published
-on PyPI or crates.io as appropriate.
+merged into the `main` branch. Once the PR is approved by someone in the release
+team and subsequently merged, the new package is published on PyPI or crates.io
+as appropriate.
 
 The changelog can be manually edited before merging the release PR. Note however
 that modifying the diff before other changes are merged will cause the
@@ -268,6 +267,7 @@ the existing release PRs for examples on how to do this. Once the branch is
 ready, create a draft PR so that the release team can review it.
 
 The wheel building process and publication to PyPI is handled by the CI. Just
-create a [github release](https://github.com/unitaryfoundation/jeff/releases/new) from the
-**unmerged** branch. The release tag should follow the format used in the
+create a
+[github release](https://github.com/unitaryfoundation/jeff/releases/new) from
+the **unmerged** branch. The release tag should follow the format used in the
 previous releases, e.g. `jeff-py-v0.1.1`.

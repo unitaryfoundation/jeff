@@ -3,17 +3,41 @@ members = ["impl/py"]
 
 [dependency-groups]
 dev = [{ include-group = "lint" }, { include-group = "test" }]
-lint = ["pre-commit ~=4.3", "ruff ~=0.12.10", "mypy ~=1.17", "nb-clean ~=4.0.1"]
-test = [
-    "ipykernel ~=6.29",
-    "pytest ~=8.4",
-    "pytest-cov ~=6.2",
-    "pytest-notebook ~=0.10.0",
-    "mypy ~=1.17",
+lint = [
+    "pre-commit~=4.3",
+    "ruff~=0.12.10",
+    "mypy~=1.17",
+    "nb-clean~=4.0.1",
+    "rumdl~=0.2.26",
 ]
+test = [
+    "ipykernel~=6.29",
+    "pytest~=8.4",
+    "pytest-cov~=6.2",
+    "pytest-notebook~=0.10.0",
+    "mypy~=1.17",
+]
+
 
 [tool.mypy]
 strict = true
+
+
+[tool.rumdl.per-file-ignores]
+# The RFCs deliberatively have a non-compliant format
+"rfcs/**" = ["MD041", "MD053"]
+# The README starts with an image and may include HTML tags
+"README.md" = ["MD033", "MD041"]
+
+[tool.rumdl.MD013]
+line-length = 80
+code-blocks = false
+reflow = true
+reflow-mode = "normalize"
+
+[tool.rumdl.MD060]
+enabled = true
+
 
 [build-system]
 requires = ["hatchling"]

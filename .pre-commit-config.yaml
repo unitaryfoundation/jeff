@@ -37,24 +37,38 @@ repos:
       - id: debug-statements
   - repo: local
     hooks:
-      - id: ruff-format
-        name: ruff format
-        description: Format python code with `ruff`.
-        entry: uv run ruff format
+      - id: rumdl-check
+        name: rumdl-check
+        description: Check Markdown files with `rumdl`.
+        entry: uv run rumdl check --fix
         language: system
-        files: \.py$
+        files: \.md$
+        pass_filenames: false
+      - id: rumdl-fmt
+        name: rumdl-fmt
+        description: Format Markdown files with `rumdl`.
+        entry: uv run rumdl fmt
+        language: system
+        files: \.md$
         pass_filenames: false
       - id: ruff-check
         name: ruff
-        description: Check python code with `ruff`.
+        description: Check Python code with `ruff`.
         entry: uv run ruff check --fix --exit-non-zero-on-fix
+        language: system
+        files: \.py$
+        pass_filenames: false
+      - id: ruff-format
+        name: ruff format
+        description: Format Python code with `ruff`.
+        entry: uv run ruff format
         language: system
         files: \.py$
         pass_filenames: false
       # TODO: Fix lints and re-enable
       #- id: mypy-check
       #  name: mypy
-      #  description: Check python code with `mypy`.
+      #  description: Check Python code with `mypy`.
       #  entry: uv run mypy .
       #  language: system
       #  files: \.py$
