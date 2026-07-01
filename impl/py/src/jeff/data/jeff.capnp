@@ -1,12 +1,12 @@
 
 @0xcc0f7aa735ae288c;
-# Jeff Exchange Format
+# jeff Exchange Format
 #
-# This file defines the schema for the Jeff exchange format version 0.1.0.
+# This file defines the schema for the jeff exchange format version 0.3.0.
 #
-# See the [Jeff
+# See the [jeff
 # Specification](https://github.com/unitaryfoundation/jeff/blob/main/docs/spec.md)
-# for more details. And the [Jeff
+# for more details. And the [jeff
 # CHANGELOG](https://github.com/unitaryfoundation/jeff/blob/main/CHANGELOG.md)
 # for the format version history.
 
