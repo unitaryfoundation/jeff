@@ -28,8 +28,7 @@ full breakdown of the changes can be found below.
 
 ## [0.2.0] - 2026-04-14
 
-This version releases two breaking changes. The full breakdown of the changes
-can be found below.
+This version releases two breaking changes:
 
 - The `qureg`, `intArray`, and `floatArray` types now hold information about the
   size of the underlying structure ([#52])
