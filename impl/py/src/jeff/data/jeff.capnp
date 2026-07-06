@@ -294,6 +294,7 @@ struct Region {
     # The operations in the region.
     #
     # The order of operations in this list is not significant.
+    # However, values must be defined before use.
 
     metadata @3 :List(Meta);
     # Metadata attached to the region.
