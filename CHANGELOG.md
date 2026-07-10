@@ -15,6 +15,7 @@ The project adheres to
 This version releases a new `verifier` tool as well as two breaking changes. The
 full breakdown of the changes can be found below.
 
+- Cap'n Proto has been updated to version 1.5.0 ([#78])
 - The spec has been updated to clarify that values must be defined before use
   ([#74])
 - The regions of the `while` operation have been renamed to `before` and
@@ -48,6 +49,7 @@ Initial release. Format defined with capnproto `1.3.0`.
 
 <!-- PR links -->
 
+[#78]: https://github.com/unitaryfoundation/jeff/pull/78
 [#74]: https://github.com/unitaryfoundation/jeff/pull/74
 [#72]: https://github.com/unitaryfoundation/jeff/pull/72
 [#68]: https://github.com/unitaryfoundation/jeff/pull/68
