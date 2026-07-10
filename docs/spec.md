@@ -64,13 +64,13 @@ The `Function` struct includes:
 `jeff` represents program logic as a dataflow graph within a `Region`.
 
 - `Region`: Container for a set of operations. Defines its inputs (`sources`)
-  and outputs (`targets`) by referencing values from the parent function's
-  `values` list. The `operations` list contains all operations in the region.
-  Execution order is determined by data dependencies, not list order; only a
-  partial order is defined. Cycles in the dataflow graph are invalid.
-  Lower-level tools may choose a specific execution order as long as
-  dependencies are respected. Regions used in control flow operations (such as
-  `switch`, `for`, `while`) are themselves dataflow graphs, and their
+  and outputs (`targets`) by referencing values from the parent's `values` list.
+  The `operations` list contains all operations in the region. Execution order
+  is determined by data dependencies, not list order; only a partial order is
+  defined in that all values must be defined before use. Cycles in the dataflow
+  graph are invalid. Lower-level tools may choose a specific execution order as
+  long as dependencies are respected. Regions used in control flow operations
+  (such as `switch`, `for`, `while`) are themselves dataflow graphs, and their
   inputs/outputs are wired according to the control flow operation's semantics.
 - `Op`: A single operation in the dataflow graph. Consumes `inputs` and produces
   `outputs`, which are indices into the function's `values` list. The specific
