@@ -19,7 +19,7 @@ full breakdown of the changes can be found below.
 - The spec has been updated to clarify that values must be defined before use
   ([#74])
 - The regions of the `while` operation have been renamed to `before` and
-  `after`. Both regions may arbitrarily modify the state, handing the modifed
+  `after`. Both regions may arbitrarily modify the state, handing the modified
   state to each other. This ensures that linearity is preserved ([#72])
 - The `doWhile` operation has been removed as its functionality is fully covered
   by the new `while` operation ([#72])
