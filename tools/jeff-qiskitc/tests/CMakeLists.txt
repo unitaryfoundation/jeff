@@ -1,0 +1,4 @@
+add_executable(gate_conversion_test gate_conversion_test.cpp)
+target_link_libraries(gate_conversion_test PRIVATE jeff_qiskitc)
+
+add_test(NAME gate_conversion_test COMMAND gate_conversion_test)
