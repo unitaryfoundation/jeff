@@ -8,7 +8,7 @@ lint = [
     "ruff~=0.12.10",
     "mypy~=1.17",
     "nb-clean~=4.0.1",
-    "rumdl==0.2.37",
+    "rumdl==0.2.41",
 ]
 test = [
     "ipykernel~=6.29",
@@ -31,7 +31,6 @@ strict = true
 
 [tool.rumdl.MD013]
 line-length = 80
-atomic-spans = true
 code-blocks = false
 reflow = true
 reflow-mode = "normalize"

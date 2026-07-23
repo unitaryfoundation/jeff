@@ -64,7 +64,8 @@ and OpenQASM) either lack the explicit structure needed for advanced high-level
 quantum optimizations, or are not tool-agnostic, locking developers into
 particular toolchains like LLVM.
 
-***This creates a bottleneck for collaboration and makes it difficult to develop and share sophisticated compiler passes.***
+***This creates a bottleneck for collaboration and makes it difficult to develop
+and share sophisticated compiler passes.***
 
 Unlike other common quantum program formats, `jeff` is not a human-readable
 source language or a low-level intermediate representation. It's an in-memory

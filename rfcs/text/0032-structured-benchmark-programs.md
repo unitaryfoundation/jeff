@@ -193,7 +193,8 @@ The following sections provide more details on each program type.
 
 ### Statically Bounded Loops without Dynamic Qubit Indexing
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on values computed at runtime.*
+*This class of benchmark programs utilizes loops (such as `for` and `while`)
+that **do not** depend on values computed at runtime.*
 *Inside the loop bodies, all operations are still statically indexed.*
 
 - *Grover's Search Algorithm*: Oracle and diffusion operations can be applied
@@ -207,9 +208,9 @@ The following sections provide more details on each program type.
 
 ### Statically Bounded Loops with Dynamic Qubit Indexing
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do not** depend on values computed at runtime.*
-*Inside the loop bodies, operations may be dynamically indexed (e.g. based on
-the loop parameter).*
+*This class of benchmark programs utilizes loops (such as `for` and `while`)
+that **do not** depend on values computed at runtime.* *Inside the loop bodies,
+operations may be dynamically indexed (e.g. based on the loop parameter).*
 
 - *GHZ State Preparation*: A static loop is used to entangle all qubits with
   each other using `cx` gates where, at each loop index `i`, the `cx` gate is
@@ -232,7 +233,8 @@ the loop parameter).*
 
 ### Dynamically Bounded Loops
 
-*This class of benchmark programs utilizes loops (such as `for` and `while`) that **do** depend on values computed at runtime, such as measurement outcomes.*
+*This class of benchmark programs utilizes loops (such as `for` and `while`)
+that **do** depend on values computed at runtime, such as measurement outcomes.*
 *Operations may also be dynamically indexed.*
 
 - *Grover's Search with Weak Measurement*: Measurements on an ancilla qubit are
@@ -248,7 +250,8 @@ the loop parameter).*
 
 ### Conditionals
 
-*This class of benchmark programs utilizes conditionals (such as `if`) to implement protocols or algorithms.*
+*This class of benchmark programs utilizes conditionals (such as `if`) to
+implement protocols or algorithms.*
 
 - *Quantum Teleportation*: Quantum teleportation is a canonical primitive for
   quantum communication and distributed computing. It utilizes conditionals
