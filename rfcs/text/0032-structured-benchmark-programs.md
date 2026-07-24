@@ -67,8 +67,8 @@ it for their quantum programming needs.
 A new directory, `benchmarks/structured` is introduced in the `jeff` repository.
 It contains a set of sub-directories for each individual structured benchmark
 program. These sub-directories may contain implementations of the respective
-program in different *intermediate* representations, such as `jeff` or OpenQASM
-3.
+program in different *intermediate* representations, such as `jeff` or
+OpenQASM 3.
 
 Implementations in higher-level frameworks such as Qiskit or PennyLane may also
 be included, but they should be actively divided specifically into the directory
