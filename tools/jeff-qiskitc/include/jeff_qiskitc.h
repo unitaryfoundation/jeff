@@ -11,3 +11,5 @@
 
 
 QkCircuit* jeff_to_qiskitc(jeff::Module::Reader module);
+
+kj::Array<capnp::word> qiskitc_to_jeff(const QkCircuit* circuit);

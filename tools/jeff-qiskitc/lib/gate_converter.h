@@ -165,6 +165,33 @@ private:
     std::variant<WellKnownGate, PauliProductRotationGate> gate_;
 };
 
-
-
 }
+
+
+namespace QiskitToJeff {
+
+class WellKnownGate {
+public:
+    explicit WellKnownGate(QkGate gate);
+
+    bool to_gate(jeff::QubitGate::Builder gate) const;
+
+    void emit(jeff::Op::Builder op) const;
+
+private:
+    QkGate gate_;
+};
+
+class PauliProductRotationGate {
+public:
+    explicit PauliProductRotationGate(const QkPauliProductRotation& gate);
+
+    bool to_gate(jeff::QubitGate::Builder gate) const;
+
+    void emit(jeff::Op::Builder op) const;
+
+private:
+    const QkPauliProductRotation* gate_;
+};
+
+}  // namespace QiskitToJeff

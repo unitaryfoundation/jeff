@@ -32,3 +32,34 @@ private:
 };
 
 }
+
+
+
+namespace QiskitToJeff {
+
+class ValueMap {
+public:
+    ValueMap(capnp::List<jeff::Value>::Builder values, uint32_t num_qubits, uint32_t num_clbits);
+
+    uint32_t allocate_qubit_value();
+    uint32_t allocate_bit_value();
+    uint32_t allocate_float_value();
+
+    uint32_t resolve_qubit(uint32_t qubit) const;
+
+    void record_qubit(uint32_t qubit, uint32_t value);
+
+    uint32_t resolve_clbit(uint32_t clbit) const;
+
+    void record_clbit(uint32_t clbit, uint32_t value);
+
+    std::vector<uint32_t> targets() const;
+
+private:
+    capnp::List<jeff::Value>::Builder values_;
+    std::vector<uint32_t> qubit_to_value_;
+    std::vector<uint32_t> clbit_to_value_;
+    uint32_t next_value_ = 0;
+};
+
+}  // namespace QiskitToJeff

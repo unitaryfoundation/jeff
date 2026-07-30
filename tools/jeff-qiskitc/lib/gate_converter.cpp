@@ -213,8 +213,84 @@ const {
         gate_
     );
 }
+} // namespace JeffToQiskit
 
+namespace QiskitToJeff {
 
+WellKnownGate::WellKnownGate(QkGate gate) : gate_(gate) {}
 
+bool WellKnownGate::to_gate(jeff::QubitGate::Builder gate) const {
+    uint8_t control_qubits = 0;
+    QkGate base_gate = gate_;
 
+    auto controlled_it = QkGateToControlledMap.find(gate_);
+    if (controlled_it != QkGateToControlledMap.end()) {
+        control_qubits = controlled_it->second.first;
+        base_gate = controlled_it->second.second;
+    }
+
+    auto well_known_it = QkGateToWellKnownMap.find(base_gate);
+    if (well_known_it == QkGateToWellKnownMap.end()) return false;
+
+    gate.setWellKnown(well_known_it->second);
+    gate.setControlQubits(control_qubits);
+    gate.setAdjoint(false);
+    gate.setPower(1);
+    return true;
 }
+
+void WellKnownGate::emit(jeff::Op::Builder op) const {
+    jeff::QubitGate::Builder gate_builder = op.getInstruction().initQubit().initGate();
+    if (!to_gate(gate_builder)) {
+        std::fprintf(stderr, "WellKnownGate::emit: QkGate has no jeff wellKnown equivalent\n");
+        std::exit(1);
+    }
+
+    // Qiskit orders a controlled gate's qubits as {controls..., targets...};
+    // jeff orders them as {targets..., controls...}. Caller has already
+    // populated inputs/outputs in Qiskit order, so rotate in place now
+    // that controlQubits is known.
+    uint8_t control_qubits = gate_builder.getControlQubits();
+    uint32_t num_qubits = qk_gate_num_qubits(gate_);
+
+    auto inputs = op.getInputs();
+    std::vector<uint32_t> qubits(num_qubits);
+    for (uint32_t i = 0; i < num_qubits; i++) qubits[i] = inputs[i];
+    std::rotate(qubits.begin(), qubits.begin() + control_qubits, qubits.end());
+    for (uint32_t i = 0; i < num_qubits; i++) inputs.set(i, qubits[i]);
+
+    auto outputs = op.getOutputs();
+    std::vector<uint32_t> out(num_qubits);
+    for (uint32_t i = 0; i < num_qubits; i++) out[i] = outputs[i];
+    std::rotate(out.begin(), out.begin() + control_qubits, out.end());
+    for (uint32_t i = 0; i < num_qubits; i++) outputs.set(i, out[i]);
+}
+
+
+PauliProductRotationGate::PauliProductRotationGate(const QkPauliProductRotation& gate) : gate_(&gate) {}
+
+bool PauliProductRotationGate::to_gate(jeff::QubitGate::Builder gate) const {
+    auto pauli_string = gate.initPpr().initPauliString(static_cast<unsigned int>(gate_->len));
+    for (size_t i = 0; i < gate_->len; i++) {
+        bool z = gate_->z[i];
+        bool x = gate_->x[i];
+        jeff::Pauli pauli;
+        if (!z && !x) pauli = jeff::Pauli::I;
+        else if (!z && x) pauli = jeff::Pauli::X;
+        else if (z && !x) pauli = jeff::Pauli::Z;
+        else pauli = jeff::Pauli::Y;
+        pauli_string.set(i, pauli);
+    }
+
+    gate.setControlQubits(0);
+    gate.setAdjoint(false);
+    gate.setPower(1);
+    return true;
+}
+
+void PauliProductRotationGate::emit(jeff::Op::Builder op) const {
+    jeff::QubitGate::Builder gate_builder = op.getInstruction().initQubit().initGate();
+    to_gate(gate_builder);
+}
+
+}  // namespace QiskitToJeff
