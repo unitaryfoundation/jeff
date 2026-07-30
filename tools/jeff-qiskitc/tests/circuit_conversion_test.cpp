@@ -1,22 +1,14 @@
-// Circuit-level round-trip tests: QkCircuit -> jeff (qiskitc_to_jeff) ->
-// QkCircuit (jeff_to_qiskitc), checked instruction-by-instruction against
-// the original. Unlike gate_conversion_test.cpp (one instruction at a
-// time, isolating each gate/ppr mapping), these exercise the whole
-// pipeline on realistic multi-instruction circuits -- SSA Value
-// threading across many sequential ops on the same qubit, qubit/clbit
-// allocation ordering across an entire program, counting passes sized
-// correctly for more than one instruction.
+// Round-trip tests: QkCircuit -> jeff -> QkCircuit, checked
+// instruction-by-instruction against the original. Unlike
+// gate_conversion_test.cpp (one instruction at a time), these exercise
+// the whole pipeline on multi-instruction circuits.
 //
-// Covers three circuits: a Bell pair, a 10-qubit GHZ state, and a
-// 5-qubit QFT (H/CPhase network + swaps) -- all built only from gates
-// this converter supports (H, X via CX, Phase via CPhase, Swap, and
-// measure), so a lossless round trip is expected: same qubit/clbit
-// counts, same instruction count, and each instruction with the same
-// name, qubits (in order), clbits, and param values.
+// Covers a Bell pair, a 10-qubit GHZ state, and a 5-qubit QFT -- all
+// built only from gates this converter supports, so a lossless round
+// trip is expected.
 //
-// Compile: this is picked up automatically by CMakeLists.txt.
 //   cmake --build build --target circuit_conversion_test
-//   ./build/circuit_conversion_test
+//   ./build/tests/circuit_conversion_test
 
 #include <algorithm>
 #include <cstdint>
@@ -85,9 +77,8 @@ QkCircuit* build_ghz(uint32_t n) {
   return qc;
 }
 
-// Standard QFT: for each qubit i, H(i) followed by a controlled phase
-// rotation from every later qubit j, then a final swap network to
-// reverse qubit order.
+// Standard QFT: H(i) then a controlled phase from every later qubit j,
+// then a swap network to reverse qubit order.
 QkCircuit* build_qft(uint32_t n) {
   QkCircuit* qc = qk_circuit_new(n, n);
   for (uint32_t i = 0; i < n; i++) {
@@ -109,10 +100,8 @@ QkCircuit* build_qft(uint32_t n) {
   return qc;
 }
 
-// Checks that `roundtripped` (the result of running `original` through
-// qiskitc_to_jeff then jeff_to_qiskitc) has the same qubit/clbit/
-// instruction counts as `original`, and that every instruction matches
-// name, qubits (in order), clbits, and param values.
+// Checks roundtripped matches original: same qubit/clbit/instruction
+// counts, and each instruction's name, qubits (in order), clbits, and params.
 void expect_same_circuit(QkCircuit* original, QkCircuit* roundtripped) {
   expect(qk_circuit_num_qubits(roundtripped) == qk_circuit_num_qubits(original), "same qubit count");
   expect(qk_circuit_num_clbits(roundtripped) == qk_circuit_num_clbits(original), "same clbit count");
@@ -155,12 +144,8 @@ void expect_same_circuit(QkCircuit* original, QkCircuit* roundtripped) {
   }
 }
 
-// Runs `original` through qiskitc_to_jeff then jeff_to_qiskitc, entirely
-// in memory (capnp::FlatArrayMessageReader over the serialized bytes, no
-// file involved -- see the earlier discussion on why qiskitc_to_jeff
-// returns flat bytes rather than a Builder/Reader directly), and checks
-// the round-tripped circuit against the original. Takes ownership of
-// `original` (frees it).
+// Runs original through qiskitc_to_jeff then jeff_to_qiskitc and checks
+// the result against it. Takes ownership of original (frees it).
 void test_round_trip(const char* label, QkCircuit* original) {
   std::printf("%s:\n", label);
   print_circuit("  original", original);

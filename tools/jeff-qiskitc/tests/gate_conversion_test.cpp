@@ -1,19 +1,12 @@
-// Unit tests for both directions: jeff -> QkCircuit (jeff_to_qiskitc) and
-// QkCircuit -> jeff (qiskitc_to_jeff). Each jeff_to_qiskitc test
-// hand-builds a minimal jeff::Module directly via capnp Builders and
-// checks the single resulting QkCircuit instruction; each qiskitc_to_jeff
-// test hand-builds a minimal QkCircuit directly via the Qiskit C API and
-// checks the single resulting jeff Op(s) -- neither direction round-trips
-// through the other.
+// Tests for both jeff <-> QkCircuit directions (jeff_to_qiskitc,
+// qiskitc_to_jeff). Each test builds one gate/ppr op directly and checks
+// the single result -- no round-tripping through the other direction.
 //
-// Covers every wellKnown gate (uncontrolled, at its own minimum qubit
-// count) and every controlled gate, both driven directly off
-// WellKnownToQkGateMap/ControlledQkGateMap so the gate lists only live in
-// one place, plus a handful of Pauli product rotations.
+// Covers every gate in WellKnownToQkGateMap/ControlledQkGateMap plus a
+// few Pauli product rotations.
 //
-// Compile: this is picked up automatically by CMakeLists.txt.
 //   cmake --build build --target gate_conversion_test
-//   ./build/gate_conversion_test
+//   ./build/tests/gate_conversion_test
 
 #include <cstdio>
 #include <cstdint>
@@ -43,55 +36,16 @@ void expect(bool cond, const std::string& what) {
   if (!cond) g_failures++;
 }
 
-// Expected instruction names for every QkGate this converter can produce
-// (from Qiskit's own StandardGate name table), used only to check
-// jeff_to_qiskitc mapped to the *specific* gate expected -- e.g. that R1
-// really landed on Phase, not just some other 1-qubit/1-param gate, or
-// that C3X's instruction is really named "mcx" (Qiskit's own naming
-// quirk), not "c3x".
-const std::unordered_map<QkGate, std::string> kQkGateNames = {
-    {QkGate_GlobalPhase, "global_phase"},
-    {QkGate_H, "h"},
-    {QkGate_I, "id"},
-    {QkGate_X, "x"},
-    {QkGate_Y, "y"},
-    {QkGate_Z, "z"},
-    {QkGate_Phase, "p"},
-    {QkGate_RX, "rx"},
-    {QkGate_RY, "ry"},
-    {QkGate_RZ, "rz"},
-    {QkGate_S, "s"},
-    {QkGate_T, "t"},
-    {QkGate_U, "u"},
-    {QkGate_Swap, "swap"},
-    {QkGate_CH, "ch"},
-    {QkGate_CX, "cx"},
-    {QkGate_CY, "cy"},
-    {QkGate_CZ, "cz"},
-    {QkGate_CPhase, "cp"},
-    {QkGate_CRX, "crx"},
-    {QkGate_CRY, "cry"},
-    {QkGate_CRZ, "crz"},
-    {QkGate_CS, "cs"},
-    {QkGate_CSdg, "csdg"},
-    {QkGate_CSX, "csx"},
-    {QkGate_CU, "cu"},
-    {QkGate_CU1, "cu1"},
-    {QkGate_CU3, "cu3"},
-    {QkGate_CSwap, "cswap"},
-    {QkGate_CCX, "ccx"},
-    {QkGate_CCZ, "ccz"},
-    {QkGate_C3X, "mcx"},  // Qiskit's own instruction name, not "c3x"
-    {QkGate_C3SX, "c3sx"},
-};
+// QkGate -> Qiskit instruction name, reversed from NameToQkGateMap.
+const std::unordered_map<QkGate, std::string> kQkGateNames = [] {
+  std::unordered_map<QkGate, std::string> reverse;
+  for (const auto& [name, qk_gate] : NameToQkGateMap) reverse.emplace(qk_gate, name);
+  return reverse;
+}();
 
-// Builds (in `message`) a minimal jeff::Module: a single function that
-// allocates `num_qubits` fresh qubits, allocates one FloatOp.const64 per
-// entry in `params` (fed to the gate as its float inputs, in that order),
-// then applies exactly one QubitGate op -- configured by `configure_gate`
-// -- consuming all of those Values as inputs (qubits first, then floats,
-// matching jeff's own ordering) and producing `num_qubits` fresh qubit
-// outputs. Returns a Reader into the built message.
+// Builds a jeff::Module with one function: num_qubits qubit allocs, one
+// FloatOp.const64 per entry in params, then a single QubitGate op
+// (configured by configure_gate) consuming all of them.
 jeff::Module::Reader build_single_gate_module(capnp::MessageBuilder& message, uint32_t num_qubits,
                                                const std::vector<double>& params,
                                                const std::function<void(jeff::QubitGate::Builder)>& configure_gate) {
@@ -159,11 +113,8 @@ jeff::Module::Reader build_single_gate_module(capnp::MessageBuilder& message, ui
   return reader;
 }
 
-// Builds a QkCircuit with `num_qubits` qubits (physical indices
-// 0..num_qubits-1, used as {controls..., targets...} -- Qiskit's own
-// qubit-ordering convention for a controlled gate) and applies exactly
-// one `qk_gate` instruction with `params`. Caller owns the returned
-// QkCircuit* (free with qk_circuit_free).
+// Builds a QkCircuit with num_qubits qubits and one qk_gate instruction
+// on physical qubits {0..num_qubits-1} ({controls..., targets...}).
 QkCircuit* build_single_gate_circuit(QkGate qk_gate, uint32_t num_qubits, const std::vector<double>& params) {
   QkCircuit* qc = qk_circuit_new(num_qubits, 0);
   std::vector<uint32_t> qubits(num_qubits);
@@ -172,12 +123,8 @@ QkCircuit* build_single_gate_circuit(QkGate qk_gate, uint32_t num_qubits, const 
   return qc;
 }
 
-// Runs a jeff wellKnown gate (with the given controlQubits) through
-// jeff_to_qiskitc and checks the resulting QkCircuit has exactly one
-// instruction with the right name, qubit count, qubit order (targets
-// first in jeff, but reordered to controls-first for a controlled gate),
-// and param values. `expected_gate` is the QkGate the (well_known,
-// control_qubits) combination is expected to resolve to.
+// jeff_to_qiskitc: a wellKnown gate maps to expected_gate, with the
+// right name, qubit order, and params.
 void test_gate(jeff::WellKnownGate well_known, uint8_t control_qubits, QkGate expected_gate) {
   const std::string& name = kQkGateNames.at(expected_gate);
   std::printf("%s (controlQubits=%u):\n", name.c_str(), control_qubits);
@@ -207,8 +154,7 @@ void test_gate(jeff::WellKnownGate well_known, uint8_t control_qubits, QkGate ex
   expect(std::string(inst.name) == name, "instruction name is \"" + name + "\"");
   expect(inst.num_qubits == num_qubits, "instruction has the right number of qubits");
 
-  // build_single_gate_module allocates+feeds qubits as {targets...,
-  // controls...} (jeff's own order); Qiskit wants {controls..., targets...}.
+  // jeff orders qubits {targets..., controls...}; Qiskit wants {controls..., targets...}.
   bool qubits_in_order = true;
   for (uint32_t i = 0; i < control_qubits; i++) {
     if (inst.qubits[i] != num_targets + i) qubits_in_order = false;
@@ -229,13 +175,8 @@ void test_gate(jeff::WellKnownGate well_known, uint8_t control_qubits, QkGate ex
   qk_circuit_free(circuit);
 }
 
-// Runs a single-gate QkCircuit (built directly via the Qiskit C API, no
-// round-trip through jeff) through qiskitc_to_jeff and checks the
-// resulting jeff module has exactly the alloc/const64/gate Ops expected:
-// `control_qubits` controls + targets reordered into jeff's {targets...,
-// controls...} order, `expected_well_known`/control_qubits/adjoint=false/
-// power=1 on the gate, and param inputs referencing the right
-// FloatOp.const64 Values.
+// qiskitc_to_jeff: a QkGate produces expected_well_known, with the
+// alloc/const64/gate ops in the right slots and order.
 void test_gate_reverse(QkGate qk_gate, uint8_t control_qubits, jeff::WellKnownGate expected_well_known) {
   const std::string& name = kQkGateNames.at(qk_gate);
   std::printf("%s (controlQubits=%u) [reverse]:\n", name.c_str(), control_qubits);
@@ -257,14 +198,12 @@ void test_gate_reverse(QkGate qk_gate, uint8_t control_qubits, jeff::WellKnownGa
   auto operations = module.getFunctions()[0].getDefinition().getBody().getOperations();
   expect(operations.size() == num_qubits + num_params + 1, "right number of Ops (allocs + param consts + gate)");
 
-  // operations[0..num_qubits) are the qubit allocs, in physical order --
-  // alloc op q's single output Value represents physical qubit q.
+  // operations[0..num_qubits) are the qubit allocs, output q = physical qubit q.
   std::vector<uint32_t> qubit_values(num_qubits);
   for (uint32_t q = 0; q < num_qubits; q++) {
     qubit_values[q] = operations[q].getOutputs()[0];
   }
 
-  // operations[num_qubits..num_qubits+num_params) are the param consts.
   bool params_match = true;
   std::vector<uint32_t> float_values(num_params);
   for (uint32_t i = 0; i < num_params; i++) {
@@ -290,9 +229,7 @@ void test_gate_reverse(QkGate qk_gate, uint8_t control_qubits, jeff::WellKnownGa
   auto inputs = gate_op.getInputs();
   expect(inputs.size() == num_qubits + num_params, "gate op has the right number of inputs");
 
-  // jeff orders qubits as {targets..., controls...}; this test built the
-  // QkCircuit with qubits {controls..., targets...} = physical indices
-  // {0..control_qubits-1, control_qubits..num_qubits-1}.
+  // Qiskit built {controls..., targets...}; jeff wants {targets..., controls...}.
   bool qubits_in_order = true;
   for (uint32_t i = 0; i < num_targets; i++) {
     if (inputs[i] != qubit_values[control_qubits + i]) qubits_in_order = false;
@@ -309,9 +246,7 @@ void test_gate_reverse(QkGate qk_gate, uint8_t control_qubits, jeff::WellKnownGa
   expect(float_inputs_match, "gate op's float inputs reference the param FloatOp Values");
 }
 
-// Applies a ppr gate with the given Pauli string and angle, and checks the
-// resulting QkCircuit has exactly one QkPauliProductRotation instruction
-// with the right z/x arrays and angle.
+// jeff_to_qiskitc: a ppr gate produces a matching QkPauliProductRotation.
 void test_ppr(const char* label, const std::vector<jeff::Pauli>& pauli_string, double angle) {
   std::printf("ppr %s:\n", label);
 
@@ -365,11 +300,7 @@ void test_ppr(const char* label, const std::vector<jeff::Pauli>& pauli_string, d
   qk_circuit_free(circuit);
 }
 
-// Runs a single-ppr QkCircuit (built directly via
-// qk_circuit_pauli_product_rotation, no round-trip through jeff) through
-// qiskitc_to_jeff and checks the resulting jeff module's gate op is a
-// ppr with the right pauliString, controlQubits=0/adjoint=false/power=1,
-// and qubit/angle inputs referencing the right alloc/FloatOp Values.
+// qiskitc_to_jeff: a QkPauliProductRotation produces a matching ppr gate op.
 void test_ppr_reverse(const char* label, const std::vector<jeff::Pauli>& pauli_string, double angle) {
   std::printf("ppr %s [reverse]:\n", label);
 
@@ -461,10 +392,7 @@ int main() {
 
   for (const auto& [key, controlled_gate] : ControlledQkGateMap) {
     const auto& [control_qubits, base_gate] = key;
-    // ControlledQkGateMap has entries (e.g. Sdg, SX, U1, U3) whose base
-    // gate has no jeff WellKnownGate at all -- those combinations can
-    // never actually be produced by either direction's to_gate(), so
-    // skip them here too.
+    // Some ControlledQkGateMap entries (Sdg, SX, U1, U3, ...) have no jeff WellKnownGate -- skip those.
     auto well_known_it = QkGateToWellKnownMap.find(base_gate);
     if (well_known_it == QkGateToWellKnownMap.end()) {
       std::printf("%s (controlQubits=%u): skipped, base QkGate has no jeff WellKnownGate\n",
