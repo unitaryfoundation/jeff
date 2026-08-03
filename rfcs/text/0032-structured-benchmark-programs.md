@@ -67,14 +67,14 @@ it for their quantum programming needs.
 A new directory, `benchmarks/structured` is introduced in the `jeff` repository.
 It contains a set of sub-directories for each individual structured benchmark
 program. These sub-directories may contain implementations of the respective
-program in different *intermediate* representations, such as `jeff` or
-OpenQASM 3.
+program in different *intermediate* representations, such as `jeff` or OpenQASM
+3.
 
 Implementations in higher-level frameworks such as Qiskit or PennyLane may also
 be included, but they should be actively divided specifically into the directory
 `benchmarks/_recipes/structured/` to indicate that they are not to be used as
 generalized benchmark formats, but rather as "recipes" for generating them. In
-this case, reprodubility of the `jeff` programs generated from them has to be
+this case, reproducibility of the `jeff` programs generated from them has to be
 ensured, e.g., by specifying framework versions and random seeds. The directory
 is once again subdivided into sub-directories for each individual structured
 benchmark program, which in turn contain an additional sub-directory for each
@@ -389,8 +389,8 @@ such as:
   A command-line utility designed to benchmark and compare the performance of
   various quantum compilers, with a particular focus on the ucc compiler.
 - [MQT Bench](https://github.com/munich-quantum-toolkit/bench):
-  A collection of benchmark circuits in qiskit format to evaluate quantum software
-  tools.
+  A collection of benchmark circuits in qiskit format to evaluate quantum
+  software tools.
 - [metriq-gym](https://github.com/unitaryfoundation/metriq-gym):
   A framework for implementing and running standard quantum benchmarks.
 
