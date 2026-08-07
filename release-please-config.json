@@ -10,6 +10,7 @@
             "release-type": "python",
             "component": "jeff-format-py",
             "package-name": "jeff-format",
+            "pull-request-title-pattern": "chore(release): prepare${component} v${version}",
             "include-component-in-tag": true,
             "draft": true,
             "force-tag-creation": true,
