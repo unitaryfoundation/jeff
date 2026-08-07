@@ -8,6 +8,7 @@ release = false
 # Keep release PRs in draft until a maintainer approves the release.
 pr_draft = true
 pr_labels = ["A-rust"]
+pr_name = "chore(release): prepare {{ package }}-rs v{{ version }}"
 
 # Include the crate name and language to avoid collisions with Python and schema tags.
 git_tag_name = "{{ package }}-rs-v{{ version }}"
