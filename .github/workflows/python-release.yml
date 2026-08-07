@@ -1,0 +1,100 @@
+# Build and publish the Python package for a release created by release-please.
+name: Release wheels 🚚 🐍
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: GitHub release tag to publish
+        required: true
+        type: string
+      commit:
+        description: Commit to build before the draft release creates its tag
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing jeff-py-v* draft release tag to publish
+        required: true
+        type: string
+      commit:
+        description: Commit to build; leave blank if the tag already exists
+        required: false
+        type: string
+
+env:
+  UV_VERSION: "0.8.12"
+
+jobs:
+  release:
+    name: Build and publish Python distributions
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Validate release tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^jeff-py-v[0-9]+\.[0-9]+\.[0-9]+([ab][0-9]+|rc[0-9]+)?$ ]]; then
+            echo "Expected a jeff-py-v* release tag, got: $RELEASE_TAG"
+            exit 1
+          fi
+
+      - name: Checkout release commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.commit || inputs.tag }}
+          persist-credentials: false
+
+      - name: Verify package version matches tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          PACKAGE_VERSION=$(sed -n '/^\[project\]/,/^\[/s/^version = "\([^"]*\)"/\1/p' impl/py/pyproject.toml)
+          if [[ "jeff-py-v$PACKAGE_VERSION" != "$RELEASE_TAG" ]]; then
+            echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION"
+            exit 1
+          fi
+
+      - name: Verify draft GitHub release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          gh release view "$RELEASE_TAG"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: false
+
+      - name: Build wheel and source distribution
+        run: uv build impl/py --out-dir dist
+
+      - name: Check distributions
+        run: uvx twine check dist/*
+
+      - name: Generate artifact attestations
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/*
+
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          skip-existing: true
+
+      - name: Attach distributions and publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          gh release upload "$RELEASE_TAG" dist/* --clobber
+          gh release edit "$RELEASE_TAG" --draft=false
