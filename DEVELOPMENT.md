@@ -194,21 +194,21 @@ We accept the following contribution types:
 
 We use automation to bump the version number and generate changelog entries
 based on the
-[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) labels.
-Release PRs are created automatically for each package when new changes are
-merged into the `main` branch. Once the PR is approved by someone in the release
-team and subsequently merged, the new package is published on PyPI or crates.io
-as appropriate.
+[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
+included in the git history. Merges to `main` update draft release PRs for the
+Rust and Python packages. Merging one of those release PRs publishes the
+corresponding package and creates a GitHub release.
 
-The changelog can be manually edited before merging the release PR. Note however
-that modifying the diff before other changes are merged will cause the
-automation to close the release PR and create a new one to avoid conflicts.
+The generated version and changelog can be edited in a release PR before it is
+merged. Further changes to the target branch may cause the automation to update
+or replace the release PR, so make final edits immediately before release.
 
 ### Rust crate release
 
 Rust releases are managed by `release-plz`. This tool will automatically detect
 breaking changes even when they are not marked as such in the commit message,
-and bump the version accordingly.
+and bump the version accordingly. Merging a `release-plz` release PR publishes
+`jeff-format` to crates.io and creates a `jeff-format-rs-vX.Y.Z` GitHub release.
 
 To modify the version being released, update the `Cargo.toml`, CHANGELOG.md, PR
 name, and PR description in the release PR with the desired version. You may
@@ -218,56 +218,14 @@ also have to update the dates. Rust pre-release versions should be formatted as
 ### Python package release
 
 Python releases are managed by `release-please`. This tool always bumps the
-minor version (or the pre-release version if the previous version was a
-pre-release).
+version according to the conventional-commit rules.
 
-To override the version getting released, you must merge a PR to `main`
-containing `Release-As: 0.1.0` in the description. Python pre-release versions
-should be formatted as `0.1.0a1` (or `b1`, `rc1`).
+Merging the Python release PR creates the `jeff-format-py-vX.Y.Z` tag and a
+draft GitHub release. The Python release workflow then builds and checks the
+wheel and source distribution, publishes them to PyPI, attaches them to the
+GitHub release, and publishes the release.
 
-### Patch releases
-
-Sometimes we need to release a patch version to fix a critical bug, but we don't
-want to include all the changes that have been merged into the main branch. In
-this case, you can create a new branch from the latest release tag and
-cherry-pick the commits you want to include in the patch release.
-
-#### Rust patch releases
-
-You can use [`release-plz`](https://release-plz.ieni.dev/) to automatically
-generate the changelogs and bump the package versions.
-
-```bash
-# If you have cargo-semver-checks installed,
-# release-plz will ensure your changes don't break the semver rules.
-cargo install cargo-semver-checks --locked
-# Analyze the new comments to generate the changelogs / bump the versions
-release-plz update
-```
-
-Once the branch is ready, create a draft PR so that the release team can review
-it.
-
-Now someone from the release team can run `release-plz` on the **unmerged**
-branch to create the github releases and publish to crates.io.
-
-```bash
-# Make sure you are logged in to `crates.io`
-cargo login <your_crates_io_token>
-# Get a github token with permissions to create releases
-GITHUB_TOKEN=<your_github_token>
-# Run release-plz
-release-plz release --git-token $GITHUB_TOKEN
-```
-
-#### Python patch releases
-
-You will need to modify the version and changelog manually in this case. Check
-the existing release PRs for examples on how to do this. Once the branch is
-ready, create a draft PR so that the release team can review it.
-
-The wheel building process and publication to PyPI is handled by the CI. Just
-create a
-[github release](https://github.com/unitaryfoundation/jeff/releases/new) from
-the **unmerged** branch. The release tag should follow the format used in the
-previous releases, e.g. `jeff-py-v0.1.1`.
+To override the proposed version, merge a PR to `main` whose squash commit
+contains a `Release-As: 0.1.0` footer. Python pre-release versions should be
+formatted as `0.1.0a1` (or `b1`, `rc1`). See also `release-please`'s
+[commit override documentation](https://github.com/googleapis/release-please#how-can-i-fix-release-notes).

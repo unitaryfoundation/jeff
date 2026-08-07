@@ -1,0 +1,52 @@
+# Automatic changelog generation and releases for Rust crates.
+
+[workspace]
+# Only explicitly listed packages are released. In particular, the internal
+# verifier binary is not published.
+release = false
+
+# Keep release PRs in draft until a maintainer approves the release.
+pr_draft = true
+pr_labels = ["A-rust"]
+
+# Include the crate name and language to avoid collisions with Python and schema tags.
+git_tag_name = "{{ package }}-rs-v{{ version }}"
+git_release_name = "{{ package }}: v{{ version }}"
+git_release_latest = false
+
+# Only publish commits that came from a release-plz release PR.
+release_always = false
+
+git_release_body = """
+{{ changelog }}
+{% if remote.contributors %}
+### Contributors
+{% for contributor in remote.contributors %}
+* @{{ contributor.username }}
+{% endfor %}
+{% endif %}
+"""
+
+[changelog]
+header = """# Changelog
+
+"""
+sort_commits = "oldest"
+commit_parsers = [
+    { message = "^feat", group = "New Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^style", group = "Styling" },
+    { message = "^refactor", group = "Refactor" },
+    { message = "^perf", group = "Performance" },
+    { message = "^test", group = "Testing", skip = true },
+    { message = "^chore", group = "Miscellaneous Tasks", skip = true },
+    { message = "^revert", group = "Reverted changes", skip = true },
+    { message = "^ci", group = "CI", skip = true },
+]
+protect_breaking_commits = true
+
+[[package]]
+name = "jeff-format"
+release = true
+git_release_latest = false

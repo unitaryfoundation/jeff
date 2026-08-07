@@ -18,7 +18,7 @@ repos:
             .*\.snap|
             .*\.snap\.new|
             .*\.ambr|
-            impl/.release-please-manifest.json
+            .release-please-manifest.json
           )$
       - id: trailing-whitespace
         exclude: |

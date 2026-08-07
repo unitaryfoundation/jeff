@@ -1,0 +1,40 @@
+# Create Python release PRs and publish merged releases.
+name: Release PR 🐍
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+  workflow_dispatch: {}
+
+jobs:
+  release-please:
+    name: Create Python release PR or release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs['impl/py--release_created'] }}
+      release_sha: ${{ steps.release.outputs['impl/py--sha'] }}
+      tag_name: ${{ steps.release.outputs['impl/py--tag_name'] }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          config-file: release-please-config.json
+          target-branch: ${{ github.ref_name }}
+
+  publish:
+    name: Publish Python package
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/python-release.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+      commit: ${{ needs.release-please.outputs.release_sha }}
