@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing jeff-py-v* draft release tag to publish
+        description: Existing jeff-format-py-v* draft release tag to publish
         required: true
         type: string
       commit:
@@ -40,8 +40,8 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          if [[ ! "$RELEASE_TAG" =~ ^jeff-py-v[0-9]+\.[0-9]+\.[0-9]+([ab][0-9]+|rc[0-9]+)?$ ]]; then
-            echo "Expected a jeff-py-v* release tag, got: $RELEASE_TAG"
+          if [[ ! "$RELEASE_TAG" =~ ^jeff-format-py-v[0-9]+\.[0-9]+\.[0-9]+([ab][0-9]+|rc[0-9]+)?$ ]]; then
+            echo "Expected a jeff-format-py-v* release tag, got: $RELEASE_TAG"
             exit 1
           fi
 
@@ -56,7 +56,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           PACKAGE_VERSION=$(sed -n '/^\[project\]/,/^\[/s/^version = "\([^"]*\)"/\1/p' impl/py/pyproject.toml)
-          if [[ "jeff-py-v$PACKAGE_VERSION" != "$RELEASE_TAG" ]]; then
+          if [[ "jeff-format-py-v$PACKAGE_VERSION" != "$RELEASE_TAG" ]]; then
             echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION"
             exit 1
           fi

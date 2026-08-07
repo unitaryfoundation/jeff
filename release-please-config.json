@@ -8,7 +8,7 @@
     "packages": {
         "impl/py": {
             "release-type": "python",
-            "component": "jeff-py",
+            "component": "jeff-format-py",
             "package-name": "jeff-format",
             "include-component-in-tag": true,
             "draft": true,

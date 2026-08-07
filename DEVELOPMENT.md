@@ -208,7 +208,7 @@ or replace the release PR, so make final edits immediately before release.
 Rust releases are managed by `release-plz`. This tool will automatically detect
 breaking changes even when they are not marked as such in the commit message,
 and bump the version accordingly. Merging a `release-plz` release PR publishes
-`jeff-format` to crates.io and creates a `jeff-format-vX.Y.Z` GitHub release.
+`jeff-format` to crates.io and creates a `jeff-format-rs-vX.Y.Z` GitHub release.
 
 To modify the version being released, update the `Cargo.toml`, CHANGELOG.md, PR
 name, and PR description in the release PR with the desired version. You may
@@ -220,10 +220,10 @@ also have to update the dates. Rust pre-release versions should be formatted as
 Python releases are managed by `release-please`. This tool always bumps the
 version according to the conventional-commit rules.
 
-Merging the Python release PR creates the `jeff-py-vX.Y.Z` tag and a draft
-GitHub release. The Python release workflow then builds and checks the wheel and
-source distribution, publishes them to PyPI, attaches them to the GitHub
-release, and publishes the release.
+Merging the Python release PR creates the `jeff-format-py-vX.Y.Z` tag and a
+draft GitHub release. The Python release workflow then builds and checks the
+wheel and source distribution, publishes them to PyPI, attaches them to the
+GitHub release, and publishes the release.
 
 To override the proposed version, merge a PR to `main` whose squash commit
 contains a `Release-As: 0.1.0` footer. Python pre-release versions should be
