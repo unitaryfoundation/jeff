@@ -7,12 +7,8 @@
 // with `int(ceiling(...))`, which the OpenQASM frontend does not accept; the
 // value is constant here because the size is.
 //
-// grover.qasm writes the oracle operands as `q[0:n-1], flag` and the diffusion
-// operands as `q[0:n-2], q[n-1]`. Both ranges run past the end of a register
-// holding n-1 qubits, and neither matches the stated control count. This file
-// uses the consistent reading: the oracle takes all 6 search qubits as controls
-// and the flag as target, and the diffusion takes the first 5 as controls and
-// the last as target.
+// The oracle takes all 6 search qubits as controls and the flag as target. The
+// diffusion takes the first 5 as controls and the last as target.
 
 module {
   func.func @main() -> memref<6xi1> attributes {passthrough = ["entry_point"]} {
