@@ -11,7 +11,7 @@ reset anc;
 
 x anc;
 
-for int i in [precision - 1:0:-1] {
+for int i in [precision - 1:-1:0] {
     h q;
     ctrl @ pow(2**i) @ p(3*pi/8) q, anc;
     for int j in [i + 1:precision - 1] {

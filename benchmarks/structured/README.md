@@ -15,17 +15,17 @@ indicates important features about the provided programs.
 The following table lists the currently implemented benchmark programs and
 indicates the different formats the program is available in.
 
-| Program                                                        | `jeff` | OpenQASM 3                               |
-| -------------------------------------------------------------- | ------ | ---------------------------------------- |
-| [Quantum Teleportation](./teleportation/README.md)             | ❌     | [✔️](./teleportation/teleportation.qasm) |
-| [Grover's Search Algorithm](./grover/README.md)                | ❌     | [✔️](./grover/grover.qasm)               |
-| [GHZ State Preparation (linear)](./ghz-linear/README.md)       | ❌     | [✔️](./ghz-linear/ghz-linear.qasm)       |
-| [GHZ State Preparation (star)](./ghz-star/README.md)           | ❌     | [✔️](./ghz-star/ghz-star.qasm)           |
-| [Quantum Fourier Transform (QFT)](./qft/README.md)             | ❌     | [✔️](./qft/qft.qasm)                     |
-| [Quantum Phase Estimation (QPE)](./qpe/README.md)              | ❌     | [✔️](./qpe/qpe.qasm)                     |
-| [Iterative Quantum Fourier Transform (iQFT)](./iqft/README.md) | ❌     | [✔️](./iqft/iqft.qasm)                   |
-| [Iterative Quantum Phase Estimation (iQPE)](./iqpe/README.md)  | ❌     | [✔️](./iqpe/iqpe.qasm)                   |
-| [Quantum Multiplexer](./multiplexer/README.md)                 | ❌     | [✔️](./multiplexer/multiplexer.qasm)     |
+| Program                                                        | `jeff`                                   | OpenQASM 3                               |
+| -------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| [Quantum Teleportation](./teleportation/README.md)             | [✔️](./teleportation/teleportation.jeff) | [✔️](./teleportation/teleportation.qasm) |
+| [Grover's Search Algorithm](./grover/README.md)                | ❌                                       | [✔️](./grover/grover.qasm)               |
+| [GHZ State Preparation (linear)](./ghz-linear/README.md)       | [✔️](./ghz-linear/ghz-linear.jeff)       | [✔️](./ghz-linear/ghz-linear.qasm)       |
+| [GHZ State Preparation (star)](./ghz-star/README.md)           | [✔️](./ghz-star/ghz-star.jeff)           | [✔️](./ghz-star/ghz-star.qasm)           |
+| [Quantum Fourier Transform (QFT)](./qft/README.md)             | [✔️](./qft/qft.jeff)                     | [✔️](./qft/qft.qasm)                     |
+| [Quantum Phase Estimation (QPE)](./qpe/README.md)              | [✔️](./qpe/qpe.jeff)                     | [✔️](./qpe/qpe.qasm)                     |
+| [Iterative Quantum Fourier Transform (iQFT)](./iqft/README.md) | [✔️](./iqft/iqft.jeff)                   | [✔️](./iqft/iqft.qasm)                   |
+| [Iterative Quantum Phase Estimation (iQPE)](./iqpe/README.md)  | [✔️](./iqpe/iqpe.jeff)                   | [✔️](./iqpe/iqpe.qasm)                   |
+| [Quantum Multiplexer](./multiplexer/README.md)                 | ❌                                       | [✔️](./multiplexer/multiplexer.qasm)     |
 
 The following table lists the currently implemented benchmark programs together
 with the structured control-flow primitives they employ.
