@@ -1,7 +1,7 @@
 OPENQASM 3.0;
 include "qelib1.inc";
 
-input int n;
+const int n = 7;
 
 qubit[n] q;
 bit[n] c;
@@ -13,7 +13,7 @@ for int i in [0:n-1] {
         ctrl @ p(pi/2**(j-i)) q[j], q[i];
     }
 }
-for int i in [0:int(ceiling((n-1)/2))-1] {
+for int i in [0:n/2-1] {
     swap q[i], q[n - 1 - i];
 }
 

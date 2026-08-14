@@ -1,9 +1,7 @@
 OPENQASM 3.0;
 include "qelib1.inc";
 
-// n must be at least 2.
-
-input int n;
+const int n = 7;
 
 qubit[n-1] q;
 qubit anc;
@@ -20,7 +18,7 @@ for int i in [0:n-2] {
 }
 
 // Apply reverse QFT
-for int i in [0:int(ceiling((n-2)/2))-1] {
+for int i in [0:(n-1)/2-1] {
     swap q[i], q[n - 2 - i];
 }
 for int i in [0:n-2] {
