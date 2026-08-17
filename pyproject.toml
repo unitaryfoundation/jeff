@@ -22,6 +22,9 @@ test = [
 [tool.mypy]
 strict = true
 
+[tool.rumdl]
+# Changelog files are auto-generated
+exclude = ["**/CHANGELOG.md"]
 
 [tool.rumdl.per-file-ignores]
 # The RFCs deliberatively have a non-compliant format
