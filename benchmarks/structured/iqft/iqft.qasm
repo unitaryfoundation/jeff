@@ -1,7 +1,7 @@
 OPENQASM 3.0;
 include "qelib1.inc";
 
-const int n = 7;
+input int n;
 
 qubit q;
 bit[n] res;

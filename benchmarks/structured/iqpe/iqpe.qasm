@@ -1,7 +1,7 @@
 OPENQASM 3.0;
 include "qelib1.inc";
 
-const int precision = 7;
+input int precision;
 
 qubit q;
 qubit anc;
