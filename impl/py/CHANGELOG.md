@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.0...jeff-format-py-v0.2.0) (2026-08-17)
+## [0.1.0](https://github.com/unitaryfoundation/jeff/compare/jeff-v0.1.0...jeff-format-py-v0.1.0) (2026-08-17)
 
 
 ### ⚠ BREAKING CHANGES
