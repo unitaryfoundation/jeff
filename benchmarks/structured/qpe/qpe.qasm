@@ -20,7 +20,7 @@ for int i in [0:n-2] {
 }
 
 // Apply reverse QFT
-for int i in [0:int(ceiling((n-2)/2))-1] {
+for int i in [0:(n-1)/2-1] {
     swap q[i], q[n - 2 - i];
 }
 for int i in [0:n-2] {

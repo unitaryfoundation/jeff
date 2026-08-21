@@ -18,12 +18,12 @@ int num_iterations = int(ceiling(pi / 4 * sqrt(2**(n-1))));
 
 for int i in [1:num_iterations] {
     // oracle
-    ctrl(n-1) @ z q[0:n-1], flag;
+    ctrl(n-1) @ z q[0:n-2], flag;
 
     // diffusion
     h q;
     x q;
-    ctrl(n-2) @ z q[0:n-2], q[n-1];
+    ctrl(n-2) @ z q[0:n-3], q[n-2];
     x q;
     h q;
 }

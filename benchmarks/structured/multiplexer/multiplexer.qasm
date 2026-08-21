@@ -1,14 +1,13 @@
 OPENQASM 3.0;
 
 // Quantum Multiplexer (Uniformly Controlled RY Gates)
-// Applies 2^(n-1) different RY rotations based on n control qubits
+// Applies 2^(n-1) different RY rotations based on n-1 control qubits
 // n must be at least 2.
 
 input int n;
 int num_controls = n - 1;
 int num_states = 2**num_controls;
-input angle[num_states] angles;
-
+input array[angle, num_states] angles;
 
 qubit[num_controls] controls;
 qubit target;
