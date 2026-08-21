@@ -7,3 +7,8 @@ add_executable(circuit_conversion_test circuit_conversion_test.cpp)
 target_link_libraries(circuit_conversion_test PRIVATE jeff_qiskitc)
 
 add_test(NAME circuit_conversion_test COMMAND circuit_conversion_test)
+
+add_executable(file_conversion_test file_conversion_test.cpp)
+target_link_libraries(file_conversion_test PRIVATE jeff_qiskitc)
+
+add_test(NAME file_conversion_test COMMAND file_conversion_test)

@@ -1,10 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
-project(jeff_qiskitc CXX)
+project(jeff_qiskitc VERSION 0.1.0 LANGUAGES CXX)
+
+set(JEFF_QISKITC_TOOL_NAME "jeff-qiskitc")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(CapnProto CONFIG REQUIRED)
+include(FetchContent)
+FetchContent_Declare(
+    capnproto
+    GIT_REPOSITORY https://github.com/capnproto/capnproto.git
+    GIT_TAG v1.5.0
+)
+FetchContent_MakeAvailable(capnproto)
 
 # The Qiskit C API isn't part of this repo and isn't find_package()-able;
 # point QISKIT_C_DIR at a directory containing include/qiskit.h and
@@ -50,6 +59,13 @@ target_link_libraries(jeff_qiskitc PUBLIC
     CapnProto::capnp
     qiskit_c
 )
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/jeff_qiskitc_version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/include/jeff_qiskitc_version.h"
+    @ONLY
+)
+target_include_directories(jeff_qiskitc PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 enable_testing()
 add_subdirectory(tests)
