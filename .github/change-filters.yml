@@ -28,3 +28,8 @@ python: &python
 
 markdown: &markdown
   - "*.md"
+
+qiskitc: &qiskitc
+  - *schema-def
+  - ".github/workflows/ci-qiskitc.yml"
+  - "tools/jeff-qiskitc/**"
