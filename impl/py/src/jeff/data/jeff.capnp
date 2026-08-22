@@ -477,7 +477,7 @@ struct QubitGate {
         # Inputs:
         # - ...inputs: The input qubits to the operation.
         # - `qubit` x controlQubits: The control qubits for the operation.
-        # - ...inputs: Additional floating point arguments.
+        # - ...inputs: Additional floating-point arguments.
         #
         # Outputs:
         # - ...outputs: The output qubits.
@@ -508,7 +508,7 @@ struct QubitGate {
             # Inputs:
             # - `qubit` x numQubits: The input qubits to the operation.
             # - `qubit` x controlQubits: The control qubits for the operation.
-            # - `float(N)` x numParams: Additional floating point arguments.
+            # - `float(N)` x numParams: Additional floating-point arguments.
             #
             # Outputs:
             # - `qubit` x numQubits: The output qubits.
@@ -521,7 +521,7 @@ struct QubitGate {
             # The number of qubits that the gate acts on.
 
             numParams @3 :UInt8;
-            # The number of floating point parameters that the gate takes as
+            # The number of floating-point parameters that the gate takes as
             # inputs, after the qubit values.
         }
     }
@@ -713,6 +713,7 @@ struct IntOp {
         #
         # Outputs:
         # - `int(N)`: Difference of the inputs.
+
         mul @7 :Void;
         # Multiply two integers.
         #
@@ -863,7 +864,7 @@ struct IntOp {
         # - `int(1)`: True if first less than or equal to second, false otherwise.
 
         ltU @22 :Void;
-        # Check if one signed integer is strictly less than another.
+        # Check if one unsigned integer is strictly less than another.
         #
         # Inputs:
         # - `int(N)`: First integer operand.
@@ -930,6 +931,62 @@ struct IntOp {
         #
         # Outputs:
         # - `int(N)`: Shifted value.
+
+        select @29 :Void;
+        # Select between two integers based on a condition mask.
+        #
+        # Inputs:
+        # - `int(1)`: Condition mask.
+        # - `int(N)`: Value selected when condition is true.
+        # - `int(N)`: Value selected when condition is false.
+        #
+        # Outputs:
+        # - `int(N)`: Selected integer output.
+
+        extS @30 :Void;
+        # Sign-extend an integer to a wider integer type.
+        #
+        # Inputs:
+        # - `int(N)`: The narrower integer operand.
+        #
+        # Outputs:
+        # - `int(M)`: The sign-extended wider integer value (where M > N).
+
+        extU @31 :Void;
+        # Zero-extend an integer to a wider integer type.
+        #
+        # Inputs:
+        # - `uint(N)`: The narrower integer operand.
+        #
+        # Outputs:
+        # - `uint(M)`: The zero-extended wider integer value (where M > N).
+
+        trunc @32 :Void;
+        # Truncate an integer to a narrower integer type.
+        #
+        # Inputs:
+        # - `int(N)`: The wider integer operand.
+        #
+        # Outputs:
+        # - `int(M)`: The truncated narrower integer value (where M < N).
+
+        toFloatS @33 :Void;
+        # Convert a signed integer to a float.
+        #
+        # Inputs:
+        # - `int(N)`: The signed integer operand.
+        #
+        # Outputs:
+        # - `float(M)`: The converted float.
+
+        toFloatU @34 :Void;
+        # Convert an unsigned integer to a float.
+        #
+        # Inputs:
+        # - `uint(N)`: The unsigned integer operand.
+        #
+        # Outputs:
+        # - `float(M)`: The converted float.
     }
 }
 
@@ -1062,6 +1119,16 @@ struct FloatOp {
         #
         # Outputs:
         # - `float(N)`: Product of the inputs.
+
+        div @32 :Void;
+        # Divide two floats.
+        #
+        # Inputs:
+        # - `float(N)`: First float operand.
+        # - `float(N)`: Second float operand.
+        #
+        # Outputs:
+        # - `float(N)`: Quotient of the inputs.
 
         pow @5 :Void;
         # Calculate one float raised to the power of another.
@@ -1312,6 +1379,53 @@ struct FloatOp {
         #
         # Outputs:
         # - `float(N)`: Minimum of the inputs.
+
+        select @33 :Void;
+        # Select between two floats based on a condition mask.
+        #
+        # Inputs:
+        # - `int(1)`: Condition mask.
+        # - `float(N)`: Value selected when condition is true.
+        # - `float(N)`: Value selected when condition is false.
+        #
+        # Outputs:
+        # - `float(N)`: Selected float output.
+
+        ext @34 :Void;
+        # Extend floating-point precision to a wider float type.
+        #
+        # Inputs:
+        # - `float(N)`: The lower-precision float operand.
+        #
+        # Outputs:
+        # - `float(M)`: The extended higher-precision float value (where M > N).
+
+        trunc @35 :Void;
+        # Truncate floating-point precision to a narrower float type.
+        #
+        # Inputs:
+        # - `float(N)`: The higher-precision float operand.
+        #
+        # Outputs:
+        # - `float(M)`: The truncated lower-precision float value (where M < N).toSInt @38 :Void;
+
+        toSInt @36 :Void;
+        # Convert a float to a signed integer.
+        #
+        # Inputs:
+        # - `float(N)`: The float operand.
+        #
+        # Outputs:
+        # - `int(M)`: The converted signed integer value.
+
+        toUInt @37 :Void;
+        # Convert a float  to an unsigned integer.
+        #
+        # Inputs:
+        # - `float(N)`: The float operand.
+        #
+        # Outputs:
+        # - `uint(M)`: The converted unsigned integer value.
     }
 }
 

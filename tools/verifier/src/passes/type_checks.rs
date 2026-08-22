@@ -307,6 +307,86 @@ fn check_uniform_float(
     }
 }
 
+fn check_int_ext(
+    inputs: &[Type],
+    outputs: &[Type],
+    name: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if let (Some(input_ty), Some(output_ty)) = (inputs.first(), outputs.first()) {
+        if let (Type::Int { bits: input_bits }, Type::Int { bits: output_bits }) =
+            (input_ty, output_ty)
+        {
+            if output_bits <= input_bits {
+                errors.push(VerificationError::InvalidOutputType { operation: name });
+            }
+        }
+    }
+}
+
+fn check_int_trunc(
+    inputs: &[Type],
+    outputs: &[Type],
+    name: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if let (Some(input_ty), Some(output_ty)) = (inputs.first(), outputs.first()) {
+        if let (Type::Int { bits: input_bits }, Type::Int { bits: output_bits }) =
+            (input_ty, output_ty)
+        {
+            if input_bits <= output_bits {
+                errors.push(VerificationError::InvalidOutputType { operation: name });
+            }
+        }
+    }
+}
+
+fn check_float_ext(
+    inputs: &[Type],
+    outputs: &[Type],
+    name: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if let (Some(input_ty), Some(output_ty)) = (inputs.first(), outputs.first()) {
+        if let (
+            Type::Float {
+                precision: input_precision,
+            },
+            Type::Float {
+                precision: output_precision,
+            },
+        ) = (input_ty, output_ty)
+        {
+            if output_precision.bits() <= input_precision.bits() {
+                errors.push(VerificationError::InvalidOutputType { operation: name });
+            }
+        }
+    }
+}
+
+fn check_float_trunc(
+    inputs: &[Type],
+    outputs: &[Type],
+    name: &'static str,
+    errors: &mut Vec<VerificationError>,
+) {
+    if let (Some(input_ty), Some(output_ty)) = (inputs.first(), outputs.first()) {
+        if let (
+            Type::Float {
+                precision: input_precision,
+            },
+            Type::Float {
+                precision: output_precision,
+            },
+        ) = (input_ty, output_ty)
+        {
+            if input_precision.bits() <= output_precision.bits() {
+                errors.push(VerificationError::InvalidOutputType { operation: name });
+            }
+        }
+    }
+}
+
 fn check_int_op(
     int_op: IntOp,
     inputs: &[Type],
@@ -362,6 +442,40 @@ fn check_int_op(
             check_arity(inputs, 2, outputs, 1, "int comparison", errors);
             check_uniform_int(inputs, &[], "int comparison", errors);
             expect_output(outputs, 0, |ty| is_int(ty, 1), "int comparison", errors);
+        }
+        IntOp::Select => {
+            check_arity(inputs, 3, outputs, 1, "int select", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, 1), "int select", errors);
+            check_uniform_int(&inputs[1..], outputs, "int select", errors);
+        }
+        IntOp::ExtS | IntOp::ExtU => {
+            check_arity(inputs, 1, outputs, 1, "int extension", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, None), "int extension", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, None), "int extension", errors);
+            check_int_ext(inputs, outputs, "int extension", errors);
+        }
+        IntOp::Trunc => {
+            check_arity(inputs, 1, outputs, 1, "int truncation", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, None), "int truncation", errors);
+            expect_output(outputs, 0, |ty| is_int(ty, None), "int truncation", errors);
+            check_int_trunc(inputs, outputs, "int truncation", errors);
+        }
+        IntOp::ToFloatS | IntOp::ToFloatU => {
+            check_arity(inputs, 1, outputs, 1, "int-to-float conversion", errors);
+            expect_input(
+                inputs,
+                0,
+                |ty| is_int(ty, None),
+                "int-to-float conversion",
+                errors,
+            );
+            expect_output(
+                outputs,
+                0,
+                |ty| is_float(ty, None),
+                "int-to-float conversion",
+                errors,
+            );
         }
         _ => {}
     }
@@ -434,6 +548,64 @@ fn check_float_op(
             check_arity(inputs, 1, outputs, 1, "float predicate", errors);
             check_uniform_float(inputs, &[], "float predicate", errors);
             expect_output(outputs, 0, |ty| is_int(ty, 1), "float predicate", errors);
+        }
+        FloatOp::Select => {
+            check_arity(inputs, 3, outputs, 1, "float select", errors);
+            expect_input(inputs, 0, |ty| is_int(ty, 1), "float select", errors);
+            check_uniform_float(&inputs[1..], outputs, "float select", errors);
+        }
+        FloatOp::Ext => {
+            check_arity(inputs, 1, outputs, 1, "float extension", errors);
+            expect_input(
+                inputs,
+                0,
+                |ty| is_float(ty, None),
+                "float extension",
+                errors,
+            );
+            expect_output(
+                outputs,
+                0,
+                |ty| is_float(ty, None),
+                "float extension",
+                errors,
+            );
+            check_float_ext(inputs, outputs, "float extension", errors);
+        }
+        FloatOp::Trunc => {
+            check_arity(inputs, 1, outputs, 1, "float truncation", errors);
+            expect_input(
+                inputs,
+                0,
+                |ty| is_float(ty, None),
+                "float truncation",
+                errors,
+            );
+            expect_output(
+                outputs,
+                0,
+                |ty| is_float(ty, None),
+                "float truncation",
+                errors,
+            );
+            check_float_trunc(inputs, outputs, "float truncation", errors);
+        }
+        FloatOp::ToSInt | FloatOp::ToUInt => {
+            check_arity(inputs, 1, outputs, 1, "float-to-int conversion", errors);
+            expect_input(
+                inputs,
+                0,
+                |ty| is_float(ty, None),
+                "float-to-int conversion",
+                errors,
+            );
+            expect_output(
+                outputs,
+                0,
+                |ty| is_int(ty, None),
+                "float-to-int conversion",
+                errors,
+            );
         }
         _ => {}
     }
