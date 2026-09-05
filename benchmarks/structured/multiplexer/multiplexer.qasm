@@ -1,13 +1,12 @@
 OPENQASM 3.0;
+include "qelib1.inc";
 
-// Quantum Multiplexer (Uniformly Controlled RY Gates)
-// Applies 2^(n-1) different RY rotations based on n-1 control qubits
+// Quantum Multiplexer
+// Prepares the controls uniformly and rotates the target based on their state.
 // n must be at least 2.
 
 input int n;
 int num_controls = n - 1;
-int num_states = 2**num_controls;
-input array[angle, num_states] angles;
 
 qubit[num_controls] controls;
 qubit target;
@@ -16,30 +15,11 @@ bit outcome;
 reset controls;
 reset target;
 
-for int state in [0:num_states-1] {
-    // We want to apply angles[state] when controls equal 'state'
-    // State is a binary number: e.g., state=5 = 0b110 for 3 controls
-    // means control[0]=0, control[1]=1, control[2]=1
-
-    // Extract each bit: if 0, we need to flip the corresponding qubit
-    // Bit i is: (state >> i) & 1
-    for int bit_pos in [0:num_controls-1] {
-        int bit_value = (state >> bit_pos) & 1;
-        if (bit_value == 0) {
-            x controls[bit_pos];  // Flip this control
-        }
-    }
-
-    // Apply fully-controlled gate (all controls must be |1⟩)
-    ctrl(num_controls) @ ry(angles[state]) controls[0:num_controls-1], target;
-
-    // Flip controls back
-    for int bit_pos in [0:num_controls-1] {
-        int bit_value = (state >> bit_pos) & 1;
-        if (bit_value == 0) {
-            x controls[bit_pos];  // Flip back
-        }
-    }
+h controls;
+float[64] theta = pi / 2.0;
+for int i in [0:num_controls - 1] {
+    ctrl @ ry(theta) controls[num_controls - 1 - i], target;
+    theta = theta * 0.5;
 }
 
 c = measure controls;
