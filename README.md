@@ -101,8 +101,11 @@ programs:
 ## Contributions
 
 `jeff` is hosted by the [Unitary Foundation](https://unitary.foundation/) and is
-a collaboration between developers at [Quantinuum](https://www.quantinuum.com)
-and [Xanadu](https://www.xanadu.ai).
+a collaboration between developers and researchers at
+[Quantinuum](https://www.quantinuum.com), [Xanadu](https://www.xanadu.ai),
+[MQSC](https://mq.sc/), the
+[Chair for Design Automation at TUM](https://www.cda.cit.tum.de/), and the
+[QSAR Lab at UBC](https://glassnotes.github.io/qsar.html).
 
 Your contributions help improve the tool for everyone! There are many ways you
 can contribute, such as:
