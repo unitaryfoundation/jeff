@@ -16,16 +16,13 @@ void ValueMap::record_float(uint32_t value, double f) { value_to_float_.at(value
 
 double ValueMap::resolve_float(uint32_t value) const { return value_to_float_.at(value); }
 
-}  // namespace JeffToQiskit
-
+} // namespace JeffToQiskit
 
 namespace QiskitToJeff {
 
-ValueMap::ValueMap(
-    capnp::List<jeff::Value>::Builder values,
-    uint32_t num_qubits,
-    uint32_t num_clbits
-): values_(values), qubit_to_value_(num_qubits), clbit_to_value_(num_clbits) {}
+ValueMap::ValueMap(capnp::List<jeff::Value>::Builder values, uint32_t num_qubits,
+                   uint32_t num_clbits)
+    : values_(values), qubit_to_value_(num_qubits), clbit_to_value_(num_clbits) {}
 
 uint32_t ValueMap::allocate_qubit_value() {
     uint32_t v = next_value_++;
@@ -55,9 +52,11 @@ void ValueMap::record_clbit(uint32_t clbit, uint32_t value) { clbit_to_value_.at
 
 std::vector<uint32_t> ValueMap::targets() const {
     std::vector<uint32_t> result;
-    for (size_t q = 0; q < qubit_to_value_.size(); q++) result.push_back(resolve_qubit(q));
-    for (size_t c = 0; c < clbit_to_value_.size(); c++) result.push_back(resolve_clbit(c));
+    for (size_t q = 0; q < qubit_to_value_.size(); q++)
+        result.push_back(resolve_qubit(q));
+    for (size_t c = 0; c < clbit_to_value_.size(); c++)
+        result.push_back(resolve_clbit(c));
     return result;
 }
 
-}  // namespace QiskitToJeff
+} // namespace QiskitToJeff

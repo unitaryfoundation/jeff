@@ -1,20 +1,18 @@
 #include "jeff_qiskitc.h"
+
+#include "circuit_converter.h"
 #include "jeff_qiskitc_version.h"
+
+#include <capnp/message.h>
+#include <fcntl.h>
+#include <kj/io.h>
+#include <unistd.h>
 
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <deque>
 #include <vector>
-
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <capnp/message.h>
-#include <kj/io.h>
-
-#include "circuit_converter.h"
-
 
 QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod) {
     jeff::Function::Reader fn = mod.getFunctions()[mod.getEntrypoint()];
@@ -33,9 +31,7 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod) {
     QkCircuit* circuit = qk_circuit_new(num_qubits, num_clbits);
 
     JeffToQiskit::walk_jeff_ops(
-        body,
-        [&](jeff::Op::Reader op){ JeffToQiskit::Op(op).build(circuit, values); }
-    );
+        body, [&](jeff::Op::Reader op) { JeffToQiskit::Op(op).build(circuit, values); });
 
     return circuit;
 }
@@ -48,8 +44,8 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
 
     std::deque<QiskitToJeff::Op> ops;
 
-    uint32_t num_values = num_qubits;  // one alloc-produced Value per qubit
-    uint32_t num_ops = num_qubits;     // one alloc Op per qubit
+    uint32_t num_values = num_qubits; // one alloc-produced Value per qubit
+    uint32_t num_ops = num_qubits;    // one alloc Op per qubit
     for (size_t i = 0; i < num_instructions; i++) {
         QiskitToJeff::Op& op = ops.emplace_back(circuit, i);
         num_values += op.num_jeff_values();
@@ -101,11 +97,8 @@ kj::Array<capnp::word> qiskitc_to_jeff(const QkCircuit* circuit) {
 QkCircuit* jeff_file_to_qiskitc(const std::string& path) {
     int fd = open(path.c_str(), O_RDONLY);
     if (fd < 0) {
-        std::fprintf(
-            stderr,
-            "jeff_file_to_qiskitc: failed to open \"%s\": %s\n",
-            path.c_str(), std::strerror(errno)
-        );
+        std::fprintf(stderr, "jeff_file_to_qiskitc: failed to open \"%s\": %s\n", path.c_str(),
+                     std::strerror(errno));
         std::exit(1);
     }
     capnp::StreamFdMessageReader reader{kj::AutoCloseFd(fd)};
@@ -119,11 +112,8 @@ void qiskitc_to_jeff_file(const QkCircuit* circuit, const std::string& path) {
 
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd < 0) {
-        std::fprintf(
-            stderr,
-            "qiskitc_to_jeff_file: failed to open \"%s\": %s\n",
-            path.c_str(), std::strerror(errno)
-        );
+        std::fprintf(stderr, "qiskitc_to_jeff_file: failed to open \"%s\": %s\n", path.c_str(),
+                     std::strerror(errno));
         std::exit(1);
     }
     const kj::AutoCloseFd auto_close_fd(fd);

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "capnp/jeff.capnp.h"
+
+#include <qiskit.h>
+
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -8,11 +12,6 @@
 #include <utility>
 #include <variant>
 #include <vector>
-
-#include <qiskit.h>
-
-#include "capnp/jeff.capnp.h"
-
 
 inline const std::unordered_map<jeff::WellKnownGate, QkGate> WellKnownToQkGateMap = {
     {jeff::WellKnownGate::GPHASE, QkGate_GlobalPhase},
@@ -32,41 +31,32 @@ inline const std::unordered_map<jeff::WellKnownGate, QkGate> WellKnownToQkGateMa
 };
 
 inline const std::unordered_map<QkGate, jeff::WellKnownGate> QkGateToWellKnownMap = [] {
-  std::unordered_map<QkGate, jeff::WellKnownGate> reverse;
-  for (const auto& [well_known, qk_gate] : WellKnownToQkGateMap) {
-    reverse.emplace(qk_gate, well_known);
-  }
-  return reverse;
+    std::unordered_map<QkGate, jeff::WellKnownGate> reverse;
+    for (const auto& [well_known, qk_gate] : WellKnownToQkGateMap) {
+        reverse.emplace(qk_gate, well_known);
+    }
+    return reverse;
 }();
 
 inline const std::map<std::pair<uint8_t, QkGate>, QkGate> ControlledQkGateMap = {
-    {{1, QkGate_H}, QkGate_CH},
-    {{1, QkGate_X}, QkGate_CX},
-    {{1, QkGate_Y}, QkGate_CY},
-    {{1, QkGate_Z}, QkGate_CZ},
-    {{1, QkGate_Phase}, QkGate_CPhase},
-    {{1, QkGate_RX}, QkGate_CRX},
-    {{1, QkGate_RY}, QkGate_CRY},
-    {{1, QkGate_RZ}, QkGate_CRZ},
-    {{1, QkGate_S}, QkGate_CS},
-    {{1, QkGate_Sdg}, QkGate_CSdg},
-    {{1, QkGate_SX}, QkGate_CSX},
-    {{1, QkGate_U}, QkGate_CU},
-    {{1, QkGate_U1}, QkGate_CU1},
-    {{1, QkGate_U3}, QkGate_CU3},
-    {{1, QkGate_Swap}, QkGate_CSwap},
-    {{2, QkGate_X}, QkGate_CCX},
-    {{2, QkGate_Z}, QkGate_CCZ},
-    {{3, QkGate_X}, QkGate_C3X},
+    {{1, QkGate_H}, QkGate_CH},         {{1, QkGate_X}, QkGate_CX},
+    {{1, QkGate_Y}, QkGate_CY},         {{1, QkGate_Z}, QkGate_CZ},
+    {{1, QkGate_Phase}, QkGate_CPhase}, {{1, QkGate_RX}, QkGate_CRX},
+    {{1, QkGate_RY}, QkGate_CRY},       {{1, QkGate_RZ}, QkGate_CRZ},
+    {{1, QkGate_S}, QkGate_CS},         {{1, QkGate_Sdg}, QkGate_CSdg},
+    {{1, QkGate_SX}, QkGate_CSX},       {{1, QkGate_U}, QkGate_CU},
+    {{1, QkGate_U1}, QkGate_CU1},       {{1, QkGate_U3}, QkGate_CU3},
+    {{1, QkGate_Swap}, QkGate_CSwap},   {{2, QkGate_X}, QkGate_CCX},
+    {{2, QkGate_Z}, QkGate_CCZ},        {{3, QkGate_X}, QkGate_C3X},
     {{3, QkGate_SX}, QkGate_C3SX},
 };
 
 inline const std::map<QkGate, std::pair<uint8_t, QkGate>> QkGateToControlledMap = [] {
-  std::map<QkGate, std::pair<uint8_t, QkGate>> reverse;
-  for (const auto& [key, controlled_gate] : ControlledQkGateMap) {
-    reverse.emplace(controlled_gate, key);
-  }
-  return reverse;
+    std::map<QkGate, std::pair<uint8_t, QkGate>> reverse;
+    for (const auto& [key, controlled_gate] : ControlledQkGateMap) {
+        reverse.emplace(controlled_gate, key);
+    }
+    return reverse;
 }();
 
 inline const std::unordered_map<std::string, QkGate> NameToQkGateMap = {
@@ -108,37 +98,28 @@ inline const std::unordered_map<std::string, QkGate> NameToQkGateMap = {
 namespace JeffToQiskit {
 
 class WellKnownGate {
-public:
+  public:
     explicit WellKnownGate(jeff::QubitGate::Reader gate);
 
     void operand_counts(uint32_t* num_qubits, uint32_t* num_params) const;
 
     bool to_gate(QkGate* gate) const;
 
-    void emit(
-        QkCircuit* circuit,
-        std::vector<uint32_t> qubits,
-        std::vector<double> params
-    ) const;
+    void emit(QkCircuit* circuit, std::vector<uint32_t> qubits, std::vector<double> params) const;
 
-private:
+  private:
     jeff::QubitGate::Reader gate_;
 };
 
-
 class PauliProductRotationGate {
-public:
+  public:
     explicit PauliProductRotationGate(jeff::QubitGate::Reader gate);
 
     void operand_counts(uint32_t* num_qubits, uint32_t* num_params) const;
 
-    void emit(
-        QkCircuit* circuit,
-        std::vector<uint32_t> qubits,
-        std::vector<double> params
-    ) const;
+    void emit(QkCircuit* circuit, std::vector<uint32_t> qubits, std::vector<double> params) const;
 
-private:
+  private:
     jeff::QubitGate::Reader gate_;
     struct PauliRotation {
         std::unique_ptr<bool[]> z;
@@ -146,52 +127,47 @@ private:
         std::unique_ptr<QkParam, decltype(&qk_param_free)> angle;
         QkPauliProductRotation rotation;
     };
-    PauliRotation to_gate( const std::vector<double>& params) const;
-
+    PauliRotation to_gate(const std::vector<double>& params) const;
 };
 
 class QubitGate {
-public:
+  public:
     explicit QubitGate(jeff::QubitGate::Reader gate);
 
     void operand_counts(uint32_t* num_qubits, uint32_t* num_params) const;
 
-    void emit(
-        QkCircuit* circuit,
-        std::vector<uint32_t> qubits,
-        std::vector<double> params) const;
+    void emit(QkCircuit* circuit, std::vector<uint32_t> qubits, std::vector<double> params) const;
 
-private:
+  private:
     std::variant<WellKnownGate, PauliProductRotationGate> gate_;
 };
 
-}
-
+} // namespace JeffToQiskit
 
 namespace QiskitToJeff {
 
 class WellKnownGate {
-public:
+  public:
     explicit WellKnownGate(QkGate gate);
 
     bool to_gate(jeff::QubitGate::Builder gate) const;
 
     void emit(jeff::Op::Builder op) const;
 
-private:
+  private:
     QkGate gate_;
 };
 
 class PauliProductRotationGate {
-public:
+  public:
     explicit PauliProductRotationGate(const QkPauliProductRotation& gate);
 
     bool to_gate(jeff::QubitGate::Builder gate) const;
 
     void emit(jeff::Op::Builder op) const;
 
-private:
+  private:
     const QkPauliProductRotation* gate_;
 };
 
-}  // namespace QiskitToJeff
+} // namespace QiskitToJeff
