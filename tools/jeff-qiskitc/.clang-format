@@ -11,5 +11,5 @@ IncludeCategories:
     Priority: 3
 IndentWidth: 4
 PointerAlignment: Left
-Standard: c++17
+Standard: c++20
 TabWidth: 4
