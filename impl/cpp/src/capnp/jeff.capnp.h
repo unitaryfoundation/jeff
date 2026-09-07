@@ -503,6 +503,12 @@ struct IntOp {
     REM_U,
     SHL,
     SHR,
+    SELECT,
+    EXT_S,
+    EXT_U,
+    TRUNC,
+    TO_FLOAT_S,
+    TO_FLOAT_U,
   };
 
   struct _capnpPrivate {
@@ -579,6 +585,12 @@ struct FloatOp {
     ATANH,
     MAX,
     MIN,
+    DIV,
+    SELECT,
+    EXT,
+    TRUNC,
+    TO_S_INT,
+    TO_U_INT,
   };
 
   struct _capnpPrivate {
@@ -2874,6 +2886,24 @@ public:
   inline bool isShr() const;
   inline  ::capnp::Void getShr() const;
 
+  inline bool isSelect() const;
+  inline  ::capnp::Void getSelect() const;
+
+  inline bool isExtS() const;
+  inline  ::capnp::Void getExtS() const;
+
+  inline bool isExtU() const;
+  inline  ::capnp::Void getExtU() const;
+
+  inline bool isTrunc() const;
+  inline  ::capnp::Void getTrunc() const;
+
+  inline bool isToFloatS() const;
+  inline  ::capnp::Void getToFloatS() const;
+
+  inline bool isToFloatU() const;
+  inline  ::capnp::Void getToFloatU() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -3018,6 +3048,30 @@ public:
   inline bool isShr();
   inline  ::capnp::Void getShr();
   inline void setShr( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isSelect();
+  inline  ::capnp::Void getSelect();
+  inline void setSelect( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isExtS();
+  inline  ::capnp::Void getExtS();
+  inline void setExtS( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isExtU();
+  inline  ::capnp::Void getExtU();
+  inline void setExtU( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isTrunc();
+  inline  ::capnp::Void getTrunc();
+  inline void setTrunc( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isToFloatS();
+  inline  ::capnp::Void getToFloatS();
+  inline void setToFloatS( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isToFloatU();
+  inline  ::capnp::Void getToFloatU();
+  inline void setToFloatU( ::capnp::Void value = ::capnp::VOID);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3332,6 +3386,24 @@ public:
   inline bool isMin() const;
   inline  ::capnp::Void getMin() const;
 
+  inline bool isDiv() const;
+  inline  ::capnp::Void getDiv() const;
+
+  inline bool isSelect() const;
+  inline  ::capnp::Void getSelect() const;
+
+  inline bool isExt() const;
+  inline  ::capnp::Void getExt() const;
+
+  inline bool isTrunc() const;
+  inline  ::capnp::Void getTrunc() const;
+
+  inline bool isToSInt() const;
+  inline  ::capnp::Void getToSInt() const;
+
+  inline bool isToUInt() const;
+  inline  ::capnp::Void getToUInt() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -3488,6 +3560,30 @@ public:
   inline bool isMin();
   inline  ::capnp::Void getMin();
   inline void setMin( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isDiv();
+  inline  ::capnp::Void getDiv();
+  inline void setDiv( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isSelect();
+  inline  ::capnp::Void getSelect();
+  inline void setSelect( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isExt();
+  inline  ::capnp::Void getExt();
+  inline void setExt( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isTrunc();
+  inline  ::capnp::Void getTrunc();
+  inline void setTrunc( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isToSInt();
+  inline  ::capnp::Void getToSInt();
+  inline void setToSInt( ::capnp::Void value = ::capnp::VOID);
+
+  inline bool isToUInt();
+  inline  ::capnp::Void getToUInt();
+  inline void setToUInt( ::capnp::Void value = ::capnp::VOID);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -7187,6 +7283,162 @@ inline void IntOp::Builder::setShr( ::capnp::Void value) {
       ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
 }
 
+inline bool IntOp::Reader::isSelect() const {
+  return which() == IntOp::SELECT;
+}
+inline bool IntOp::Builder::isSelect() {
+  return which() == IntOp::SELECT;
+}
+inline  ::capnp::Void IntOp::Reader::getSelect() const {
+  KJ_IREQUIRE((which() == IntOp::SELECT),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getSelect() {
+  KJ_IREQUIRE((which() == IntOp::SELECT),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setSelect( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::SELECT);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool IntOp::Reader::isExtS() const {
+  return which() == IntOp::EXT_S;
+}
+inline bool IntOp::Builder::isExtS() {
+  return which() == IntOp::EXT_S;
+}
+inline  ::capnp::Void IntOp::Reader::getExtS() const {
+  KJ_IREQUIRE((which() == IntOp::EXT_S),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getExtS() {
+  KJ_IREQUIRE((which() == IntOp::EXT_S),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setExtS( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::EXT_S);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool IntOp::Reader::isExtU() const {
+  return which() == IntOp::EXT_U;
+}
+inline bool IntOp::Builder::isExtU() {
+  return which() == IntOp::EXT_U;
+}
+inline  ::capnp::Void IntOp::Reader::getExtU() const {
+  KJ_IREQUIRE((which() == IntOp::EXT_U),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getExtU() {
+  KJ_IREQUIRE((which() == IntOp::EXT_U),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setExtU( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::EXT_U);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool IntOp::Reader::isTrunc() const {
+  return which() == IntOp::TRUNC;
+}
+inline bool IntOp::Builder::isTrunc() {
+  return which() == IntOp::TRUNC;
+}
+inline  ::capnp::Void IntOp::Reader::getTrunc() const {
+  KJ_IREQUIRE((which() == IntOp::TRUNC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getTrunc() {
+  KJ_IREQUIRE((which() == IntOp::TRUNC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setTrunc( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::TRUNC);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool IntOp::Reader::isToFloatS() const {
+  return which() == IntOp::TO_FLOAT_S;
+}
+inline bool IntOp::Builder::isToFloatS() {
+  return which() == IntOp::TO_FLOAT_S;
+}
+inline  ::capnp::Void IntOp::Reader::getToFloatS() const {
+  KJ_IREQUIRE((which() == IntOp::TO_FLOAT_S),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getToFloatS() {
+  KJ_IREQUIRE((which() == IntOp::TO_FLOAT_S),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setToFloatS( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::TO_FLOAT_S);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool IntOp::Reader::isToFloatU() const {
+  return which() == IntOp::TO_FLOAT_U;
+}
+inline bool IntOp::Builder::isToFloatU() {
+  return which() == IntOp::TO_FLOAT_U;
+}
+inline  ::capnp::Void IntOp::Reader::getToFloatU() const {
+  KJ_IREQUIRE((which() == IntOp::TO_FLOAT_U),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void IntOp::Builder::getToFloatU() {
+  KJ_IREQUIRE((which() == IntOp::TO_FLOAT_U),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void IntOp::Builder::setToFloatU( ::capnp::Void value) {
+  _builder.setDataField<IntOp::Which>(
+      ::capnp::bounded<1>() * ::capnp::ELEMENTS, IntOp::TO_FLOAT_U);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
 inline  ::jeff::IntArrayOp::Which IntArrayOp::Reader::which() const {
   return _reader.getDataField<Which>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS);
@@ -8463,6 +8715,162 @@ inline  ::capnp::Void FloatOp::Builder::getMin() {
 inline void FloatOp::Builder::setMin( ::capnp::Void value) {
   _builder.setDataField<FloatOp::Which>(
       ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::MIN);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isDiv() const {
+  return which() == FloatOp::DIV;
+}
+inline bool FloatOp::Builder::isDiv() {
+  return which() == FloatOp::DIV;
+}
+inline  ::capnp::Void FloatOp::Reader::getDiv() const {
+  KJ_IREQUIRE((which() == FloatOp::DIV),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getDiv() {
+  KJ_IREQUIRE((which() == FloatOp::DIV),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setDiv( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::DIV);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isSelect() const {
+  return which() == FloatOp::SELECT;
+}
+inline bool FloatOp::Builder::isSelect() {
+  return which() == FloatOp::SELECT;
+}
+inline  ::capnp::Void FloatOp::Reader::getSelect() const {
+  KJ_IREQUIRE((which() == FloatOp::SELECT),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getSelect() {
+  KJ_IREQUIRE((which() == FloatOp::SELECT),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setSelect( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::SELECT);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isExt() const {
+  return which() == FloatOp::EXT;
+}
+inline bool FloatOp::Builder::isExt() {
+  return which() == FloatOp::EXT;
+}
+inline  ::capnp::Void FloatOp::Reader::getExt() const {
+  KJ_IREQUIRE((which() == FloatOp::EXT),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getExt() {
+  KJ_IREQUIRE((which() == FloatOp::EXT),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setExt( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::EXT);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isTrunc() const {
+  return which() == FloatOp::TRUNC;
+}
+inline bool FloatOp::Builder::isTrunc() {
+  return which() == FloatOp::TRUNC;
+}
+inline  ::capnp::Void FloatOp::Reader::getTrunc() const {
+  KJ_IREQUIRE((which() == FloatOp::TRUNC),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getTrunc() {
+  KJ_IREQUIRE((which() == FloatOp::TRUNC),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setTrunc( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::TRUNC);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isToSInt() const {
+  return which() == FloatOp::TO_S_INT;
+}
+inline bool FloatOp::Builder::isToSInt() {
+  return which() == FloatOp::TO_S_INT;
+}
+inline  ::capnp::Void FloatOp::Reader::getToSInt() const {
+  KJ_IREQUIRE((which() == FloatOp::TO_S_INT),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getToSInt() {
+  KJ_IREQUIRE((which() == FloatOp::TO_S_INT),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setToSInt( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::TO_S_INT);
+  _builder.setDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool FloatOp::Reader::isToUInt() const {
+  return which() == FloatOp::TO_U_INT;
+}
+inline bool FloatOp::Builder::isToUInt() {
+  return which() == FloatOp::TO_U_INT;
+}
+inline  ::capnp::Void FloatOp::Reader::getToUInt() const {
+  KJ_IREQUIRE((which() == FloatOp::TO_U_INT),
+              "Must check which() before get()ing a union member.");
+  return _reader.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+
+inline  ::capnp::Void FloatOp::Builder::getToUInt() {
+  KJ_IREQUIRE((which() == FloatOp::TO_U_INT),
+              "Must check which() before get()ing a union member.");
+  return _builder.getDataField< ::capnp::Void>(
+      ::capnp::bounded<0>() * ::capnp::ELEMENTS);
+}
+inline void FloatOp::Builder::setToUInt( ::capnp::Void value) {
+  _builder.setDataField<FloatOp::Which>(
+      ::capnp::bounded<2>() * ::capnp::ELEMENTS, FloatOp::TO_U_INT);
   _builder.setDataField< ::capnp::Void>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
 }
