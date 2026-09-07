@@ -446,7 +446,6 @@ fn check_int_op(
         IntOp::Select => {
             check_arity(inputs, 3, outputs, 1, "int select", errors);
             expect_input(inputs, 0, |ty| is_int(ty, 1), "int select", errors);
-            check_uniform_int(&inputs[1..], outputs, "int select", errors);
         }
         IntOp::ExtS | IntOp::ExtU => {
             check_arity(inputs, 1, outputs, 1, "int extension", errors);
@@ -511,6 +510,7 @@ fn check_float_op(
         FloatOp::Add
         | FloatOp::Sub
         | FloatOp::Mul
+        | FloatOp::Div
         | FloatOp::Pow
         | FloatOp::Atan2
         | FloatOp::Max
@@ -552,7 +552,12 @@ fn check_float_op(
         FloatOp::Select => {
             check_arity(inputs, 3, outputs, 1, "float select", errors);
             expect_input(inputs, 0, |ty| is_int(ty, 1), "float select", errors);
-            check_uniform_float(&inputs[1..], outputs, "float select", errors);
+            check_uniform_float(
+                inputs.get(1..).unwrap_or_default(),
+                outputs,
+                "float select",
+                errors,
+            );
         }
         FloatOp::Ext => {
             check_arity(inputs, 1, outputs, 1, "float extension", errors);
