@@ -8,7 +8,7 @@ reset msg;
 reset alice;
 reset bob;
 
-// Alice has a qubit in an unknown state.
+// Alice prepares the fixed |+> message state.
 h msg;
 
 // Alice and Bob share an entangled Bell pair.
@@ -31,6 +31,6 @@ if (a) {
   z bob;
 }
 
-// Now bob is in the previous state of alice.
-
-bit b2 = measure bob;
+// Measure Bob's qubit in the X basis to verify the teleported state.
+h bob;
+bit result = measure bob;

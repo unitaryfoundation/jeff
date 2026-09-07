@@ -17,7 +17,7 @@ indicates the different formats the program is available in.
 
 | Program                                                        | `jeff`                                                                                                              | OpenQASM 3                               |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| [Quantum Teleportation](./teleportation/README.md)             | ❌                                                                                                                  | [✔️](./teleportation/teleportation.qasm) |
+| [Quantum Teleportation](./teleportation/README.md)             | [✔️](./teleportation/teleportation.jeff)                                                                            | [✔️](./teleportation/teleportation.qasm) |
 | [Grover's Search Algorithm](./grover/README.md)                | [3](./grover/grover_3.jeff), [5](./grover/grover_5.jeff), [7](./grover/grover_7.jeff)                               | [✔️](./grover/grover.qasm)               |
 | [GHZ State Preparation (linear)](./ghz-linear/README.md)       | [3](./ghz-linear/ghz-linear_3.jeff), [5](./ghz-linear/ghz-linear_5.jeff), [7](./ghz-linear/ghz-linear_7.jeff)       | [✔️](./ghz-linear/ghz-linear.qasm)       |
 | [GHZ State Preparation (star)](./ghz-star/README.md)           | [3](./ghz-star/ghz-star_3.jeff), [5](./ghz-star/ghz-star_5.jeff), [7](./ghz-star/ghz-star_7.jeff)                   | [✔️](./ghz-star/ghz-star.qasm)           |
