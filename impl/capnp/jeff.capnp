@@ -1407,7 +1407,7 @@ struct FloatOp {
         # - `float(N)`: The higher-precision float operand.
         #
         # Outputs:
-        # - `float(M)`: The truncated lower-precision float value (where M < N).toSInt @38 :Void;
+        # - `float(M)`: The truncated lower-precision float value (where M < N)
 
         toSInt @36 :Void;
         # Convert a float to a signed integer.
