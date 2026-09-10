@@ -7,13 +7,13 @@ techniques.
 
 ## Benchmark Program Tracker
 
-This section tracks the current programs of benchmark program implementation and
-indicates important features about the provided programs.
+This section tracks benchmark availability and the structured control-flow
+features used by each program.
 
 ### Implemented Benchmark Programs
 
-The following table lists the currently implemented benchmark programs and
-indicates the different formats the program is available in.
+The following table lists the available benchmark programs and their checked-in
+artifacts.
 
 | Program                                                                              | `jeff`                                                                                                                                                                                                                                                        | QC MLIR reference                                                                    |
 | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -31,25 +31,15 @@ indicates the different formats the program is available in.
 | [Controlled multiplication modulo N](./controlled-multiplication-modulo-n/README.md) | [3](./controlled-multiplication-modulo-n/controlled-multiplication-modulo-n_3.jeff), [5](./controlled-multiplication-modulo-n/controlled-multiplication-modulo-n_5.jeff), [7](./controlled-multiplication-modulo-n/controlled-multiplication-modulo-n_7.jeff) | [3](./controlled-multiplication-modulo-n/controlled-multiplication-modulo-n.qc.mlir) |
 | [Repeat-Until-Success](./repeat-until-success/README.md)                             | [3](./repeat-until-success/repeat-until-success_3.jeff), [5](./repeat-until-success/repeat-until-success_5.jeff), [7](./repeat-until-success/repeat-until-success_7.jeff)                                                                                     | [3](./repeat-until-success/repeat-until-success.qc.mlir)                             |
 
+> [!NOTE]
+> Additional benchmarks will be added on a rolling basis.
+
 The QC MLIR files are representative, human-readable views of the generated
-programs for `n = 3`. Like textual `jeff`, they are provided only for
-inspection. Use the binary `.jeff` files for benchmarks. Teleportation has a
-fixed size and therefore has no `n` suffix. Additional benchmarks will be added
-on a rolling basis.
+programs for `n = 3`. They are provided only for inspection. Use the binary
+`.jeff` files for benchmarks. Teleportation has a fixed size and therefore has
+no `n` suffix.
 
-### Generate Other Sizes
-
-The programs were generated with MQT Core v4. Install MQT Core and run the
-Python recipe from the repository root:
-
-```console
-python -m pip install "mqt-core>=4"
-python benchmarks/_recipes/structured/generate.py 9
-```
-
-The positional arguments select values of `n >= 3`. Without arguments, the
-recipe recreates the checked-in programs for `n = 3`, `n = 5`, and `n = 7`. The
-benchmark READMEs explain how each family interprets `n`.
+### Feature Matrix
 
 The following table lists the currently implemented benchmark programs together
 with the structured control-flow primitives they employ.
@@ -116,3 +106,17 @@ and that may be implemented through future pull requests.
 | VQE Ansatz with Fixed Repetitions     | ✔️                       | ❌                        | ❌                     | ✔️                       | ❌                                          | ❌                                  | ❌                       | ❌          | [Paper](https://arxiv.org/abs/1304.3061)                                                            | ✔️             | ❌        |
 | VQE                                   | ✔️                       | ❌                        | ❌                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | ❌          | [Paper](https://arxiv.org/abs/1304.3061)                                                            | ✔️             | ✔️        |
 | Measurement-based quantum computation | 🟦                       | ❌                        | 🟦                     | ✔️                       | ❌                                          | ✔️                                  | ❌                       | 🟦          | [Wikipedia](https://en.wikipedia.org/wiki/One-way_quantum_computer)                                 | ❌             | 🟦        |
+
+## Generate Other Sizes
+
+The programs were generated with MQT Core v4. Install MQT Core and run the
+Python recipe from the repository root:
+
+```console
+python -m pip install "mqt-core>=4"
+python benchmarks/_recipes/structured/generate.py 9
+```
+
+The positional arguments select values of `n >= 3`. Without arguments, the
+recipe recreates the checked-in programs for `n = 3`, `n = 5`, and `n = 7`. The
+benchmark READMEs explain how each family interprets `n`.
