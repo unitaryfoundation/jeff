@@ -3,6 +3,7 @@
 """Generate the structured benchmark programs with MQT Core."""
 
 from argparse import ArgumentParser
+from collections.abc import Iterator
 from fractions import Fraction
 from pathlib import Path
 
@@ -22,67 +23,89 @@ from mqt.core.mlir import OutputFormat, QCProgram, compile_program
 OUTPUT_DIRECTORY = Path(__file__).parents[2] / "structured"
 
 
-def programs(n: int) -> dict[str, QCProgram]:
+def programs(n: int) -> Iterator[tuple[str, QCProgram]]:
     """Create the scalable structured benchmarks for n."""
-    one = f"{1:0{n}b}"
-    return {
-        "ghz-linear": ghz.GHZ(
-            ghz.Options(qubits=n, topology=ghz.Topology.LINEAR)
-        ).generate(),
-        "ghz-star": ghz.GHZ(
-            ghz.Options(qubits=n, topology=ghz.Topology.STAR)
-        ).generate(),
-        "grover": grover.Grover(
-            grover.Options(marked_bitstring="1" * (n - 1))
-        ).generate(),
-        "qft": qft.QFT(
+    yield (
+        "ghz-linear",
+        ghz.GHZ(ghz.Options(qubits=n, topology=ghz.Topology.LINEAR)).generate(),
+    )
+    yield (
+        "ghz-star",
+        ghz.GHZ(ghz.Options(qubits=n, topology=ghz.Topology.STAR)).generate(),
+    )
+    yield (
+        "grover",
+        grover.Grover(grover.Options(marked_bitstring="1" * (n - 1))).generate(),
+    )
+    yield (
+        "qft",
+        qft.QFT(
             qft.Options(
                 qubits=n,
                 period_exponent=n,
                 method=qft.Method.STANDARD,
             )
         ).generate(),
-        "qpe": qpe.QPE(
+    )
+    yield (
+        "qpe",
+        qpe.QPE(
             qpe.Options(
                 precision=n - 1,
                 phase=Fraction(3, 16),
                 method=qpe.Method.STANDARD,
             )
         ).generate(),
-        "iqft": qft.QFT(
+    )
+    yield (
+        "iqft",
+        qft.QFT(
             qft.Options(
                 qubits=n,
                 period_exponent=n,
                 method=qft.Method.SEMICLASSICAL,
             )
         ).generate(),
-        "iqpe": qpe.QPE(
+    )
+    yield (
+        "iqpe",
+        qpe.QPE(
             qpe.Options(
                 precision=n,
                 phase=Fraction(3, 16),
                 method=qpe.Method.ITERATIVE,
             )
         ).generate(),
-        "multiplexer": multiplexer.Multiplexer(
-            multiplexer.Options(qubits=n)
-        ).generate(),
-        "qft-adder-quantum": qft_adder.QFTAdder(
+    )
+    yield (
+        "multiplexer",
+        multiplexer.Multiplexer(multiplexer.Options(qubits=n)).generate(),
+    )
+    yield (
+        "qft-adder-quantum",
+        qft_adder.QFTAdder(
             qft_adder.Options(
                 addend="+" * n,
-                accumulator=one,
+                accumulator=f"{1:0{n}b}",
                 method=qft_adder.Method.REGISTER,
                 overflow=qft_adder.Overflow.WRAP,
             )
         ).generate(),
-        "qft-adder-classical": qft_adder.QFTAdder(
+    )
+    yield (
+        "qft-adder-classical",
+        qft_adder.QFTAdder(
             qft_adder.Options(
                 addend=f"{5:0{n}b}",
-                accumulator=one,
+                accumulator=f"{1:0{n}b}",
                 method=qft_adder.Method.CONSTANT,
                 overflow=qft_adder.Overflow.WRAP,
             )
         ).generate(),
-        "controlled-multiplication-modulo-n": modular_multiplier.ModularMultiplier(
+    )
+    yield (
+        "controlled-multiplication-modulo-n",
+        modular_multiplier.ModularMultiplier(
             modular_multiplier.Options(
                 multiplier=f"{3:0{n}b}",
                 modulus=f"{(1 << (n - 1)) + 1:0{n}b}",
@@ -90,10 +113,13 @@ def programs(n: int) -> dict[str, QCProgram]:
                 control="+",
             )
         ).generate(),
-        "repeat-until-success": repeat_until_success.RepeatUntilSuccess(
+    )
+    yield (
+        "repeat-until-success",
+        repeat_until_success.RepeatUntilSuccess(
             repeat_until_success.Options(data_qubits=n)
         ).generate(),
-    }
+    )
 
 
 def write_program(slug: str, program: QCProgram, filename: str) -> None:
@@ -112,7 +138,7 @@ def main() -> None:
         parser.error("N must be at least 3")
 
     for n in args.n:
-        for slug, program in programs(n).items():
+        for slug, program in programs(n):
             directory = OUTPUT_DIRECTORY / slug
             write_program(slug, program, f"{slug}_{n}.jeff")
             if n == 3:
