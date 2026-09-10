@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["mqt-core>=4"]
+# ///
+
 """Generate the structured benchmark programs with MQT Core."""
 
 from argparse import ArgumentParser

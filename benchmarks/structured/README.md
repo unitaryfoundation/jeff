@@ -109,12 +109,11 @@ and that may be implemented through future pull requests.
 
 ## Generate Other Sizes
 
-The programs were generated with MQT Core v4. Install MQT Core and run the
-Python recipe from the repository root:
+The programs were generated with MQT Core v4. Run the Python recipe from the
+repository root with `uv`:
 
 ```console
-python -m pip install "mqt-core>=4"
-python benchmarks/_recipes/structured/generate.py 9
+uv run benchmarks/_recipes/structured/generate.py 9
 ```
 
 The positional arguments select values of `n >= 3`. Without arguments, the
