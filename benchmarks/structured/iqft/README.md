@@ -1,16 +1,11 @@
 # iqft
 
-This benchmark program is an implementation of Iterative Quantum Fourier
-Transform (iQFT) with an arbitrary number of qubits.
-
-The provided program also includes the final swap operations to reverse the
-order of the qubits.
+This benchmark program is an implementation of the semiclassical Quantum Fourier
+Transform, called Iterative Quantum Fourier Transform (iQFT) in the benchmark
+table. It measures and resets one qubit per iteration and uses earlier
+measurement results for phase corrections. The size parameter `n` is the number
+of result bits.
 
 | Program Type                               | statically-bounded loops | dynamically-bounded loops | dynamic qubit indexing | dynamic classical values | conditionals on originally classical values | conditionals on measurement results | dynamic qubit allocation | qubit reuse | references                                                                 | arbitrary-size | composite |
 | ------------------------------------------ | ------------------------ | ------------------------- | ---------------------- | ------------------------ | ------------------------------------------- | ----------------------------------- | ------------------------ | ----------- | -------------------------------------------------------------------------- | -------------- | --------- |
 | Iterative Quantum Fourier Transform (iQFT) | ✔️                       | ❌                        | ✔️                     | 🟦                       | ❌                                          | ✔️                                  | ❌                       | ✔️          | [Paper](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.76.3228) | ✔️             | ❌        |
-
-## Constraints & Concerns
-
-- The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it
-  is still used in this benchmark for potential future compatibility.
