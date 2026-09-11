@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-rs-v0.2.0...jeff-format-rs-v0.2.1) - 2026-09-11
+
+### New Features
+
+- Add more arithmetic operations ([#101](https://github.com/unitaryfoundation/jeff/pull/101))
+
 ## [0.2.0](https://github.com/unitaryfoundation/jeff/compare/jeff-v0.1.0...jeff-format-rs-v0.2.0) - 2026-08-17
 
 ### Bug Fixes
