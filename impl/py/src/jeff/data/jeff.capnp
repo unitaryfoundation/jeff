@@ -2,7 +2,7 @@
 @0xcc0f7aa735ae288c;
 # jeff Exchange Format
 #
-# This file defines the schema for the jeff exchange format version 0.3.0.
+# This file defines the schema for the jeff exchange format version 0.3.1.
 #
 # See the [jeff
 # Specification](https://github.com/unitaryfoundation/jeff/blob/main/docs/spec.md)
@@ -20,7 +20,7 @@ const schemaVersionMinor: UInt32 = 3;
 # The minor version of the format.
 #
 # Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionPatch`.
-const schemaVersionPatch: UInt32 = 0;
+const schemaVersionPatch: UInt32 = 1;
 # The patch version of the format.
 #
 # Forms a semver version triplet with `schemaVersionMajor` and `schemaVersionMinor`.

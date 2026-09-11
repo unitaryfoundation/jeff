@@ -6,7 +6,7 @@
 
 pub const SCHEMA_VERSION_MAJOR: u32 = 0;
 pub const SCHEMA_VERSION_MINOR: u32 = 3;
-pub const SCHEMA_VERSION_PATCH: u32 = 0;
+pub const SCHEMA_VERSION_PATCH: u32 = 1;
 
 #[repr(u16)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

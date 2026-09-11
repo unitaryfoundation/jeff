@@ -89,7 +89,7 @@ namespace jeff {
 
 static constexpr  ::uint32_t SCHEMA_VERSION_MAJOR = 0u;
 static constexpr  ::uint32_t SCHEMA_VERSION_MINOR = 3u;
-static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 0u;
+static constexpr  ::uint32_t SCHEMA_VERSION_PATCH = 1u;
 typedef ::capnp::schemas::FloatPrecision_ff11858a5d46ba79 FloatPrecision;
 
 typedef ::capnp::schemas::Pauli_8ecf0123694bb7e6 Pauli;
