@@ -63,5 +63,10 @@ update-capnp:
     ./examples/encode_examples.sh
 
 # Generate benchmark programs.
+#
+# The positional arguments select values of `n >= 3`. Without arguments, the
+# recipe recreates the checked-in programs for `n = 3`, `n = 5`, and `n = 7`. The
+# benchmark READMEs explain how each family interprets `n`.
+[doc('Generate benchmark programs.')]
 generate-benchmarks *N:
     uv run benchmarks/_recipes/structured/generate.py {{N}}
