@@ -2,7 +2,7 @@
 
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["mqt-core~=4.0.0"]
+# dependencies = ["mqt-core==4.0.0"]
 # ///
 
 """Generate the structured benchmark programs with MQT Core."""
