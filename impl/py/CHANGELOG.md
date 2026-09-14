@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.0...jeff-format-py-v0.1.1) (2026-09-11)
+
+
+### Features
+
+* Add more arithmetic operations ([#101](https://github.com/unitaryfoundation/jeff/issues/101)) ([3bf34d2](https://github.com/unitaryfoundation/jeff/commit/3bf34d222f250f5cdcdf13510cab4b4740c0c1a3))
+
 ## [0.1.0](https://github.com/unitaryfoundation/jeff/compare/jeff-v0.1.0...jeff-format-py-v0.1.0) (2026-08-17)
 
 

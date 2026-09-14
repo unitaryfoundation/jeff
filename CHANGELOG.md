@@ -10,6 +10,12 @@ files.
 The project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-09-11
+
+- The format now supports floating-point division; integer and floating-point
+  select, extension, and truncation operations; and signed and unsigned
+  conversions between integer and floating-point values ([#101])
+
 ## [0.3.0] - 2026-07-02
 
 This version releases a new `verifier` tool as well as two breaking changes. The
@@ -43,12 +49,14 @@ Initial release. Format defined with capnproto `1.3.0`.
 
 <!-- Version links -->
 
+[0.3.1]: https://github.com/unitaryfoundation/jeff/tree/jeff-v0.3.1
 [0.3.0]: https://github.com/unitaryfoundation/jeff/tree/jeff-v0.3.0
 [0.2.0]: https://github.com/unitaryfoundation/jeff/tree/jeff-v0.2.0
 [0.1.0]: https://github.com/unitaryfoundation/jeff/tree/jeff-v0.1.0
 
 <!-- PR links -->
 
+[#101]: https://github.com/unitaryfoundation/jeff/pull/101
 [#78]: https://github.com/unitaryfoundation/jeff/pull/78
 [#74]: https://github.com/unitaryfoundation/jeff/pull/74
 [#72]: https://github.com/unitaryfoundation/jeff/pull/72
