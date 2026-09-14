@@ -39,7 +39,9 @@ programs for `n = 3`. QC is one of the MLIR dialects in the
 [MQT Compiler Collection (`mqt-cc`)](https://mqt.readthedocs.io/projects/core/en/latest/mlir/index.html),
 which is part of [MQT Core](https://github.com/munich-quantum-toolkit/core).
 These files are provided only for inspection. Use the binary `.jeff` files for
-benchmarks. Teleportation has a fixed size and therefore has no `n` suffix.
+benchmarks.
+
+Teleportation has a fixed size and therefore has no `n` suffix.
 
 ### Feature Matrix
 
