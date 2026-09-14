@@ -111,11 +111,11 @@ and that may be implemented through future pull requests.
 
 ## Generate Other Sizes
 
-The programs were generated with MQT Core. Run the Python recipe from the
-repository root with `uv`:
+The programs were generated with MQT Core. Run the recipe from the repository
+root with `just`:
 
 ```console
-uv run benchmarks/_recipes/structured/generate.py 9
+just generate-benchmarks 9
 ```
 
 The positional arguments select values of `n >= 3`. Without arguments, the

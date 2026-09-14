@@ -61,3 +61,7 @@ update-capnp:
     patch -p0 -R < impl/capnp/cpp_namespace.patch
     # Re-encode the test examples
     ./examples/encode_examples.sh
+
+# Generate benchmark programs.
+generate-benchmarks *N:
+    uv run benchmarks/_recipes/structured/generate.py {{N}}
