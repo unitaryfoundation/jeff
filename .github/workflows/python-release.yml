@@ -1,17 +1,16 @@
-# Build and publish the Python package for a release created by release-please.
+# Manually retry a Python release.
+#
+# Register `python-release.yml` as a PyPI trusted publisher (environment: pypi)
+# to use this workflow.
+#
+# This code is a clone of the `publish` job in `release-please.yml`. PyPI
+# Trusted Publishing does not support reusing workflows through `workflow_call`,
+# so these cannot be deduplicated.
+#
+# Ensure this definition and `release-please.yml` remain in sync.
 name: Release wheels 🚚 🐍
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        description: GitHub release tag to publish
-        required: true
-        type: string
-      commit:
-        description: Commit to build before the draft release creates its tag
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       tag:
