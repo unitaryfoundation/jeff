@@ -13,5 +13,3 @@ ancilla qubit.
 ## Constraints & Concerns
 
 - The size parameter `n` must be at least 2.
-- The OpenQASM 3.0 specification does not support dynamic qubit indexing, but it
-  is still used in this benchmark for potential future compatibility.
