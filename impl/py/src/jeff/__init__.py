@@ -572,7 +572,12 @@ class JeffOp:
         if self._subkind is not _Empty:
             return self._subkind
 
-        return str(getattr(self._raw_data.instruction, self.kind).which)
+        group = getattr(self._raw_data.instruction, self.kind)
+        if not group.schema.union_fields:
+            # A group with a single field, such as `FuncOp`, has no union to ask.
+            (field,) = group.schema.non_union_fields
+            return str(field)
+        return str(group.which)
 
     # convenience methods
 
