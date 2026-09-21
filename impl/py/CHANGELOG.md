@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.1...jeff-format-py-v0.1.2) (2026-09-21)
+
+
+### Bug Fixes
+
+* **py:** read the subkind of an op group that has no union ([#112](https://github.com/unitaryfoundation/jeff/issues/112)) ([5eed007](https://github.com/unitaryfoundation/jeff/commit/5eed0076d2fd8645546e1fbc3aaeccaebb5973a8))
+
 ## [0.1.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.0...jeff-format-py-v0.1.1) (2026-09-11)
 
 
