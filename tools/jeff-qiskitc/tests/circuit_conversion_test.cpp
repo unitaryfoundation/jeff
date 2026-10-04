@@ -7,8 +7,8 @@
 // built only from gates this converter supports, so a lossless round
 // trip is expected.
 //
-//   cmake --build build --target circuit_conversion_test
-//   ./build/tests/circuit_conversion_test
+//   cmake --build build --target jeff_qiskitc_tests
+//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*CircuitRoundTripTest*'
 
 #include "capnp/jeff.capnp.h"
 #include "jeff_qiskitc.h"

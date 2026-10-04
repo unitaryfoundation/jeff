@@ -7,8 +7,8 @@
 // in-memory Reader/Array<word> API), this exercises the actual file I/O
 // path: open/write/close then open/read/close via real file descriptors.
 //
-//   cmake --build build --target file_conversion_test
-//   ./build/tests/file_conversion_test
+//   cmake --build build --target jeff_qiskitc_tests
+//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*FileRoundTripTest*'
 
 #include "jeff_qiskitc.h"
 #include "test_utils.h"

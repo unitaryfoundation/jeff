@@ -5,8 +5,8 @@
 // Covers every gate in WellKnownToQkGateMap/ControlledQkGateMap plus a
 // few Pauli product rotations, one test case per gate.
 //
-//   cmake --build build --target gate_conversion_test
-//   ./build/tests/gate_conversion_test
+//   cmake --build build --target jeff_qiskitc_tests
+//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*WellKnownGateTest*:*PauliProductRotationTest*'
 
 #include "../lib/gate_converter.h"
 #include "capnp/jeff.capnp.h"
