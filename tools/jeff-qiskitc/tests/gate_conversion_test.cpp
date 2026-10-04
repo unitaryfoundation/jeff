@@ -289,10 +289,18 @@ INSTANTIATE_TEST_SUITE_P(Gates, WellKnownGateTest, ::testing::ValuesIn(well_know
 // Pauli product rotations
 //===--------------------------------------------------------------------===//
 
+// jeff's ppr is exp(iθP) (impl/capnp/jeff.capnp) and Qiskit's is exp(-iθ/2·P)
+// (qiskit/circuit/library/generalized_gates/pauli_product_rotation.py), so the same rotation
+// has θ_qiskit = -2·θ_jeff.
+double jeff_to_qiskit_angle(double jeff_angle) { return -2.0 * jeff_angle; }
+
+// Both angles are spelled out so each case states the convention on its own; the tests also
+// check every case against jeff_to_qiskit_angle to catch typos in the table.
 struct PprCase {
     std::string label;
     std::vector<jeff::Pauli> pauli_string;
-    double angle;
+    double jeff_angle;
+    double qiskit_angle;
 };
 
 void PrintTo(const PprCase& ppr_case, std::ostream* os) { *os << ppr_case.label; }
@@ -323,11 +331,13 @@ void pauli_to_zx(jeff::Pauli pauli, bool* z, bool* x) {
 // jeff_to_qiskitc: a ppr gate produces a matching QkPauliProductRotation.
 TEST_P(PauliProductRotationTest, JeffToQiskit) {
     const PprCase& ppr_case = GetParam();
+    ASSERT_DOUBLE_EQ(ppr_case.qiskit_angle, jeff_to_qiskit_angle(ppr_case.jeff_angle))
+        << "test case angles disagree with the convention";
     const uint32_t num_qubits = static_cast<uint32_t>(ppr_case.pauli_string.size());
 
     capnp::MallocMessageBuilder message;
     jeff::Module::Reader mod = build_single_gate_module(
-        message, num_qubits, {ppr_case.angle}, [&](jeff::QubitGate::Builder gate) {
+        message, num_qubits, {ppr_case.jeff_angle}, [&](jeff::QubitGate::Builder gate) {
             auto pauli_list = gate.initPpr().initPauliString(num_qubits);
             for (uint32_t i = 0; i < num_qubits; i++) {
                 pauli_list.set(i, ppr_case.pauli_string[i]);
@@ -352,7 +362,7 @@ TEST_P(PauliProductRotationTest, JeffToQiskit) {
         EXPECT_EQ(rotation.z[i], expected_z) << "z[" << i << "]";
         EXPECT_EQ(rotation.x[i], expected_x) << "x[" << i << "]";
     }
-    EXPECT_EQ(qk_param_as_real(rotation.angle), ppr_case.angle);
+    EXPECT_DOUBLE_EQ(qk_param_as_real(rotation.angle), ppr_case.qiskit_angle);
 
     qk_pauli_product_rotation_clear(&rotation);
 }
@@ -360,6 +370,8 @@ TEST_P(PauliProductRotationTest, JeffToQiskit) {
 // qiskitc_to_jeff: a QkPauliProductRotation produces a matching ppr gate op.
 TEST_P(PauliProductRotationTest, QiskitToJeff) {
     const PprCase& ppr_case = GetParam();
+    ASSERT_DOUBLE_EQ(ppr_case.qiskit_angle, jeff_to_qiskit_angle(ppr_case.jeff_angle))
+        << "test case angles disagree with the convention";
     const uint32_t num_qubits = static_cast<uint32_t>(ppr_case.pauli_string.size());
 
     auto z = std::make_unique<bool[]>(num_qubits);
@@ -368,7 +380,7 @@ TEST_P(PauliProductRotationTest, QiskitToJeff) {
         pauli_to_zx(ppr_case.pauli_string[i], &z[i], &x[i]);
     }
     std::unique_ptr<QkParam, decltype(&qk_param_free)> angle_param(
-        qk_param_from_double(ppr_case.angle), qk_param_free);
+        qk_param_from_double(ppr_case.qiskit_angle), qk_param_free);
     QkPauliProductRotation rotation{z.get(), x.get(), num_qubits, angle_param.get()};
 
     CircuitPtr circuit(qk_circuit_new(num_qubits, 0));
@@ -393,7 +405,7 @@ TEST_P(PauliProductRotationTest, QiskitToJeff) {
     auto angle_instr = angle_op.getInstruction();
     ASSERT_TRUE(angle_instr.isFloat());
     ASSERT_TRUE(angle_instr.getFloat().isConst64());
-    EXPECT_EQ(angle_instr.getFloat().getConst64(), ppr_case.angle);
+    EXPECT_DOUBLE_EQ(angle_instr.getFloat().getConst64(), ppr_case.jeff_angle);
     const uint32_t angle_value = angle_op.getOutputs()[0];
 
     jeff::Op::Reader gate_op = operations[num_qubits + 1];
@@ -423,10 +435,11 @@ TEST_P(PauliProductRotationTest, QiskitToJeff) {
 
 INSTANTIATE_TEST_SUITE_P(
     Rotations, PauliProductRotationTest,
-    ::testing::Values(PprCase{"III", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::I}, 0.7},
-                      PprCase{"IXX", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::X}, 1.1},
-                      PprCase{"IXZ", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::Z}, -0.3},
-                      PprCase{"IIY", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::Y}, 2.4}),
+    ::testing::Values(
+        PprCase{"III", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::I}, 0.7, -1.4},
+        PprCase{"IXX", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::X}, 1.1, -2.2},
+        PprCase{"IXZ", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::Z}, -0.3, 0.6},
+        PprCase{"IIY", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::Y}, 2.4, -4.8}),
     [](const ::testing::TestParamInfo<PprCase>& info) { return info.param.label; });
 
 //===--------------------------------------------------------------------===//
@@ -557,7 +570,8 @@ TEST(PauliProductRotationAdjointTest, NegatesAngle) {
     ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
     QkPauliProductRotation rotation;
     qk_circuit_inst_pauli_product_rotation(circuit.get(), 0, &rotation);
-    EXPECT_EQ(qk_param_as_real(rotation.angle), -0.5);
+    // jeff 0.5, adjoint -> jeff -0.5 -> Qiskit -2·(-0.5) = 1.0.
+    EXPECT_DOUBLE_EQ(qk_param_as_real(rotation.angle), 1.0);
     qk_pauli_product_rotation_clear(&rotation);
 }
 
@@ -588,7 +602,8 @@ TEST(PowerTest, UnsetPowerCountsAsOne) {
         ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
         QkPauliProductRotation rotation;
         qk_circuit_inst_pauli_product_rotation(circuit.get(), 0, &rotation);
-        EXPECT_EQ(qk_param_as_real(rotation.angle), 0.5);
+        // jeff 0.5 -> Qiskit -2·0.5 = -1.0.
+        EXPECT_DOUBLE_EQ(qk_param_as_real(rotation.angle), -1.0);
         qk_pauli_product_rotation_clear(&rotation);
     }
 }

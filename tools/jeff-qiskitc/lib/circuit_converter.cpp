@@ -202,8 +202,9 @@ void PPROp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
     QkPauliProductRotation rotation;
     qk_circuit_inst_pauli_product_rotation(circuit_, index_, &rotation);
 
+    // Qiskit's ppr is exp(-iθ/2·P), jeff's is exp(iθP).
     uint32_t angle_value =
-        FloatOp(qk_param_as_real(rotation.angle)).build(operations, op_start, values);
+        FloatOp(-qk_param_as_real(rotation.angle) / 2.0).build(operations, op_start, values);
 
     jeff::Op::Builder op = operations[op_start + 1];
 

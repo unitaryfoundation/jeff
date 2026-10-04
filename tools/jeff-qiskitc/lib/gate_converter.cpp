@@ -135,6 +135,8 @@ PauliProductRotationGate::to_gate(const std::vector<double>& params) const {
     double angle = params[0];
     if (gate_.getAdjoint())
         angle = -angle;
+    // jeff's ppr is exp(iθP), Qiskit's is exp(-iθ/2·P).
+    angle = -2.0 * angle;
 
     auto pauli_string = gate_.getPpr().getPauliString();
     auto z = std::make_unique<bool[]>(pauli_string.size());
