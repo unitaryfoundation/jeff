@@ -22,6 +22,9 @@
  * - Only straight-line programs are supported: qubit allocations, non-destructive
  *   measurements, well-known gates and Pauli product rotations, and 32/64-bit float
  *   constants. Control flow, function calls, qubit frees and custom gates are not.
+ * - Gates with a `power` other than 1 are not supported, since Qiskit has no equivalent
+ *   and expanding them would change the structure of the program. An unset `power` (0)
+ *   counts as 1.
  * - Unsupported operations are reported on stderr and terminate the process.
  */
 QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
@@ -38,7 +41,7 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
  * Known limitations:
  *
  * - Only gates, Pauli product rotations and measurements are supported, and each gate must
- *   have a jeff well-known equivalent.
+ *   have a jeff well-known equivalent, possibly as an adjoint (e.g. `sdg` is an adjoint `s`).
  * - Unsupported instructions are reported on stderr and terminate the process.
  */
 kj::Array<capnp::word> qiskitc_to_jeff(const QkCircuit* circuit);

@@ -429,4 +429,190 @@ INSTANTIATE_TEST_SUITE_P(
                       PprCase{"IIY", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::Y}, 2.4}),
     [](const ::testing::TestParamInfo<PprCase>& info) { return info.param.label; });
 
+//===--------------------------------------------------------------------===//
+// Adjoint gates
+//===--------------------------------------------------------------------===//
+
+struct AdjointCase {
+    std::string label;
+    jeff::WellKnownGate well_known;
+    uint8_t control_qubits;
+    QkGate expected_gate;
+    std::vector<double> params;
+    std::vector<double> expected_params;
+};
+
+void PrintTo(const AdjointCase& adjoint_case, std::ostream* os) { *os << adjoint_case.label; }
+
+class JeffAdjointTest : public ::testing::TestWithParam<AdjointCase> {};
+
+// jeff_to_qiskitc: an adjoint wellKnown gate maps to the QkGate and params of its inverse.
+TEST_P(JeffAdjointTest, JeffToQiskit) {
+    const AdjointCase& adjoint_case = GetParam();
+    const uint32_t num_qubits = qk_gate_num_qubits(adjoint_case.expected_gate);
+
+    capnp::MallocMessageBuilder message;
+    jeff::Module::Reader mod = build_single_gate_module(
+        message, num_qubits, adjoint_case.params, [&](jeff::QubitGate::Builder gate) {
+            gate.setWellKnown(adjoint_case.well_known);
+            gate.setControlQubits(adjoint_case.control_qubits);
+            gate.setAdjoint(true);
+            gate.setPower(1);
+        });
+
+    const CircuitPtr circuit(jeff_to_qiskitc(mod));
+
+    ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
+    const ScopedInstruction inst(circuit.get(), 0);
+    EXPECT_EQ(std::string(inst->name), kQkGateNames.at(adjoint_case.expected_gate));
+    ASSERT_EQ(inst->num_params, adjoint_case.expected_params.size());
+    for (uint32_t i = 0; i < inst->num_params; i++) {
+        EXPECT_EQ(qk_param_as_real(inst->params[i]), adjoint_case.expected_params[i])
+            << "param " << i;
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Gates, JeffAdjointTest,
+    ::testing::Values(
+        // Gates whose adjoint is a different QkGate.
+        AdjointCase{"s", jeff::WellKnownGate::S, 0, QkGate_Sdg, {}, {}},
+        AdjointCase{"t", jeff::WellKnownGate::T, 0, QkGate_Tdg, {}, {}},
+        AdjointCase{"cs", jeff::WellKnownGate::S, 1, QkGate_CSdg, {}, {}},
+        // Self-inverse gates.
+        AdjointCase{"x", jeff::WellKnownGate::X, 0, QkGate_X, {}, {}},
+        AdjointCase{"cx", jeff::WellKnownGate::X, 1, QkGate_CX, {}, {}},
+        AdjointCase{"swap", jeff::WellKnownGate::SWAP, 0, QkGate_Swap, {}, {}},
+        // Gates inverted by negating their angles.
+        AdjointCase{"gphase", jeff::WellKnownGate::GPHASE, 0, QkGate_GlobalPhase, {0.5}, {-0.5}},
+        AdjointCase{"r1", jeff::WellKnownGate::R1, 0, QkGate_Phase, {0.5}, {-0.5}},
+        AdjointCase{"rx", jeff::WellKnownGate::RX, 0, QkGate_RX, {0.5}, {-0.5}},
+        AdjointCase{"ry", jeff::WellKnownGate::RY, 0, QkGate_RY, {0.5}, {-0.5}},
+        AdjointCase{"rz", jeff::WellKnownGate::RZ, 0, QkGate_RZ, {0.5}, {-0.5}},
+        AdjointCase{"crz", jeff::WellKnownGate::RZ, 1, QkGate_CRZ, {0.5}, {-0.5}},
+        // U(θ, φ, λ)† = U(-θ, -λ, -φ).
+        AdjointCase{"u", jeff::WellKnownGate::U, 0, QkGate_U, {0.5, 1.5, 2.5}, {-0.5, -2.5, -1.5}}),
+    [](const ::testing::TestParamInfo<AdjointCase>& info) { return info.param.label; });
+
+struct QiskitAdjointCase {
+    QkGate qk_gate;
+    jeff::WellKnownGate well_known;
+    uint8_t control_qubits;
+};
+
+void PrintTo(const QiskitAdjointCase& adjoint_case, std::ostream* os) {
+    *os << kQkGateNames.at(adjoint_case.qk_gate);
+}
+
+class QiskitAdjointTest : public ::testing::TestWithParam<QiskitAdjointCase> {};
+
+// qiskitc_to_jeff: a QkGate that is the inverse of a well-known gate becomes that gate with
+// `adjoint` set, and converts back to the original QkGate.
+TEST_P(QiskitAdjointTest, RoundTrips) {
+    const QiskitAdjointCase& adjoint_case = GetParam();
+    const uint32_t num_qubits = qk_gate_num_qubits(adjoint_case.qk_gate);
+
+    const CircuitPtr original = build_single_gate_circuit(adjoint_case.qk_gate, num_qubits, {});
+    kj::Array<capnp::word> serialized = qiskitc_to_jeff(original.get());
+
+    capnp::FlatArrayMessageReader reader(serialized.asPtr());
+    jeff::Module::Reader mod = reader.getRoot<jeff::Module>();
+
+    auto operations = mod.getFunctions()[0].getDefinition().getBody().getOperations();
+    ASSERT_EQ(operations.size(), num_qubits + 1) << "allocs + gate";
+
+    jeff::QubitGate::Reader gate =
+        operations[num_qubits].getInstruction().getQubit().getGate();
+    ASSERT_TRUE(gate.isWellKnown());
+    EXPECT_EQ(gate.getWellKnown(), adjoint_case.well_known);
+    EXPECT_EQ(gate.getControlQubits(), adjoint_case.control_qubits);
+    EXPECT_TRUE(gate.getAdjoint());
+    EXPECT_EQ(gate.getPower(), 1);
+
+    const CircuitPtr roundtripped(jeff_to_qiskitc(mod));
+    expect_same_circuit(original.get(), roundtripped.get());
+}
+
+INSTANTIATE_TEST_SUITE_P(Gates, QiskitAdjointTest,
+                         ::testing::Values(QiskitAdjointCase{QkGate_Sdg, jeff::WellKnownGate::S, 0},
+                                           QiskitAdjointCase{QkGate_Tdg, jeff::WellKnownGate::T, 0},
+                                           QiskitAdjointCase{QkGate_CSdg, jeff::WellKnownGate::S,
+                                                             1}),
+                         [](const ::testing::TestParamInfo<QiskitAdjointCase>& info) {
+                             return kQkGateNames.at(info.param.qk_gate);
+                         });
+
+// jeff_to_qiskitc: an adjoint ppr negates its angle.
+TEST(PauliProductRotationAdjointTest, NegatesAngle) {
+    capnp::MallocMessageBuilder message;
+    jeff::Module::Reader mod =
+        build_single_gate_module(message, 1, {0.5}, [](jeff::QubitGate::Builder gate) {
+            gate.initPpr().initPauliString(1).set(0, jeff::Pauli::Z);
+            gate.setAdjoint(true);
+            gate.setPower(1);
+        });
+
+    const CircuitPtr circuit(jeff_to_qiskitc(mod));
+
+    ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
+    QkPauliProductRotation rotation;
+    qk_circuit_inst_pauli_product_rotation(circuit.get(), 0, &rotation);
+    EXPECT_EQ(qk_param_as_real(rotation.angle), -0.5);
+    qk_pauli_product_rotation_clear(&rotation);
+}
+
+//===--------------------------------------------------------------------===//
+// Gate powers
+//===--------------------------------------------------------------------===//
+
+// `power` defaults to 0, which means 1, so a gate that never sets it converts as usual.
+TEST(PowerTest, UnsetPowerCountsAsOne) {
+    {
+        capnp::MallocMessageBuilder message;
+        jeff::Module::Reader mod =
+            build_single_gate_module(message, 1, {}, [](jeff::QubitGate::Builder gate) {
+                gate.setWellKnown(jeff::WellKnownGate::H);
+            });
+        const CircuitPtr circuit(jeff_to_qiskitc(mod));
+        ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
+        const ScopedInstruction inst(circuit.get(), 0);
+        EXPECT_STREQ(inst->name, "h");
+    }
+    {
+        capnp::MallocMessageBuilder message;
+        jeff::Module::Reader mod =
+            build_single_gate_module(message, 1, {0.5}, [](jeff::QubitGate::Builder gate) {
+                gate.initPpr().initPauliString(1).set(0, jeff::Pauli::Z);
+            });
+        const CircuitPtr circuit(jeff_to_qiskitc(mod));
+        ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
+        QkPauliProductRotation rotation;
+        qk_circuit_inst_pauli_product_rotation(circuit.get(), 0, &rotation);
+        EXPECT_EQ(qk_param_as_real(rotation.angle), 0.5);
+        qk_pauli_product_rotation_clear(&rotation);
+    }
+}
+
+TEST(PowerDeathTest, RejectsWellKnownGatePower) {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    capnp::MallocMessageBuilder message;
+    jeff::Module::Reader mod =
+        build_single_gate_module(message, 1, {}, [](jeff::QubitGate::Builder gate) {
+            gate.setWellKnown(jeff::WellKnownGate::T);
+            gate.setPower(2);
+        });
+    EXPECT_EXIT({ jeff_to_qiskitc(mod); }, ::testing::ExitedWithCode(1), "power 2");
+}
+
+TEST(PowerDeathTest, RejectsPauliProductRotationPower) {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    capnp::MallocMessageBuilder message;
+    jeff::Module::Reader mod =
+        build_single_gate_module(message, 1, {0.5}, [](jeff::QubitGate::Builder gate) {
+            gate.initPpr().initPauliString(1).set(0, jeff::Pauli::Z);
+            gate.setPower(3);
+        });
+    EXPECT_EXIT({ jeff_to_qiskitc(mod); }, ::testing::ExitedWithCode(1), "power 3");
+}
+
 } // namespace jeff_qiskitc_test

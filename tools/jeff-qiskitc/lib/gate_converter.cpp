@@ -4,12 +4,27 @@
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#include <utility>
 
 namespace JeffToQiskit {
+
+namespace {
+// QkCircuit has no notion of gate powers, and expanding them would change the structure of the
+// program, so only a power of 1 is supported. `power` defaults to 0, which, matching the Rust
+// reader (impl/rs/src/reader/optype/qubit.rs), means 1.
+void reject_power(jeff::QubitGate::Reader gate, const char* context) {
+    uint8_t power = gate.getPower() == 0 ? 1 : gate.getPower();
+    if (power != 1) {
+        std::fprintf(stderr, "%s: gates with power %u are not supported\n", context, power);
+        std::exit(1);
+    }
+}
+} // namespace
 
 WellKnownGate::WellKnownGate(jeff::QubitGate::Reader gate) : gate_(gate) {}
 
 void WellKnownGate::operand_counts(uint32_t* num_qubits, uint32_t* num_params) const {
+    reject_power(gate_, "WellKnownGate::operand_counts");
     QkGate qk_gate;
     if (!to_gate(&qk_gate)) {
         std::fprintf(
@@ -28,6 +43,12 @@ bool WellKnownGate::to_gate(QkGate* gate) const {
     }
     QkGate base_gate = well_known_it->second;
 
+    if (gate_.getAdjoint()) {
+        auto adjoint_it = AdjointQkGateMap.find(base_gate);
+        if (adjoint_it != AdjointQkGateMap.end())
+            base_gate = adjoint_it->second;
+    }
+
     uint8_t control_qubits = gate_.getControlQubits();
     if (control_qubits == 0) {
         *gate = base_gate;
@@ -42,8 +63,20 @@ bool WellKnownGate::to_gate(QkGate* gate) const {
     return true;
 }
 
+void WellKnownGate::apply_adjoint(std::vector<double>& params) const {
+    if (!gate_.getAdjoint())
+        return;
+    // The parametrized well-known gates (gphase, r1, rx, ry, rz and their controlled forms) are
+    // inverted by negating their angles. U(θ, φ, λ)† = U(-θ, -λ, -φ) additionally swaps φ and λ.
+    for (double& param : params)
+        param = -param;
+    if (gate_.getWellKnown() == jeff::WellKnownGate::U)
+        std::swap(params[1], params[2]);
+}
+
 void WellKnownGate::emit(QkCircuit* circuit, std::vector<uint32_t> qubits,
                          std::vector<double> params) const {
+    reject_power(gate_, "WellKnownGate::emit");
     QkGate qk_gate;
     if (!to_gate(&qk_gate)) {
         std::fprintf(stderr,
@@ -62,6 +95,8 @@ void WellKnownGate::emit(QkCircuit* circuit, std::vector<uint32_t> qubits,
         std::exit(1);
     }
 
+    apply_adjoint(params);
+
     uint8_t control_qubits = gate_.getControlQubits();
     std::rotate(qubits.begin(), qubits.begin() + (qubits.size() - control_qubits), qubits.end());
     qk_circuit_gate(circuit, qk_gate, qubits.data(), params.empty() ? nullptr : params.data());
@@ -75,6 +110,7 @@ void PauliProductRotationGate::operand_counts(uint32_t* num_qubits, uint32_t* nu
                              "rotation has no QkCircuit equivalent\n");
         std::exit(1);
     }
+    reject_power(gate_, "PauliProductRotationGate::operand_counts");
     *num_qubits = gate_.getPpr().getPauliString().size();
     *num_params = 1;
 }
@@ -94,10 +130,11 @@ PauliProductRotationGate::to_gate(const std::vector<double>& params) const {
         std::exit(1);
     }
 
+    reject_power(gate_, "PauliProductRotationGate::to_rotation");
+
     double angle = params[0];
     if (gate_.getAdjoint())
         angle = -angle;
-    angle *= gate_.getPower();
 
     auto pauli_string = gate_.getPpr().getPauliString();
     auto z = std::make_unique<bool[]>(pauli_string.size());
@@ -178,13 +215,20 @@ bool WellKnownGate::to_gate(jeff::QubitGate::Builder gate) const {
         base_gate = controlled_it->second.second;
     }
 
+    bool adjoint = false;
+    auto adjoint_it = QkGateToAdjointMap.find(base_gate);
+    if (adjoint_it != QkGateToAdjointMap.end()) {
+        base_gate = adjoint_it->second;
+        adjoint = true;
+    }
+
     auto well_known_it = QkGateToWellKnownMap.find(base_gate);
     if (well_known_it == QkGateToWellKnownMap.end())
         return false;
 
     gate.setWellKnown(well_known_it->second);
     gate.setControlQubits(control_qubits);
-    gate.setAdjoint(false);
+    gate.setAdjoint(adjoint);
     gate.setPower(1);
     return true;
 }

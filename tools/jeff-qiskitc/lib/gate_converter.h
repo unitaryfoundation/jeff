@@ -38,6 +38,21 @@ inline const std::unordered_map<QkGate, jeff::WellKnownGate> QkGateToWellKnownMa
     return reverse;
 }();
 
+// Well-known gates whose adjoint is a different QkGate. Every other well-known gate is either
+// self-inverse or inverted by negating its parameters, so it keeps its QkGate.
+inline const std::unordered_map<QkGate, QkGate> AdjointQkGateMap = {
+    {QkGate_S, QkGate_Sdg},
+    {QkGate_T, QkGate_Tdg},
+};
+
+inline const std::unordered_map<QkGate, QkGate> QkGateToAdjointMap = [] {
+    std::unordered_map<QkGate, QkGate> reverse;
+    for (const auto& [qk_gate, adjoint_gate] : AdjointQkGateMap) {
+        reverse.emplace(adjoint_gate, qk_gate);
+    }
+    return reverse;
+}();
+
 inline const std::map<std::pair<uint8_t, QkGate>, QkGate> ControlledQkGateMap = {
     {{1, QkGate_H}, QkGate_CH},         {{1, QkGate_X}, QkGate_CX},
     {{1, QkGate_Y}, QkGate_CY},         {{1, QkGate_Z}, QkGate_CZ},
@@ -71,7 +86,9 @@ inline const std::unordered_map<std::string, QkGate> NameToQkGateMap = {
     {"ry", QkGate_RY},
     {"rz", QkGate_RZ},
     {"s", QkGate_S},
+    {"sdg", QkGate_Sdg},
     {"t", QkGate_T},
+    {"tdg", QkGate_Tdg},
     {"u", QkGate_U},
     {"swap", QkGate_Swap},
     {"ch", QkGate_CH},
@@ -109,6 +126,8 @@ class WellKnownGate {
 
   private:
     jeff::QubitGate::Reader gate_;
+
+    void apply_adjoint(std::vector<double>& params) const;
 };
 
 class PauliProductRotationGate {
