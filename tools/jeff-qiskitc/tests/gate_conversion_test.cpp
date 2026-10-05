@@ -630,4 +630,35 @@ TEST(PowerDeathTest, RejectsPauliProductRotationPower) {
     EXPECT_EXIT({ jeff_to_qiskitc(mod); }, ::testing::ExitedWithCode(1), "power 3");
 }
 
+//===--------------------------------------------------------------------===//
+// Symbolic parameters
+//===--------------------------------------------------------------------===//
+
+TEST(SymbolicParameterDeathTest, RejectsSymbolicAngle) {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    CircuitPtr original(qk_circuit_new(1, 0));
+    QkParam* theta = qk_param_new_symbol("theta");
+    const QkParam* params[] = {theta};
+    uint32_t qubits[] = {0};
+    qk_circuit_parameterized_gate(original.get(), QkGate_RX, qubits, params);
+    qk_param_free(theta);
+
+    EXPECT_EXIT({ qiskitc_to_jeff(original.get()); }, ::testing::ExitedWithCode(1), "symbolic");
+}
+
+TEST(SymbolicParameterDeathTest, RejectsSymbolicPprAngle) {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    bool z[] = {true};
+    bool x[] = {false};
+    std::unique_ptr<QkParam, decltype(&qk_param_free)> theta(qk_param_new_symbol("theta"),
+                                                             qk_param_free);
+    QkPauliProductRotation rotation{z, x, 1, theta.get()};
+
+    CircuitPtr original(qk_circuit_new(1, 0));
+    uint32_t qubits[] = {0};
+    qk_circuit_pauli_product_rotation(original.get(), &rotation, qubits);
+
+    EXPECT_EXIT({ qiskitc_to_jeff(original.get()); }, ::testing::ExitedWithCode(1), "symbolic");
+}
+
 } // namespace jeff_qiskitc_test

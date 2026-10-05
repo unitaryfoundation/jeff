@@ -165,6 +165,10 @@ class QubitGate {
 
 namespace QiskitToJeff {
 
+// Converts a Qiskit gate parameter to the numeric value jeff stores. Symbolic (unbound)
+// parameters have no jeff equivalent and are rejected.
+double read_param(const QkParam* param, const char* context);
+
 class WellKnownGate {
   public:
     explicit WellKnownGate(QkGate gate);
@@ -180,6 +184,9 @@ class WellKnownGate {
 class PauliProductRotationGate {
   public:
     explicit PauliProductRotationGate(const QkPauliProductRotation& gate);
+
+    // The rotation angle in jeff's convention.
+    double angle() const;
 
     bool to_gate(jeff::QubitGate::Builder gate) const;
 

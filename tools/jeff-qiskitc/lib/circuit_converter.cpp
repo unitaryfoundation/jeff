@@ -177,7 +177,8 @@ void WellKnownOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_s
 
     for (uint32_t i = 0; i < inst_.num_params; i++) {
         uint32_t v =
-            FloatOp(qk_param_as_real(inst_.params[i])).build(operations, op_start + i, values);
+            FloatOp(read_param(inst_.params[i], "QiskitToJeff::WellKnownOp::build"))
+                .build(operations, op_start + i, values);
         op.getInputs().set(inst_.num_qubits + i, v);
     }
 
@@ -201,10 +202,9 @@ void PPROp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
                   ValueMap& values) const {
     QkPauliProductRotation rotation;
     qk_circuit_inst_pauli_product_rotation(circuit_, index_, &rotation);
+    PauliProductRotationGate gate(rotation);
 
-    // Qiskit's ppr is exp(-iθ/2·P), jeff's is exp(iθP).
-    uint32_t angle_value =
-        FloatOp(-qk_param_as_real(rotation.angle) / 2.0).build(operations, op_start, values);
+    uint32_t angle_value = FloatOp(gate.angle()).build(operations, op_start, values);
 
     jeff::Op::Builder op = operations[op_start + 1];
 
@@ -221,7 +221,7 @@ void PPROp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
         values.record_qubit(inst_.qubits[i], v);
     }
 
-    PauliProductRotationGate(rotation).emit(op);
+    gate.emit(op);
 
     qk_pauli_product_rotation_clear(&rotation);
 }

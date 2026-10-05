@@ -1,6 +1,7 @@
 #include "gate_converter.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -205,6 +206,18 @@ void QubitGate::emit(QkCircuit* circuit, std::vector<uint32_t> qubits,
 
 namespace QiskitToJeff {
 
+double read_param(const QkParam* param, const char* context) {
+    // qk_param_as_real returns NAN for parameters with unbound symbols. Qiskit 2.5 has no
+    // qk_param_kind to tell these apart from a bound NaN, which is just as meaningless as a gate
+    // parameter, so both are rejected.
+    double value = qk_param_as_real(param);
+    if (std::isnan(value)) {
+        std::fprintf(stderr, "%s: symbolic parameters are not supported\n", context);
+        std::exit(1);
+    }
+    return value;
+}
+
 WellKnownGate::WellKnownGate(QkGate gate) : gate_(gate) {}
 
 bool WellKnownGate::to_gate(jeff::QubitGate::Builder gate) const {
@@ -268,6 +281,11 @@ void WellKnownGate::emit(jeff::Op::Builder op) const {
 
 PauliProductRotationGate::PauliProductRotationGate(const QkPauliProductRotation& gate)
     : gate_(&gate) {}
+
+double PauliProductRotationGate::angle() const {
+    // Qiskit's ppr is exp(-iθ/2·P), jeff's is exp(iθP).
+    return -read_param(gate_->angle, "QiskitToJeff::PauliProductRotationGate::angle") / 2.0;
+}
 
 bool PauliProductRotationGate::to_gate(jeff::QubitGate::Builder gate) const {
     auto pauli_string = gate.initPpr().initPauliString(static_cast<unsigned int>(gate_->len));

@@ -42,6 +42,7 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
  *
  * - Only gates, Pauli product rotations and measurements are supported, and each gate must
  *   have a jeff well-known equivalent, possibly as an adjoint (e.g. `sdg` is an adjoint `s`).
+ * - Symbolic (unbound) parameters are not supported.
  * - Unsupported instructions are reported on stderr and terminate the process.
  */
 kj::Array<capnp::word> qiskitc_to_jeff(const QkCircuit* circuit);
