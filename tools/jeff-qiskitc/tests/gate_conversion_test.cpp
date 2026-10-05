@@ -152,13 +152,16 @@ class WellKnownGateTest : public ::testing::TestWithParam<GateCase> {};
 
 // Every gate in WellKnownToQkGateMap uncontrolled, plus every entry of
 // ControlledQkGateMap whose base gate has a jeff WellKnownGate equivalent
-// (Sdg, SX, U1, U3, ... don't, so they're left out).
+// (Sdg, SX, U1, U3, ... don't, so they're left out). CU is also left out:
+// it has a parameter jeff's controlled u doesn't, so it has its own tests.
 std::vector<GateCase> well_known_gate_cases() {
     std::vector<GateCase> cases;
     for (const auto& [well_known, qk_gate] : WellKnownToQkGateMap) {
         cases.push_back({well_known, /*control_qubits=*/0, qk_gate});
     }
     for (const auto& [key, controlled_gate] : ControlledQkGateMap) {
+        if (controlled_gate == QkGate_CU)
+            continue;
         const auto& [control_qubits, base_gate] = key;
         auto well_known_it = QkGateToWellKnownMap.find(base_gate);
         if (well_known_it == QkGateToWellKnownMap.end())
@@ -573,6 +576,150 @@ TEST(PauliProductRotationAdjointTest, NegatesAngle) {
     // jeff 0.5, adjoint -> jeff -0.5 -> Qiskit -2·(-0.5) = 1.0.
     EXPECT_DOUBLE_EQ(qk_param_as_real(rotation.angle), 1.0);
     qk_pauli_product_rotation_clear(&rotation);
+}
+
+//===--------------------------------------------------------------------===//
+// Controlled U
+//
+// jeff's controlled u(θ, φ, λ) has 3 parameters; Qiskit's CU(θ, φ, λ, γ) adds
+// a phase γ applied only when the control is |1>. jeff's gate is CU(θ, φ, λ, 0),
+// and CU(θ, φ, λ, γ) is jeff's controlled u plus r1(γ) on the control qubit.
+//===--------------------------------------------------------------------===//
+
+TEST(ControlledUTest, ControlledJeffUHasThreeParameters) {
+    capnp::MallocMessageBuilder message;
+    auto gate = message.initRoot<jeff::QubitGate>();
+    gate.setWellKnown(jeff::WellKnownGate::U);
+    gate.setControlQubits(1);
+    gate.setPower(1);
+
+    uint32_t qubits = 0, params = 0;
+    JeffToQiskit::WellKnownGate(gate.asReader()).operand_counts(&qubits, &params);
+
+    EXPECT_EQ(qubits, 2u);
+    EXPECT_EQ(params, 3u);
+}
+
+// jeff_to_qiskitc: a jeff controlled u (or its adjoint) becomes a CU with γ = 0.
+void expect_jeff_controlled_u_converts_to(bool adjoint, const std::vector<double>& expected) {
+    capnp::MallocMessageBuilder message;
+    jeff::Module::Reader mod =
+        build_single_gate_module(message, 2, {0.5, 1.5, 2.5}, [&](jeff::QubitGate::Builder gate) {
+            gate.setWellKnown(jeff::WellKnownGate::U);
+            gate.setControlQubits(1);
+            gate.setAdjoint(adjoint);
+            gate.setPower(1);
+        });
+
+    const CircuitPtr circuit(jeff_to_qiskitc(mod));
+
+    ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
+    const ScopedInstruction inst(circuit.get(), 0);
+    EXPECT_STREQ(inst->name, "cu");
+    // jeff orders qubits {target, control}; Qiskit wants {control, target}.
+    ASSERT_EQ(inst->num_qubits, 2u);
+    EXPECT_EQ(inst->qubits[0], 1u);
+    EXPECT_EQ(inst->qubits[1], 0u);
+    ASSERT_EQ(inst->num_params, expected.size());
+    for (uint32_t i = 0; i < inst->num_params; i++) {
+        EXPECT_DOUBLE_EQ(qk_param_as_real(inst->params[i]), expected[i]) << "param " << i;
+    }
+}
+
+TEST(ControlledUTest, JeffToQiskit) {
+    expect_jeff_controlled_u_converts_to(/*adjoint=*/false, {0.5, 1.5, 2.5, 0.0});
+}
+
+TEST(ControlledUTest, JeffAdjointToQiskit) {
+    // U(θ, φ, λ)† = U(-θ, -λ, -φ), and γ stays 0.
+    expect_jeff_controlled_u_converts_to(/*adjoint=*/true, {-0.5, -2.5, -1.5, 0.0});
+}
+
+// qiskitc_to_jeff: CU with γ = 0 is a single jeff controlled u with 3 floats.
+TEST(ControlledUTest, QiskitWithoutPhaseToJeff) {
+    const CircuitPtr circuit = build_single_gate_circuit(QkGate_CU, 2, {0.5, 1.5, 2.5, 0.0});
+    kj::Array<capnp::word> serialized = qiskitc_to_jeff(circuit.get());
+
+    capnp::FlatArrayMessageReader reader(serialized.asPtr());
+    auto operations = reader.getRoot<jeff::Module>()
+                          .getFunctions()[0]
+                          .getDefinition()
+                          .getBody()
+                          .getOperations();
+    ASSERT_EQ(operations.size(), 6u) << "2 allocs + 3 param consts + controlled u";
+
+    for (uint32_t i = 0; i < 3; i++) {
+        EXPECT_DOUBLE_EQ(operations[2 + i].getInstruction().getFloat().getConst64(), 0.5 + i)
+            << "param " << i;
+    }
+
+    jeff::Op::Reader u_op = operations[5];
+    jeff::QubitGate::Reader gate = u_op.getInstruction().getQubit().getGate();
+    EXPECT_EQ(gate.getWellKnown(), jeff::WellKnownGate::U);
+    EXPECT_EQ(gate.getControlQubits(), 1);
+    EXPECT_EQ(u_op.getInputs().size(), 5u) << "target, control, θ, φ, λ";
+}
+
+// qiskitc_to_jeff: CU with γ != 0 is a jeff controlled u with 3 floats followed by
+// r1(γ) on the control qubit.
+TEST(ControlledUTest, QiskitWithPhaseToJeff) {
+    const CircuitPtr circuit = build_single_gate_circuit(QkGate_CU, 2, {0.5, 1.5, 2.5, 3.5});
+    kj::Array<capnp::word> serialized = qiskitc_to_jeff(circuit.get());
+
+    capnp::FlatArrayMessageReader reader(serialized.asPtr());
+    auto operations = reader.getRoot<jeff::Module>()
+                          .getFunctions()[0]
+                          .getDefinition()
+                          .getBody()
+                          .getOperations();
+    ASSERT_EQ(operations.size(), 8u) << "2 allocs + 3 param consts + controlled u + γ const + r1";
+
+    jeff::Op::Reader u_op = operations[5];
+    jeff::QubitGate::Reader u_gate = u_op.getInstruction().getQubit().getGate();
+    EXPECT_EQ(u_gate.getWellKnown(), jeff::WellKnownGate::U);
+    EXPECT_EQ(u_gate.getControlQubits(), 1);
+    EXPECT_EQ(u_op.getInputs().size(), 5u) << "target, control, θ, φ, λ";
+
+    jeff::Op::Reader phase_op = operations[6];
+    EXPECT_DOUBLE_EQ(phase_op.getInstruction().getFloat().getConst64(), 3.5);
+
+    jeff::Op::Reader r1_op = operations[7];
+    jeff::QubitGate::Reader r1_gate = r1_op.getInstruction().getQubit().getGate();
+    EXPECT_EQ(r1_gate.getWellKnown(), jeff::WellKnownGate::R1);
+    EXPECT_EQ(r1_gate.getControlQubits(), 0);
+    ASSERT_EQ(r1_op.getInputs().size(), 2u);
+    // jeff's u outputs are {target, control}, so the control qubit is output 1.
+    EXPECT_EQ(r1_op.getInputs()[0], u_op.getOutputs()[1]) << "r1 acts on the control qubit";
+    EXPECT_EQ(r1_op.getInputs()[1], phase_op.getOutputs()[0]) << "r1 angle is γ";
+}
+
+// Round trip: CU(θ, φ, λ, γ) comes back as CU(θ, φ, λ, 0) followed by p(γ) on the control.
+TEST(ControlledUTest, RoundTripsWithPhase) {
+    const CircuitPtr original = build_single_gate_circuit(QkGate_CU, 2, {0.5, 1.5, 2.5, 3.5});
+    kj::Array<capnp::word> serialized = qiskitc_to_jeff(original.get());
+
+    capnp::FlatArrayMessageReader reader(serialized.asPtr());
+    const CircuitPtr roundtripped(jeff_to_qiskitc(reader.getRoot<jeff::Module>()));
+
+    ASSERT_EQ(qk_circuit_num_instructions(roundtripped.get()), 2u);
+
+    const ScopedInstruction cu(roundtripped.get(), 0);
+    EXPECT_STREQ(cu->name, "cu");
+    ASSERT_EQ(cu->num_qubits, 2u);
+    EXPECT_EQ(cu->qubits[0], 0u) << "control";
+    EXPECT_EQ(cu->qubits[1], 1u) << "target";
+    const std::vector<double> expected = {0.5, 1.5, 2.5, 0.0};
+    ASSERT_EQ(cu->num_params, expected.size());
+    for (uint32_t i = 0; i < cu->num_params; i++) {
+        EXPECT_DOUBLE_EQ(qk_param_as_real(cu->params[i]), expected[i]) << "param " << i;
+    }
+
+    const ScopedInstruction phase(roundtripped.get(), 1);
+    EXPECT_STREQ(phase->name, "p");
+    ASSERT_EQ(phase->num_qubits, 1u);
+    EXPECT_EQ(phase->qubits[0], 0u) << "on the control qubit";
+    ASSERT_EQ(phase->num_params, 1u);
+    EXPECT_DOUBLE_EQ(qk_param_as_real(phase->params[0]), 3.5);
 }
 
 //===--------------------------------------------------------------------===//

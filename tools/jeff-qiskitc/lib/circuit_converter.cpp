@@ -155,27 +155,43 @@ void MeasureNdOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_s
     values.record_clbit(inst_.clbits[0], clbit_value);
 }
 
-WellKnownOp::WellKnownOp(const QkCircuitInstruction& inst) : inst_(inst) {}
+WellKnownOp::WellKnownOp(const QkCircuitInstruction& inst)
+    : inst_(inst), qk_gate_([&] {
+          auto qk_gate_it = NameToQkGateMap.find(inst.name);
+          if (qk_gate_it == NameToQkGateMap.end()) {
+              std::fprintf(stderr,
+                           "QiskitToJeff::WellKnownOp: unrecognized gate name \"%s\"\n",
+                           inst.name);
+              std::exit(1);
+          }
+          return qk_gate_it->second;
+      }()) {}
 
-uint32_t WellKnownOp::num_jeff_ops() const { return inst_.num_params + 1; }
-uint32_t WellKnownOp::num_jeff_values() const { return inst_.num_params + inst_.num_qubits; }
+// The gate op and one float constant per parameter, plus a float constant and an r1 on the
+// control qubit if the gate has a control-only phase (see WellKnownGate::control_phase).
+uint32_t WellKnownOp::num_jeff_ops() const {
+    WellKnownGate gate(qk_gate_);
+    return gate.num_params() + 1 + (gate.control_phase(inst_.params) != 0.0 ? 2 : 0);
+}
+
+uint32_t WellKnownOp::num_jeff_values() const {
+    WellKnownGate gate(qk_gate_);
+    return gate.num_params() + inst_.num_qubits +
+           (gate.control_phase(inst_.params) != 0.0 ? 2 : 0);
+}
 
 void WellKnownOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
                         ValueMap& values) const {
-    auto qk_gate_it = NameToQkGateMap.find(inst_.name);
-    if (qk_gate_it == NameToQkGateMap.end()) {
-        std::fprintf(stderr, "QiskitToJeff::WellKnownOp::build: unrecognized gate name \"%s\"\n",
-                     inst_.name);
-        std::exit(1);
-    }
+    WellKnownGate gate(qk_gate_);
+    uint32_t num_params = gate.num_params();
 
-    jeff::Op::Builder op = operations[op_start + inst_.num_params];
+    jeff::Op::Builder op = operations[op_start + num_params];
 
-    op.initInputs(inst_.num_qubits + inst_.num_params);
+    op.initInputs(inst_.num_qubits + num_params);
     for (uint32_t i = 0; i < inst_.num_qubits; i++)
         op.getInputs().set(i, values.resolve_qubit(inst_.qubits[i]));
 
-    for (uint32_t i = 0; i < inst_.num_params; i++) {
+    for (uint32_t i = 0; i < num_params; i++) {
         uint32_t v =
             FloatOp(read_param(inst_.params[i], "QiskitToJeff::WellKnownOp::build"))
                 .build(operations, op_start + i, values);
@@ -189,7 +205,25 @@ void WellKnownOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_s
         values.record_qubit(inst_.qubits[i], v);
     }
 
-    WellKnownGate(qk_gate_it->second).emit(op);
+    gate.emit(op);
+
+    double phase = gate.control_phase(inst_.params);
+    if (phase == 0.0)
+        return;
+
+    // Qiskit lists the control qubit first.
+    uint32_t control = inst_.qubits[0];
+    uint32_t phase_op = op_start + num_params + 1;
+    uint32_t phase_value = FloatOp(phase).build(operations, phase_op, values);
+
+    jeff::Op::Builder r1 = operations[phase_op + 1];
+    r1.initInputs(2);
+    r1.getInputs().set(0, values.resolve_qubit(control));
+    r1.getInputs().set(1, phase_value);
+    uint32_t v = values.allocate_qubit_value();
+    r1.initOutputs(1).set(0, v);
+    values.record_qubit(control, v);
+    WellKnownGate(QkGate_Phase).emit(r1);
 }
 
 PPROp::PPROp(const QkCircuit* circuit, size_t index, const QkCircuitInstruction& inst)

@@ -33,21 +33,31 @@ void WellKnownGate::operand_counts(uint32_t* num_qubits, uint32_t* num_params) c
             "WellKnownGate::operand_counts: unrecognized wellKnown value or no matching QkGate\n");
         std::exit(1);
     }
+    QkGate base_gate;
+    uncontrolled_gate(&base_gate);
     *num_qubits = qk_gate_num_qubits(qk_gate);
-    *num_params = qk_gate_num_params(qk_gate);
+    *num_params = qk_gate_num_params(base_gate);
 }
 
-bool WellKnownGate::to_gate(QkGate* gate) const {
+bool WellKnownGate::uncontrolled_gate(QkGate* gate) const {
     auto well_known_it = WellKnownToQkGateMap.find(gate_.getWellKnown());
     if (well_known_it == WellKnownToQkGateMap.end()) {
         return false;
     }
-    QkGate base_gate = well_known_it->second;
+    *gate = well_known_it->second;
 
     if (gate_.getAdjoint()) {
-        auto adjoint_it = AdjointQkGateMap.find(base_gate);
+        auto adjoint_it = AdjointQkGateMap.find(*gate);
         if (adjoint_it != AdjointQkGateMap.end())
-            base_gate = adjoint_it->second;
+            *gate = adjoint_it->second;
+    }
+    return true;
+}
+
+bool WellKnownGate::to_gate(QkGate* gate) const {
+    QkGate base_gate;
+    if (!uncontrolled_gate(&base_gate)) {
+        return false;
     }
 
     uint8_t control_qubits = gate_.getControlQubits();
@@ -90,13 +100,19 @@ void WellKnownGate::emit(QkCircuit* circuit, std::vector<uint32_t> qubits,
                      qk_gate_num_qubits(qk_gate), qubits.size());
         std::exit(1);
     }
-    if (params.size() != qk_gate_num_params(qk_gate)) {
-        std::fprintf(stderr, "WellKnownGate::emit: expected %u params for this QkGate, got %zu\n",
-                     qk_gate_num_params(qk_gate), params.size());
+    QkGate base_gate;
+    uncontrolled_gate(&base_gate);
+    if (params.size() != qk_gate_num_params(base_gate)) {
+        std::fprintf(stderr, "WellKnownGate::emit: expected %u params for this gate, got %zu\n",
+                     qk_gate_num_params(base_gate), params.size());
         std::exit(1);
     }
 
     apply_adjoint(params);
+    // Qiskit's CU(θ, φ, λ, γ) adds a phase γ when the control is |1>; jeff's controlled u has
+    // none, so it is CU(θ, φ, λ, 0).
+    if (qk_gate == QkGate_CU)
+        params.push_back(0.0);
 
     uint8_t control_qubits = gate_.getControlQubits();
     std::rotate(qubits.begin(), qubits.begin() + (qubits.size() - control_qubits), qubits.end());
@@ -219,6 +235,20 @@ double read_param(const QkParam* param, const char* context) {
 }
 
 WellKnownGate::WellKnownGate(QkGate gate) : gate_(gate) {}
+
+uint32_t WellKnownGate::num_params() const {
+    QkGate base_gate = gate_;
+    auto controlled_it = QkGateToControlledMap.find(gate_);
+    if (controlled_it != QkGateToControlledMap.end())
+        base_gate = controlled_it->second.second;
+    return qk_gate_num_params(base_gate);
+}
+
+double WellKnownGate::control_phase(const QkParam* const* params) const {
+    if (gate_ != QkGate_CU)
+        return 0.0;
+    return read_param(params[3], "QiskitToJeff::WellKnownGate::control_phase");
+}
 
 bool WellKnownGate::to_gate(jeff::QubitGate::Builder gate) const {
     uint8_t control_qubits = 0;

@@ -36,7 +36,9 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
  *
  * @details
  * The resulting module holds a single function, whose body allocates one qubit per circuit
- * qubit and then mirrors the circuit's instructions in order.
+ * qubit and then mirrors the circuit's instructions in order. The one exception is `cu` with
+ * a non-zero γ, which becomes a controlled `u` followed by an `r1(γ)` on the control qubit,
+ * since jeff's controlled `u` has no γ parameter.
  *
  * Known limitations:
  *

@@ -127,6 +127,10 @@ class WellKnownGate {
   private:
     jeff::QubitGate::Reader gate_;
 
+    // The QkGate for this gate without its controls. A jeff controlled gate takes the same
+    // float inputs as its uncontrolled form.
+    bool uncontrolled_gate(QkGate* gate) const;
+
     void apply_adjoint(std::vector<double>& params) const;
 };
 
@@ -172,6 +176,15 @@ double read_param(const QkParam* param, const char* context);
 class WellKnownGate {
   public:
     explicit WellKnownGate(QkGate gate);
+
+    // Number of float inputs jeff's gate takes. For CU this is 3: Qiskit's fourth parameter is
+    // the phase returned by control_phase.
+    uint32_t num_params() const;
+
+    // The phase Qiskit applies only when the controls are |1>: CU's γ, and 0 for every other
+    // gate. jeff's controlled u has no such phase, so it is emitted as a separate r1 on the
+    // control qubit.
+    double control_phase(const QkParam* const* params) const;
 
     bool to_gate(jeff::QubitGate::Builder gate) const;
 

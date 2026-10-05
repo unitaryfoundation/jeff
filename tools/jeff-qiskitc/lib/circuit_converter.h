@@ -145,6 +145,7 @@ class WellKnownOp {
 
   private:
     const QkCircuitInstruction& inst_;
+    QkGate qk_gate_;
 };
 
 class PPROp {
