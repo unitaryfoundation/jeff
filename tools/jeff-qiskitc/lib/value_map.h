@@ -14,11 +14,14 @@ class ValueMap {
 
     uint32_t allocate_qubit();
 
-    uint32_t allocate_clbit();
-
     uint32_t resolve_qubit(uint32_t value) const;
 
     void record_qubit(uint32_t value, uint32_t qubit);
+
+    // Clbits are assigned up front by assign_clbits, one per measurement result.
+    uint32_t resolve_clbit(uint32_t value) const;
+
+    void record_clbit(uint32_t value, uint32_t clbit);
 
     void record_float(uint32_t value, double f);
 
@@ -26,9 +29,9 @@ class ValueMap {
 
   private:
     std::vector<uint32_t> value_to_qubit_;
+    std::vector<uint32_t> value_to_clbit_;
     std::vector<double> value_to_float_;
     uint32_t next_qubit_index_ = 0;
-    uint32_t next_clbit_index_ = 0;
 };
 
 } // namespace JeffToQiskit

@@ -4,8 +4,97 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <limits>
 
 namespace JeffToQiskit {
+
+namespace {
+constexpr uint32_t kNone = std::numeric_limits<uint32_t>::max();
+
+struct Measurement {
+    uint32_t qubit;  // Qubit identity, following the qubit through the ops.
+    uint32_t result; // The int(1) measurement result value.
+};
+
+// The clbit of a measurement after `m` whose result is a target clbit, preferring one on the
+// same qubit. That measurement is the clbit's final write, so anything written to the clbit
+// before it is overwritten.
+uint32_t overwritten_clbit(const std::vector<Measurement>& measurements, size_t m,
+                           const std::vector<uint32_t>& target_clbit) {
+    for (size_t later = m + 1; later < measurements.size(); later++) {
+        if (measurements[later].qubit == measurements[m].qubit &&
+            target_clbit.at(measurements[later].result) != kNone)
+            return target_clbit.at(measurements[later].result);
+    }
+    for (size_t later = m + 1; later < measurements.size(); later++) {
+        if (target_clbit.at(measurements[later].result) != kNone)
+            return target_clbit.at(measurements[later].result);
+    }
+    return kNone;
+}
+} // namespace
+
+uint32_t assign_clbits(jeff::Function::Definition::Reader def, ValueMap& values) {
+    jeff::Region::Reader body = def.getBody();
+    auto value_types = def.getValues();
+
+    // The int(1) targets, in order, are the circuit's clbits.
+    std::vector<uint32_t> target_clbit(value_types.size(), kNone);
+    uint32_t num_clbits = 0;
+    for (uint32_t value : body.getTargets()) {
+        auto type = value_types[value].getType();
+        if (!type.isInt() || type.getInt() != 1)
+            continue;
+        if (target_clbit.at(value) != kNone) {
+            std::fprintf(stderr,
+                         "JeffToQiskit::assign_clbits: int(1) value %u is returned more than "
+                         "once, but a measurement can only write one clbit\n",
+                         value);
+            std::exit(1);
+        }
+        target_clbit.at(value) = num_clbits++;
+    }
+
+    // Follow each qubit through the ops: a qubit output takes the identity of the input at the
+    // same position, which holds for every qubit op the converter supports.
+    std::vector<uint32_t> qubit_id(value_types.size(), kNone);
+    uint32_t num_qubits = 0;
+    std::vector<Measurement> measurements;
+    for (jeff::Op::Reader op : body.getOperations()) {
+        auto instr = op.getInstruction();
+        auto inputs = op.getInputs();
+        auto outputs = op.getOutputs();
+
+        if (instr.isInt() && instr.getInt().isConst1() && instr.getInt().getConst1() &&
+            target_clbit.at(outputs[0]) != kNone) {
+            std::fprintf(stderr, "JeffToQiskit::assign_clbits: a clbit returned as the constant "
+                                 "1 has no Qiskit equivalent\n");
+            std::exit(1);
+        }
+
+        if (instr.isQubit() && instr.getQubit().isAlloc()) {
+            qubit_id.at(outputs[0]) = num_qubits++;
+            continue;
+        }
+        for (uint32_t i = 0; i < outputs.size() && i < inputs.size(); i++) {
+            if (qubit_id.at(inputs[i]) != kNone)
+                qubit_id.at(outputs[i]) = qubit_id.at(inputs[i]);
+        }
+        if (instr.isQubit() && instr.getQubit().isMeasureNd())
+            measurements.push_back({qubit_id.at(inputs[0]), outputs[1]});
+    }
+
+    for (size_t m = 0; m < measurements.size(); m++) {
+        uint32_t clbit = target_clbit.at(measurements[m].result);
+        if (clbit == kNone)
+            clbit = overwritten_clbit(measurements, m, target_clbit);
+        if (clbit == kNone)
+            clbit = num_clbits++;
+        values.record_clbit(measurements[m].result, clbit);
+    }
+
+    return num_clbits;
+}
 
 GateOp::GateOp(jeff::Op::Reader jeff_op) : jeff_op_(jeff_op) {}
 
@@ -45,9 +134,9 @@ void MeasureNdOp::build(QkCircuit* circuit, ValueMap& values) const {
     for (uint32_t value : jeff_op_.getInputs())
         qubits.push_back(values.resolve_qubit(value));
 
-    qk_circuit_measure(circuit, qubits[0], values.allocate_clbit());
-
     auto outputs = jeff_op_.getOutputs();
+    qk_circuit_measure(circuit, qubits[0], values.resolve_clbit(outputs[1]));
+
     for (uint32_t i = 0; i < qubits.size(); i++)
         values.record_qubit(outputs[i], qubits[i]);
 }
@@ -91,13 +180,24 @@ void FloatOp::build(QkCircuit*, ValueMap& values) const {
     values.record_float(jeff_op_.getOutputs()[0], value);
 }
 
+IntOp::IntOp(jeff::Op::Reader jeff_op) : jeff_op_(jeff_op) {}
+
+void IntOp::build(QkCircuit*, ValueMap&) const {
+    if (!jeff_op_.getInstruction().getInt().isConst1()) {
+        std::fprintf(stderr, "IntOp::build: unhandled IntOp kind (only const1 is supported)\n");
+        std::exit(1);
+    }
+}
+
 Op::Op(jeff::Op::Reader jeff_op)
-    : op_([&]() -> std::variant<QubitOp, FloatOp> {
+    : op_([&]() -> std::variant<QubitOp, FloatOp, IntOp> {
           auto instr = jeff_op.getInstruction();
           if (instr.isQubit())
               return QubitOp(jeff_op);
           if (instr.isFloat())
               return FloatOp(jeff_op);
+          if (instr.isInt())
+              return IntOp(jeff_op);
           std::fprintf(stderr, "Op: unhandled instruction kind\n");
           std::exit(1);
       }()) {}
@@ -134,6 +234,16 @@ void AllocOp::build(jeff::Op::Builder op, ValueMap& values) const {
     op.initOutputs(1).set(0, v);
     op.getInstruction().initQubit().setAlloc();
     values.record_qubit(qubit_, v);
+}
+
+ClbitInitOp::ClbitInitOp(uint32_t clbit) : clbit_(clbit) {}
+
+void ClbitInitOp::build(jeff::Op::Builder op, ValueMap& values) const {
+    op.initInputs(0);
+    uint32_t v = values.allocate_bit_value();
+    op.initOutputs(1).set(0, v);
+    op.getInstruction().initInt().setConst1(false);
+    values.record_clbit(clbit_, v);
 }
 
 MeasureNdOp::MeasureNdOp(const QkCircuitInstruction& inst) : inst_(inst) {}
@@ -291,6 +401,12 @@ uint32_t Op::num_jeff_values() const {
 void Op::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
                ValueMap& values) const {
     std::visit([&](const auto& o) { o.build(operations, op_start, values); }, op_);
+}
+
+std::optional<uint32_t> Op::measured_clbit() const {
+    if (std::holds_alternative<MeasureNdOp>(op_))
+        return inst_.clbits[0];
+    return std::nullopt;
 }
 
 } // namespace QiskitToJeff

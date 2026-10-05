@@ -17,11 +17,19 @@
  * The function selected for conversion is the one named by the module's `entrypoint`; any
  * other functions in the module are ignored.
  *
+ * jeff has no classical bits, so the circuit's clbits are the function's `int(1)` outputs, in
+ * order. A measurement whose result is not returned is written to a clbit that a later
+ * measurement overwrites (preferring one on the same qubit), or otherwise to an extra clbit
+ * after the returned ones.
+ *
  * Known limitations:
  *
  * - Only straight-line programs are supported: qubit allocations, non-destructive
- *   measurements, well-known gates and Pauli product rotations, and 32/64-bit float
- *   constants. Control flow, function calls, qubit frees and custom gates are not.
+ *   measurements, well-known gates and Pauli product rotations, 32/64-bit float constants,
+ *   and 1-bit integer constants. Control flow, function calls, qubit frees and custom gates
+ *   are not.
+ * - A returned clbit must be a measurement result or the constant 0, and may be returned only
+ *   once.
  * - Gates with a `power` other than 1 are not supported, since Qiskit has no equivalent
  *   and expanding them would change the structure of the program. An unset `power` (0)
  *   counts as 1.

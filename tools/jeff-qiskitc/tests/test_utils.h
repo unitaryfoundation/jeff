@@ -88,6 +88,42 @@ inline CircuitPtr build_qft(uint32_t n) {
     return qc;
 }
 
+// Circuits whose clbits are not written once each, in qubit order.
+
+// measure(q0 -> c1), measure(q1 -> c0): the clbit order differs from the
+// measurement order.
+inline CircuitPtr build_swapped_measurements() {
+    CircuitPtr qc(qk_circuit_new(2, 2));
+    qk_circuit_measure(qc.get(), 0, 1);
+    qk_circuit_measure(qc.get(), 1, 0);
+    return qc;
+}
+
+// Clbit 1 is never written.
+inline CircuitPtr build_unmeasured_clbit() {
+    CircuitPtr qc(qk_circuit_new(1, 2));
+    qk_circuit_measure(qc.get(), 0, 0);
+    return qc;
+}
+
+// q0 is measured into c0 twice; the first result is overwritten.
+inline CircuitPtr build_repeated_measurement() {
+    CircuitPtr qc(qk_circuit_new(1, 1));
+    std::vector<uint32_t> x_qubits = {0};
+    qk_circuit_measure(qc.get(), 0, 0);
+    qk_circuit_gate(qc.get(), QkGate_X, x_qubits.data(), nullptr);
+    qk_circuit_measure(qc.get(), 0, 0);
+    return qc;
+}
+
+// c0 is written by q0, then overwritten by a measurement of q1.
+inline CircuitPtr build_overwritten_clbit() {
+    CircuitPtr qc(qk_circuit_new(2, 1));
+    qk_circuit_measure(qc.get(), 0, 0);
+    qk_circuit_measure(qc.get(), 1, 0);
+    return qc;
+}
+
 // Shared by the in-memory and through-a-file round-trip tests.
 struct CircuitCase {
     std::string name;
@@ -103,6 +139,10 @@ inline std::vector<CircuitCase> circuit_cases() {
         {"BellPair", [] { return build_bell_pair(); }},
         {"GHZ10", [] { return build_ghz(10); }},
         {"QFT5", [] { return build_qft(5); }},
+        {"SwappedMeasurements", [] { return build_swapped_measurements(); }},
+        {"UnmeasuredClbit", [] { return build_unmeasured_clbit(); }},
+        {"RepeatedMeasurement", [] { return build_repeated_measurement(); }},
+        {"OverwrittenClbit", [] { return build_overwritten_clbit(); }},
     };
 }
 

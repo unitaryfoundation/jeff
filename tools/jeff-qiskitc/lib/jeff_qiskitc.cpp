@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstring>
 #include <deque>
+#include <optional>
 #include <vector>
 
 QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod) {
@@ -21,12 +22,11 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod) {
 
     JeffToQiskit::ValueMap values(def.getValues().size());
 
-    uint32_t num_qubits = 0, num_clbits = 0;
+    uint32_t num_qubits = 0;
     JeffToQiskit::walk_jeff_ops(body, [&](jeff::Op::Reader op) {
-        auto count = JeffToQiskit::Op(op).resource_count();
-        num_qubits += count.qubits;
-        num_clbits += count.clbits;
+        num_qubits += JeffToQiskit::Op(op).resource_count().qubits;
     });
+    uint32_t num_clbits = JeffToQiskit::assign_clbits(def, values);
 
     QkCircuit* circuit = qk_circuit_new(num_qubits, num_clbits);
 
@@ -43,6 +43,7 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
     size_t num_instructions = qk_circuit_num_instructions(circuit);
 
     std::deque<QiskitToJeff::Op> ops;
+    std::vector<bool> measured(num_clbits, false);
 
     uint32_t num_values = num_qubits; // one alloc-produced Value per qubit
     uint32_t num_ops = num_qubits;    // one alloc Op per qubit
@@ -50,7 +51,18 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
         QiskitToJeff::Op& op = ops.emplace_back(circuit, i);
         num_values += op.num_jeff_values();
         num_ops += op.num_jeff_ops();
+        if (std::optional<uint32_t> clbit = op.measured_clbit())
+            measured.at(*clbit) = true;
     }
+
+    // A clbit no measurement writes still needs an int(1) value among the targets.
+    std::vector<uint32_t> unmeasured_clbits;
+    for (uint32_t c = 0; c < num_clbits; c++) {
+        if (!measured[c])
+            unmeasured_clbits.push_back(c);
+    }
+    num_values += static_cast<uint32_t>(unmeasured_clbits.size());
+    num_ops += static_cast<uint32_t>(unmeasured_clbits.size());
 
     jeff::Module::Builder mod = message.initRoot<jeff::Module>();
     mod.setVersion(jeff::SCHEMA_VERSION_MAJOR);
@@ -72,10 +84,12 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
     auto values_list = def.initValues(num_values);
     QiskitToJeff::ValueMap value_map(values_list, num_qubits, num_clbits);
 
+    uint32_t op_idx = 0;
     for (uint32_t q = 0; q < num_qubits; q++)
-        QiskitToJeff::AllocOp(q).build(operations[q], value_map);
+        QiskitToJeff::AllocOp(q).build(operations[op_idx++], value_map);
+    for (uint32_t c : unmeasured_clbits)
+        QiskitToJeff::ClbitInitOp(c).build(operations[op_idx++], value_map);
 
-    uint32_t op_idx = num_qubits;
     for (const QiskitToJeff::Op& op : ops) {
         op.build(operations, op_idx, value_map);
         op_idx += op.num_jeff_ops();
