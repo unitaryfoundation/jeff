@@ -181,7 +181,8 @@ std::string gate_case_name(const ::testing::TestParamInfo<GateCase>& info) {
 }
 
 // jeff_to_qiskitc: a wellKnown gate maps to the expected QkGate, with the
-// right name, qubit order, and params.
+// right name, qubit order, and params. The exception is gphase, which becomes
+// the circuit's global phase attribute rather than an instruction.
 TEST_P(WellKnownGateTest, JeffToQiskit) {
     const GateCase& gate_case = GetParam();
     const std::string& name = kQkGateNames.at(gate_case.qk_gate);
@@ -202,6 +203,13 @@ TEST_P(WellKnownGateTest, JeffToQiskit) {
     const CircuitPtr circuit(jeff_to_qiskitc(mod));
 
     EXPECT_EQ(qk_circuit_num_qubits(circuit.get()), num_qubits);
+
+    if (gate_case.qk_gate == QkGate_GlobalPhase) {
+        EXPECT_EQ(qk_circuit_num_instructions(circuit.get()), 0u);
+        expect_same_phase(global_phase_of(circuit.get()), params[0]);
+        return;
+    }
+
     ASSERT_EQ(qk_circuit_num_instructions(circuit.get()), 1u);
 
     const ScopedInstruction inst(circuit.get(), 0);
@@ -500,7 +508,6 @@ INSTANTIATE_TEST_SUITE_P(
         AdjointCase{"cx", jeff::WellKnownGate::X, 1, QkGate_CX, {}, {}},
         AdjointCase{"swap", jeff::WellKnownGate::SWAP, 0, QkGate_Swap, {}, {}},
         // Gates inverted by negating their angles.
-        AdjointCase{"gphase", jeff::WellKnownGate::GPHASE, 0, QkGate_GlobalPhase, {0.5}, {-0.5}},
         AdjointCase{"r1", jeff::WellKnownGate::R1, 0, QkGate_Phase, {0.5}, {-0.5}},
         AdjointCase{"rx", jeff::WellKnownGate::RX, 0, QkGate_RX, {0.5}, {-0.5}},
         AdjointCase{"ry", jeff::WellKnownGate::RY, 0, QkGate_RY, {0.5}, {-0.5}},
@@ -806,6 +813,90 @@ TEST(SymbolicParameterDeathTest, RejectsSymbolicPprAngle) {
     qk_circuit_pauli_product_rotation(original.get(), &rotation, qubits);
 
     EXPECT_EXIT({ qiskitc_to_jeff(original.get()); }, ::testing::ExitedWithCode(1), "symbolic");
+}
+
+TEST(SymbolicParameterDeathTest, RejectsSymbolicGlobalPhase) {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    CircuitPtr original(qk_circuit_new(1, 0));
+    QkParam* theta = qk_param_new_symbol("theta");
+    qk_circuit_set_global_phase(original.get(), theta);
+    qk_param_free(theta);
+
+    EXPECT_EXIT({ qiskitc_to_jeff(original.get()); }, ::testing::ExitedWithCode(1), "symbolic");
+}
+
+//===--------------------------------------------------------------------===//
+// Global phase
+//
+// Qiskit keeps a circuit's global phase as an attribute, so jeff_to_qiskitc
+// adds an uncontrolled gphase to it instead of emitting an instruction.
+//===--------------------------------------------------------------------===//
+
+// A module whose body is one uncontrolled gphase per entry in `phases`.
+jeff::Module::Reader build_gphase_module(capnp::MessageBuilder& message,
+                                         const std::vector<double>& phases, bool adjoint) {
+    const uint32_t n = static_cast<uint32_t>(phases.size());
+
+    jeff::Module::Builder mod = message.initRoot<jeff::Module>();
+    mod.setVersion(jeff::SCHEMA_VERSION_MAJOR);
+    mod.setVersionMinor(jeff::SCHEMA_VERSION_MINOR);
+    mod.setVersionPatch(jeff::SCHEMA_VERSION_PATCH);
+    mod.setEntrypoint(0);
+    mod.initStrings(1).set(0, "gphase_test");
+
+    jeff::Function::Builder fn = mod.initFunctions(1)[0];
+    fn.setName(0);
+    jeff::Function::Definition::Builder def = fn.initDefinition();
+
+    auto values = def.initValues(n);
+    jeff::Region::Builder body = def.initBody();
+    body.initSources(0);
+    body.initTargets(0);
+    auto operations = body.initOperations(2 * n);
+
+    for (uint32_t i = 0; i < n; i++) {
+        values[i].initType().setFloat(jeff::FloatPrecision::FLOAT64);
+
+        jeff::Op::Builder constant = operations[2 * i];
+        constant.initInputs(0);
+        constant.initOutputs(1).set(0, i);
+        constant.getInstruction().initFloat().setConst64(phases[i]);
+
+        jeff::Op::Builder gphase = operations[2 * i + 1];
+        gphase.initInputs(1).set(0, i);
+        gphase.initOutputs(0);
+        auto gate = gphase.getInstruction().initQubit().initGate();
+        gate.setWellKnown(jeff::WellKnownGate::GPHASE);
+        gate.setAdjoint(adjoint);
+        gate.setPower(1);
+    }
+
+    return mod.asReader();
+}
+
+TEST(GlobalPhaseTest, BecomesCircuitGlobalPhase) {
+    capnp::MallocMessageBuilder message;
+    const CircuitPtr circuit(jeff_to_qiskitc(build_gphase_module(message, {0.37}, false)));
+
+    EXPECT_EQ(qk_circuit_num_instructions(circuit.get()), 0u);
+    expect_same_phase(global_phase_of(circuit.get()), 0.37);
+}
+
+TEST(GlobalPhaseTest, AdjointNegatesPhase) {
+    capnp::MallocMessageBuilder message;
+    const CircuitPtr circuit(jeff_to_qiskitc(build_gphase_module(message, {0.5}, true)));
+
+    EXPECT_EQ(qk_circuit_num_instructions(circuit.get()), 0u);
+    // Qiskit stores -0.5 as 2π - 0.5.
+    expect_same_phase(global_phase_of(circuit.get()), -0.5);
+}
+
+TEST(GlobalPhaseTest, PhasesAddUp) {
+    capnp::MallocMessageBuilder message;
+    const CircuitPtr circuit(jeff_to_qiskitc(build_gphase_module(message, {0.25, 0.5}, false)));
+
+    EXPECT_EQ(qk_circuit_num_instructions(circuit.get()), 0u);
+    expect_same_phase(global_phase_of(circuit.get()), 0.75);
 }
 
 } // namespace jeff_qiskitc_test

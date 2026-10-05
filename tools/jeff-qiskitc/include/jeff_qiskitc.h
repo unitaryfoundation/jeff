@@ -22,6 +22,9 @@
  * measurement overwrites (preferring one on the same qubit), or otherwise to an extra clbit
  * after the returned ones.
  *
+ * Qiskit keeps a circuit's global phase as an attribute, so an uncontrolled `gphase` is added
+ * to the circuit's global phase rather than emitted as an instruction.
+ *
  * Known limitations:
  *
  * - Only straight-line programs are supported: qubit allocations, non-destructive
@@ -46,7 +49,8 @@ QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
  * The resulting module holds a single function, whose body allocates one qubit per circuit
  * qubit and then mirrors the circuit's instructions in order. The one exception is `cu` with
  * a non-zero γ, which becomes a controlled `u` followed by an `r1(γ)` on the control qubit,
- * since jeff's controlled `u` has no γ parameter.
+ * since jeff's controlled `u` has no γ parameter. A non-zero global phase becomes a `gphase`
+ * op, since jeff has no global phase attribute.
  *
  * Known limitations:
  *

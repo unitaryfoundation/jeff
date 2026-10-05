@@ -114,6 +114,18 @@ void WellKnownGate::emit(QkCircuit* circuit, std::vector<uint32_t> qubits,
     if (qk_gate == QkGate_CU)
         params.push_back(0.0);
 
+    // Qiskit keeps a circuit's global phase as an attribute rather than an instruction, so an
+    // uncontrolled gphase is added to it. The attribute only ever holds numbers here, since this
+    // converter is what builds the circuit.
+    if (qk_gate == QkGate_GlobalPhase) {
+        QkParam* current = qk_circuit_global_phase(circuit);
+        QkParam* phase = qk_param_from_double(qk_param_as_real(current) + params[0]);
+        qk_circuit_set_global_phase(circuit, phase);
+        qk_param_free(phase);
+        qk_param_free(current);
+        return;
+    }
+
     uint8_t control_qubits = gate_.getControlQubits();
     std::rotate(qubits.begin(), qubits.begin() + (qubits.size() - control_qubits), qubits.end());
     qk_circuit_gate(circuit, qk_gate, qubits.data(), params.empty() ? nullptr : params.data());

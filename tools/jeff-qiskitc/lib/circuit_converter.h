@@ -144,6 +144,21 @@ class AllocOp {
     uint32_t qubit_;
 };
 
+// The circuit's global phase, which Qiskit keeps as an attribute and jeff as a gphase op:
+// a float constant followed by an uncontrolled gphase.
+class GlobalPhaseOp {
+  public:
+    explicit GlobalPhaseOp(double phase);
+
+    static constexpr uint32_t num_jeff_ops() { return 2; }
+    static constexpr uint32_t num_jeff_values() { return 1; }
+    void build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
+               ValueMap& values) const;
+
+  private:
+    double phase_;
+};
+
 // Gives a clbit that no measurement writes its initial value, an int.const1 false, so that it
 // still has an int(1) value among the targets.
 class ClbitInitOp {

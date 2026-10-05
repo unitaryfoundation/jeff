@@ -10,7 +10,7 @@
 // values and unreturned measurement results to clbits.
 //
 //   cmake --build build --target jeff_qiskitc_tests
-//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*CircuitRoundTripTest*:*ClassicalBit*'
+//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*CircuitRoundTripTest*:*ClassicalBit*:*GlobalPhase*'
 
 #include "capnp/jeff.capnp.h"
 #include "jeff_qiskitc.h"
@@ -21,8 +21,10 @@
 #include <gtest/gtest.h>
 #include <qiskit.h>
 
+#include <cmath>
 #include <cstdint>
 #include <functional>
+#include <numbers>
 #include <string>
 #include <vector>
 
@@ -49,6 +51,87 @@ INSTANTIATE_TEST_SUITE_P(Circuits, CircuitRoundTripTest, ::testing::ValuesIn(cir
 //===--------------------------------------------------------------------===//
 // Classical bits
 //===--------------------------------------------------------------------===//
+
+//===--------------------------------------------------------------------===//
+// Global phase
+//===--------------------------------------------------------------------===//
+
+TEST(GlobalPhaseRoundTripTest, GlobalPhaseSurvivesRoundTrip) {
+    CircuitPtr original(qk_circuit_new(1, 0));
+    QkParam* phase = qk_param_from_double(0.37);
+    qk_circuit_set_global_phase(original.get(), phase);
+    qk_param_free(phase);
+
+    auto data = qiskitc_to_jeff(original.get());
+    capnp::FlatArrayMessageReader reader(data.asPtr());
+    CircuitPtr rt(jeff_to_qiskitc(reader.getRoot<jeff::Module>()));
+
+    phase = qk_circuit_global_phase(rt.get());
+    double total_phase = qk_param_as_real(phase);
+    qk_param_free(phase);
+
+    // Also accept an equivalent global-phase instruction.
+    for (size_t i = 0; i < qk_circuit_num_instructions(rt.get()); ++i) {
+        ScopedInstruction inst(rt.get(), i);
+        ASSERT_STREQ(inst->name, "global_phase");
+        ASSERT_EQ(inst->num_params, 1u);
+        total_phase += qk_param_as_real(inst->params[0]);
+    }
+    EXPECT_NEAR(std::remainder(total_phase - 0.37, 2 * std::numbers::pi), 0.0, 1e-12);
+}
+
+// qiskitc_to_jeff: a non-zero global phase becomes a float constant and an
+// uncontrolled gphase on no qubits.
+TEST(GlobalPhaseRoundTripTest, BecomesGphaseOp) {
+    CircuitPtr original(qk_circuit_new(1, 0));
+    QkParam* phase = qk_param_from_double(0.37);
+    qk_circuit_set_global_phase(original.get(), phase);
+    qk_param_free(phase);
+
+    kj::Array<capnp::word> data = qiskitc_to_jeff(original.get());
+    capnp::FlatArrayMessageReader reader(data.asPtr());
+    auto operations =
+        reader.getRoot<jeff::Module>().getFunctions()[0].getDefinition().getBody().getOperations();
+    ASSERT_EQ(operations.size(), 3u) << "alloc + phase const + gphase";
+
+    jeff::Op::Reader constant = operations[1];
+    ASSERT_TRUE(constant.getInstruction().isFloat());
+    EXPECT_DOUBLE_EQ(constant.getInstruction().getFloat().getConst64(), 0.37);
+
+    jeff::Op::Reader gphase = operations[2];
+    jeff::QubitGate::Reader gate = gphase.getInstruction().getQubit().getGate();
+    ASSERT_TRUE(gate.isWellKnown());
+    EXPECT_EQ(gate.getWellKnown(), jeff::WellKnownGate::GPHASE);
+    EXPECT_EQ(gate.getControlQubits(), 0);
+    ASSERT_EQ(gphase.getInputs().size(), 1u);
+    EXPECT_EQ(gphase.getInputs()[0], constant.getOutputs()[0]);
+    EXPECT_EQ(gphase.getOutputs().size(), 0u);
+}
+
+// qiskitc_to_jeff: a zero global phase adds no ops.
+TEST(GlobalPhaseRoundTripTest, ZeroPhaseAddsNothing) {
+    CircuitPtr original(qk_circuit_new(1, 0));
+
+    kj::Array<capnp::word> data = qiskitc_to_jeff(original.get());
+    capnp::FlatArrayMessageReader reader(data.asPtr());
+    auto operations =
+        reader.getRoot<jeff::Module>().getFunctions()[0].getDefinition().getBody().getOperations();
+    EXPECT_EQ(operations.size(), 1u) << "just the alloc";
+}
+
+// A Qiskit global_phase instruction comes back as the global phase attribute.
+TEST(GlobalPhaseRoundTripTest, InstructionBecomesAttribute) {
+    CircuitPtr original(qk_circuit_new(1, 0));
+    double angle = 0.37;
+    qk_circuit_gate(original.get(), QkGate_GlobalPhase, nullptr, &angle);
+
+    auto data = qiskitc_to_jeff(original.get());
+    capnp::FlatArrayMessageReader reader(data.asPtr());
+    CircuitPtr rt(jeff_to_qiskitc(reader.getRoot<jeff::Module>()));
+
+    EXPECT_EQ(qk_circuit_num_instructions(rt.get()), 0u);
+    expect_same_phase(global_phase_of(rt.get()), 0.37);
+}
 
 // qiskitc_to_jeff: a clbit no measurement writes is returned as an int(1) value,
 // not as whatever value happens to have index 0.

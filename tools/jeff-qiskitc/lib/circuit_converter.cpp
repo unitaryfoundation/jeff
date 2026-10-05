@@ -236,6 +236,18 @@ void AllocOp::build(jeff::Op::Builder op, ValueMap& values) const {
     values.record_qubit(qubit_, v);
 }
 
+GlobalPhaseOp::GlobalPhaseOp(double phase) : phase_(phase) {}
+
+void GlobalPhaseOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
+                          ValueMap& values) const {
+    uint32_t phase_value = FloatOp(phase_).build(operations, op_start, values);
+
+    jeff::Op::Builder op = operations[op_start + 1];
+    op.initInputs(1).set(0, phase_value);
+    op.initOutputs(0);
+    WellKnownGate(QkGate_GlobalPhase).emit(op);
+}
+
 ClbitInitOp::ClbitInitOp(uint32_t clbit) : clbit_(clbit) {}
 
 void ClbitInitOp::build(jeff::Op::Builder op, ValueMap& values) const {

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <qiskit.h>
 
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -39,6 +40,20 @@ class ScopedInstruction {
   private:
     QkCircuitInstruction inst_;
 };
+
+// The circuit's global phase attribute, which must be numeric.
+inline double global_phase_of(const QkCircuit* circuit) {
+    QkParam* phase = qk_circuit_global_phase(circuit);
+    double value = qk_param_as_real(phase);
+    qk_param_free(phase);
+    return value;
+}
+
+// Phases are only defined modulo 2π, and Qiskit stores them in [0, 2π).
+inline void expect_same_phase(double actual, double expected) {
+    EXPECT_NEAR(std::remainder(actual - expected, 2 * std::numbers::pi), 0.0, 1e-12)
+        << "phase " << actual << " vs " << expected;
+}
 
 // Circuits built only from gates this converter supports, so a lossless
 // round trip is expected.
@@ -124,6 +139,17 @@ inline CircuitPtr build_overwritten_clbit() {
     return qc;
 }
 
+// H on q0 with a global phase of 0.37.
+inline CircuitPtr build_global_phase() {
+    CircuitPtr qc(qk_circuit_new(1, 0));
+    std::vector<uint32_t> h_qubits = {0};
+    qk_circuit_gate(qc.get(), QkGate_H, h_qubits.data(), nullptr);
+    QkParam* phase = qk_param_from_double(0.37);
+    qk_circuit_set_global_phase(qc.get(), phase);
+    qk_param_free(phase);
+    return qc;
+}
+
 // Shared by the in-memory and through-a-file round-trip tests.
 struct CircuitCase {
     std::string name;
@@ -143,6 +169,7 @@ inline std::vector<CircuitCase> circuit_cases() {
         {"UnmeasuredClbit", [] { return build_unmeasured_clbit(); }},
         {"RepeatedMeasurement", [] { return build_repeated_measurement(); }},
         {"OverwrittenClbit", [] { return build_overwritten_clbit(); }},
+        {"GlobalPhase", [] { return build_global_phase(); }},
     };
 }
 
@@ -151,10 +178,11 @@ inline std::string circuit_case_name(const ::testing::TestParamInfo<CircuitCase>
 }
 
 // Checks roundtripped matches original: same qubit/clbit/instruction counts,
-// and each instruction's name, qubits (in order), clbits, and params.
+// global phase, and each instruction's name, qubits (in order), clbits, and params.
 inline void expect_same_circuit(const QkCircuit* original, const QkCircuit* roundtripped) {
     EXPECT_EQ(qk_circuit_num_qubits(roundtripped), qk_circuit_num_qubits(original));
     EXPECT_EQ(qk_circuit_num_clbits(roundtripped), qk_circuit_num_clbits(original));
+    expect_same_phase(global_phase_of(roundtripped), global_phase_of(original));
     ASSERT_EQ(qk_circuit_num_instructions(roundtripped), qk_circuit_num_instructions(original));
 
     for (size_t i = 0; i < qk_circuit_num_instructions(original); i++) {

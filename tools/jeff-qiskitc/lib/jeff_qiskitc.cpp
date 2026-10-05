@@ -1,6 +1,7 @@
 #include "jeff_qiskitc.h"
 
 #include "circuit_converter.h"
+#include "gate_converter.h"
 #include "jeff_qiskitc_version.h"
 
 #include <capnp/message.h>
@@ -64,6 +65,15 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
     num_values += static_cast<uint32_t>(unmeasured_clbits.size());
     num_ops += static_cast<uint32_t>(unmeasured_clbits.size());
 
+    QkParam* global_phase_param = qk_circuit_global_phase(circuit);
+    double global_phase =
+        QiskitToJeff::read_param(global_phase_param, "qiskitc_to_jeff: global phase");
+    qk_param_free(global_phase_param);
+    if (global_phase != 0.0) {
+        num_values += QiskitToJeff::GlobalPhaseOp::num_jeff_values();
+        num_ops += QiskitToJeff::GlobalPhaseOp::num_jeff_ops();
+    }
+
     jeff::Module::Builder mod = message.initRoot<jeff::Module>();
     mod.setVersion(jeff::SCHEMA_VERSION_MAJOR);
     mod.setVersionMinor(jeff::SCHEMA_VERSION_MINOR);
@@ -89,6 +99,10 @@ void build_qiskitc_to_jeff_message(const QkCircuit* circuit, capnp::MessageBuild
         QiskitToJeff::AllocOp(q).build(operations[op_idx++], value_map);
     for (uint32_t c : unmeasured_clbits)
         QiskitToJeff::ClbitInitOp(c).build(operations[op_idx++], value_map);
+    if (global_phase != 0.0) {
+        QiskitToJeff::GlobalPhaseOp(global_phase).build(operations, op_idx, value_map);
+        op_idx += QiskitToJeff::GlobalPhaseOp::num_jeff_ops();
+    }
 
     for (const QiskitToJeff::Op& op : ops) {
         op.build(operations, op_idx, value_map);
