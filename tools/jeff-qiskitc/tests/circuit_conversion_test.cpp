@@ -10,7 +10,8 @@
 // values and unreturned measurement results to clbits.
 //
 //   cmake --build build --target jeff_qiskitc_tests
-//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*CircuitRoundTripTest*:*ClassicalBit*:*GlobalPhase*'
+//   ./build/tests/jeff_qiskitc_tests
+//   --gtest_filter='*CircuitRoundTripTest*:*ClassicalBit*:*GlobalPhase*'
 
 #include "capnp/jeff.capnp.h"
 #include "jeff_qiskitc.h"
@@ -249,8 +250,9 @@ TEST(ClassicalBitDeathTest, RejectsConstantOneClbit) {
     set_const1(operations[0], 0, true);
     set_targets(body, {0});
 
-    EXPECT_EXIT({ jeff_to_qiskitc(message.getRoot<jeff::Module>().asReader()); },
-                ::testing::ExitedWithCode(1), "constant 1");
+    EXPECT_EXIT(
+        { jeff_to_qiskitc(message.getRoot<jeff::Module>().asReader()); },
+        ::testing::ExitedWithCode(1), "constant 1");
 }
 
 TEST(ClassicalBitDeathTest, RejectsClbitReturnedTwice) {
@@ -263,8 +265,9 @@ TEST(ClassicalBitDeathTest, RejectsClbitReturnedTwice) {
     set_measure_nd(operations[1], 0, 1, 2);
     set_targets(body, {1, 2, 2});
 
-    EXPECT_EXIT({ jeff_to_qiskitc(message.getRoot<jeff::Module>().asReader()); },
-                ::testing::ExitedWithCode(1), "more than once");
+    EXPECT_EXIT(
+        { jeff_to_qiskitc(message.getRoot<jeff::Module>().asReader()); },
+        ::testing::ExitedWithCode(1), "more than once");
 }
 
 } // namespace jeff_qiskitc_test

@@ -6,7 +6,8 @@
 // few Pauli product rotations, one test case per gate.
 //
 //   cmake --build build --target jeff_qiskitc_tests
-//   ./build/tests/jeff_qiskitc_tests --gtest_filter='*WellKnownGateTest*:*PauliProductRotationTest*'
+//   ./build/tests/jeff_qiskitc_tests
+//   --gtest_filter='*WellKnownGateTest*:*PauliProductRotationTest*'
 
 #include "../lib/gate_converter.h"
 #include "capnp/jeff.capnp.h"
@@ -446,11 +447,10 @@ TEST_P(PauliProductRotationTest, QiskitToJeff) {
 
 INSTANTIATE_TEST_SUITE_P(
     Rotations, PauliProductRotationTest,
-    ::testing::Values(
-        PprCase{"III", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::I}, 0.7, -1.4},
-        PprCase{"IXX", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::X}, 1.1, -2.2},
-        PprCase{"IXZ", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::Z}, -0.3, 0.6},
-        PprCase{"IIY", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::Y}, 2.4, -4.8}),
+    ::testing::Values(PprCase{"III", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::I}, 0.7, -1.4},
+                      PprCase{"IXX", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::X}, 1.1, -2.2},
+                      PprCase{"IXZ", {jeff::Pauli::I, jeff::Pauli::X, jeff::Pauli::Z}, -0.3, 0.6},
+                      PprCase{"IIY", {jeff::Pauli::I, jeff::Pauli::I, jeff::Pauli::Y}, 2.4, -4.8}),
     [](const ::testing::TestParamInfo<PprCase>& info) { return info.param.label; });
 
 //===--------------------------------------------------------------------===//
@@ -544,8 +544,7 @@ TEST_P(QiskitAdjointTest, RoundTrips) {
     auto operations = mod.getFunctions()[0].getDefinition().getBody().getOperations();
     ASSERT_EQ(operations.size(), num_qubits + 1) << "allocs + gate";
 
-    jeff::QubitGate::Reader gate =
-        operations[num_qubits].getInstruction().getQubit().getGate();
+    jeff::QubitGate::Reader gate = operations[num_qubits].getInstruction().getQubit().getGate();
     ASSERT_TRUE(gate.isWellKnown());
     EXPECT_EQ(gate.getWellKnown(), adjoint_case.well_known);
     EXPECT_EQ(gate.getControlQubits(), adjoint_case.control_qubits);
@@ -648,11 +647,8 @@ TEST(ControlledUTest, QiskitWithoutPhaseToJeff) {
     kj::Array<capnp::word> serialized = qiskitc_to_jeff(circuit.get());
 
     capnp::FlatArrayMessageReader reader(serialized.asPtr());
-    auto operations = reader.getRoot<jeff::Module>()
-                          .getFunctions()[0]
-                          .getDefinition()
-                          .getBody()
-                          .getOperations();
+    auto operations =
+        reader.getRoot<jeff::Module>().getFunctions()[0].getDefinition().getBody().getOperations();
     ASSERT_EQ(operations.size(), 6u) << "2 allocs + 3 param consts + controlled u";
 
     for (uint32_t i = 0; i < 3; i++) {
@@ -674,11 +670,8 @@ TEST(ControlledUTest, QiskitWithPhaseToJeff) {
     kj::Array<capnp::word> serialized = qiskitc_to_jeff(circuit.get());
 
     capnp::FlatArrayMessageReader reader(serialized.asPtr());
-    auto operations = reader.getRoot<jeff::Module>()
-                          .getFunctions()[0]
-                          .getDefinition()
-                          .getBody()
-                          .getOperations();
+    auto operations =
+        reader.getRoot<jeff::Module>().getFunctions()[0].getDefinition().getBody().getOperations();
     ASSERT_EQ(operations.size(), 8u) << "2 allocs + 3 param consts + controlled u + γ const + r1";
 
     jeff::Op::Reader u_op = operations[5];

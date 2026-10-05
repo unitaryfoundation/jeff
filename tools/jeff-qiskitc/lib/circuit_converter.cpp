@@ -281,8 +281,7 @@ WellKnownOp::WellKnownOp(const QkCircuitInstruction& inst)
     : inst_(inst), qk_gate_([&] {
           auto qk_gate_it = NameToQkGateMap.find(inst.name);
           if (qk_gate_it == NameToQkGateMap.end()) {
-              std::fprintf(stderr,
-                           "QiskitToJeff::WellKnownOp: unrecognized gate name \"%s\"\n",
+              std::fprintf(stderr, "QiskitToJeff::WellKnownOp: unrecognized gate name \"%s\"\n",
                            inst.name);
               std::exit(1);
           }
@@ -298,8 +297,7 @@ uint32_t WellKnownOp::num_jeff_ops() const {
 
 uint32_t WellKnownOp::num_jeff_values() const {
     WellKnownGate gate(qk_gate_);
-    return gate.num_params() + inst_.num_qubits +
-           (gate.control_phase(inst_.params) != 0.0 ? 2 : 0);
+    return gate.num_params() + inst_.num_qubits + (gate.control_phase(inst_.params) != 0.0 ? 2 : 0);
 }
 
 void WellKnownOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_start,
@@ -314,9 +312,8 @@ void WellKnownOp::build(capnp::List<jeff::Op>::Builder operations, uint32_t op_s
         op.getInputs().set(i, values.resolve_qubit(inst_.qubits[i]));
 
     for (uint32_t i = 0; i < num_params; i++) {
-        uint32_t v =
-            FloatOp(read_param(inst_.params[i], "QiskitToJeff::WellKnownOp::build"))
-                .build(operations, op_start + i, values);
+        uint32_t v = FloatOp(read_param(inst_.params[i], "QiskitToJeff::WellKnownOp::build"))
+                         .build(operations, op_start + i, values);
         op.getInputs().set(inst_.num_qubits + i, v);
     }
 
