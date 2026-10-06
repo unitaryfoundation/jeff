@@ -1120,6 +1120,15 @@ class JeffModule:
         obj._mark_clean()
         return obj
 
+    @staticmethod
+    def from_bytes(data: bytes) -> JeffModule:
+        """Construct a JeffModule from the bytes of a jeff file, as `to_bytes` returns them.
+        The module holds its own copy of the data.
+        """
+        with schema.Module.from_bytes(data) as view:
+            # The view is only valid inside this block, so the module gets a copy.
+            return JeffModule.from_encoding(view.as_builder().as_reader())
+
     @property
     def is_dirty(self) -> bool:
         """Whether the object has been modified since the last time it was encoded. Also returns
@@ -1171,6 +1180,15 @@ class JeffModule:
 
         with open(path, "wb") as f:
             self._raw_data.as_builder().write(f)
+
+    def to_bytes(self) -> bytes:
+        """Return the program as bytes, the same content that `write_out` writes to a file.
+        Only available on the module object as the root node. Automatically calls `refresh`
+        before encoding.
+        """
+        self.refresh()
+
+        return self._raw_data.as_builder().to_bytes()
 
     # settable fields
 
