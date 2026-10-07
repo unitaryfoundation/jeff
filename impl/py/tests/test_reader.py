@@ -1,4 +1,21 @@
-from jeff import FunctionDef, JeffModule, JeffOp, JeffRegion
+from jeff import (
+    CustomGate,
+    FloatArrayType,
+    FloatType,
+    FunctionDef,
+    IntArrayType,
+    IntType,
+    JeffModule,
+    JeffOp,
+    JeffRegion,
+    JeffValue,
+    PPRGate,
+    QubitType,
+    QuregType,
+    WellKnowGate,
+    pauli_rotation,
+    quantum_gate,
+)
 
 
 def test_func_call_reads_back() -> None:
@@ -17,3 +34,61 @@ def test_func_call_reads_back() -> None:
     assert op.kind == "func"
     assert op.subkind == "funcCall"
     assert op.instruction_data == 1
+
+
+def test_types_read_back() -> None:
+    expected = [
+        QubitType(),
+        QuregType(),
+        QuregType(3),
+        IntType(8),
+        IntArrayType(8),
+        IntArrayType(8, 3),
+        FloatType(32),
+        FloatType(64),
+        FloatArrayType(64),
+        FloatArrayType(64, 3),
+    ]
+    values = [JeffValue(type) for type in expected]
+    body = JeffRegion(sources=values, targets=values, operations=[])
+    module = JeffModule([FunctionDef(name="main", body=body)])
+    module.refresh()
+
+    loaded = JeffModule.from_encoding(module._raw_data)
+    assert loaded.functions[0].function_type == (expected, expected)
+
+
+def test_gates_read_back() -> None:
+    qubit = JeffValue(QubitType())
+    control = JeffValue(QubitType())
+    angle = JeffValue(FloatType(64))
+    well_known = quantum_gate(
+        "h", qubit, control_qubits=[control], adjoint=True, power=2
+    )
+    custom = quantum_gate("external", well_known.outputs)
+    rotation = pauli_rotation(angle, ["x", "z"], custom.outputs)
+    body = JeffRegion(
+        sources=[qubit, control, angle],
+        targets=rotation.outputs,
+        operations=[well_known, custom, rotation],
+    )
+    module = JeffModule([FunctionDef(name="main", body=body)])
+    module.refresh()
+
+    loaded = JeffModule.from_encoding(module._raw_data)
+    ops = loaded.functions[0].body.operations
+    gate = ops[0].instruction_data
+    assert isinstance(gate, WellKnowGate)
+    assert gate.kind == "h"
+    assert gate.num_controls == 1
+    assert gate.adjoint
+    assert gate.power == 2
+    gate = ops[1].instruction_data
+    assert isinstance(gate, CustomGate)
+    assert gate.name == "external"
+    assert gate.num_qubits == 2
+    assert gate.num_params == 0
+    gate = ops[2].instruction_data
+    assert isinstance(gate, PPRGate)
+    assert gate.pauli_string == ["x", "z"]
+    assert ops[2].inputs[-1].type == FloatType(64)
