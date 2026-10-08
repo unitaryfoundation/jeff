@@ -102,6 +102,8 @@ pub trait HasMetadata: sealed::HasMetadataSealed {
     }
 }
 
+impl<T: sealed::HasMetadataSealed> HasMetadata for T {}
+
 pub(crate) mod sealed {
     use crate::capnp::jeff_capnp;
     use crate::reader::string_table::StringTable;
@@ -115,5 +117,40 @@ pub(crate) mod sealed {
 
         /// Returns the capnproto reader over the element's metadata.
         fn metadata_reader(&self) -> capnp::struct_list::Reader<'_, jeff_capnp::meta::Owned>;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::reader::ReadJeff;
+    use crate::Jeff;
+
+    /// Encode a minimal module with a single string metadata entry.
+    fn module_with_metadata(name: &str, value: &str) -> Vec<u8> {
+        let mut message = capnp::message::Builder::new_default();
+        let mut module = message.init_root::<jeff_capnp::module::Builder>();
+        module.set_version(jeff_capnp::SCHEMA_VERSION_MAJOR);
+        module.set_version_minor(jeff_capnp::SCHEMA_VERSION_MINOR);
+        module.set_version_patch(jeff_capnp::SCHEMA_VERSION_PATCH);
+        module.reborrow().init_strings(1).set(0, name);
+        let mut meta = module.init_metadata(1).get(0);
+        meta.set_name(0);
+        meta.init_value().set_as(value).unwrap();
+        capnp::serialize::write_message_to_words(&message)
+    }
+
+    #[test]
+    fn module_metadata() {
+        let bytes = module_with_metadata("tool.note", "hello");
+        let jeff = Jeff::read_slice(&mut bytes.as_slice()).unwrap();
+        let module = jeff.module();
+
+        assert_eq!(module.metadata_count(), 1);
+        let entry = module.metadata(0);
+        assert_eq!(entry.name(), "tool.note");
+        assert_eq!(entry.value_str(), Some("hello"));
+        assert!(module.try_metadata(1).is_none());
+        assert_eq!(module.metadata_entries().count(), 1);
     }
 }
