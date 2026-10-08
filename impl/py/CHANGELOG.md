@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.2](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.1...jeff-format-py-v0.1.2) (2026-10-08)
+
+
+### Bug Fixes
+
+* **py:** read the subkind of an op group that has no union ([#112](https://github.com/unitaryfoundation/jeff/issues/112)) ([5eed007](https://github.com/unitaryfoundation/jeff/commit/5eed0076d2fd8645546e1fbc3aaeccaebb5973a8))
+* **py:** return no default region for a switch read without one ([#128](https://github.com/unitaryfoundation/jeff/issues/128)) ([7485316](https://github.com/unitaryfoundation/jeff/commit/74853169b5510c363ae5542f149a60cfb96cb8ee))
+* **py:** write modules that contain a function declaration ([#127](https://github.com/unitaryfoundation/jeff/issues/127)) ([3e6c30a](https://github.com/unitaryfoundation/jeff/commit/3e6c30a8d8a4fa415f50cd13cb138c5e12077bc0))
+
+
+### Documentation
+
+* fix broken links in the READMEs and development guide ([#123](https://github.com/unitaryfoundation/jeff/issues/123)) ([0b5e84e](https://github.com/unitaryfoundation/jeff/commit/0b5e84ec756dd06554ad7c7e6702cd3d10490263))
+
 ## [0.1.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-py-v0.1.0...jeff-format-py-v0.1.1) (2026-09-11)
 
 
