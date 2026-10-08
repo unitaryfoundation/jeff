@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2](https://github.com/unitaryfoundation/jeff/compare/jeff-format-rs-v0.2.1...jeff-format-rs-v0.2.2) - 2026-10-08
+
+### Documentation
+
+- fix broken links in the READMEs and development guide ([#123](https://github.com/unitaryfoundation/jeff/pull/123))
+
 ## [0.2.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-rs-v0.2.0...jeff-format-rs-v0.2.1) - 2026-09-11
 
 ### New Features
