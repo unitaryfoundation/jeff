@@ -133,8 +133,20 @@ impl JeffCow<'_> {
 }
 
 impl Clone for JeffCow<'_> {
+    /// Copies the program into a new owned buffer.
     fn clone(&self) -> Self {
-        todo!()
+        let bytes = match self {
+            Self::Borrowed(module) => {
+                capnp::serialize::write_message_segments_to_words(module.get_segments())
+            }
+            Self::Owned(module) => {
+                capnp::serialize::write_message_segments_to_words(module.get_segments())
+            }
+        };
+        let reader =
+            capnp::serialize::read_message(bytes.as_slice(), capnp::message::ReaderOptions::new())
+                .expect("Re-reading an already validated message should not fail");
+        Self::Owned(reader.into_typed())
     }
 }
 
@@ -150,11 +162,43 @@ impl std::fmt::Debug for JeffCow<'_> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::test::entangled_qs;
+    use crate::test::{entangled_calls, entangled_qs};
     use rstest::rstest;
 
     #[rstest]
     fn simple_jeff(entangled_qs: Jeff<'static>) {
         entangled_qs.check_version().unwrap();
+    }
+
+    /// Function names and operation counts, used to compare two programs.
+    fn summary(jeff: &Jeff<'_>) -> Vec<(String, usize)> {
+        jeff.module()
+            .functions()
+            .map(|f| {
+                let ops = match f {
+                    crate::reader::Function::Definition(def) => def.body().operation_count(),
+                    crate::reader::Function::Declaration(_) => 0,
+                };
+                (f.name().to_string(), ops)
+            })
+            .collect()
+    }
+
+    #[rstest]
+    fn clone_owned(entangled_calls: Jeff<'static>) {
+        let cloned = entangled_calls.clone();
+        assert_eq!(summary(&cloned), summary(&entangled_calls));
+    }
+
+    #[rstest]
+    fn clone_borrowed(entangled_calls: Jeff<'static>) {
+        let JeffCow::Owned(module) = &entangled_calls.module else {
+            panic!("fixtures are read into owned buffers");
+        };
+        let bytes = capnp::serialize::write_message_segments_to_words(module.get_segments());
+        let borrowed = Jeff::read_slice(&mut bytes.as_slice()).unwrap();
+
+        let cloned = borrowed.clone();
+        assert_eq!(summary(&cloned), summary(&entangled_calls));
     }
 }
