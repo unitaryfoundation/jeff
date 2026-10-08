@@ -23,7 +23,7 @@ cool_asserts = "2.0.3"
 criterion = "0.5.1"
 derive_more = "2.0.1"
 iai-callgrind = "0.14.2"
-itertools = "0.14.0"
+itertools = "0.15.0"
 rstest = "0.24.0"
 semver = "1.0.27"
 
