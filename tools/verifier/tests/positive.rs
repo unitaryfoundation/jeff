@@ -54,6 +54,12 @@ fn valid_three_qubit_gates() {
     assert!(errors.is_empty(), "expected no errors, got: {errors:?}");
 }
 
+#[test]
+fn valid_switch_no_default() {
+    let errors = load_positive("valid_switch_no_default.jeff");
+    assert!(errors.is_empty(), "expected no errors, got: {errors:?}");
+}
+
 // examples
 #[test]
 fn example_qubits() {
