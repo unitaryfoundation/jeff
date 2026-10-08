@@ -24,6 +24,6 @@ See [DEVELOPMENT][] for instructions on setting up the development environment.
 This project is licensed under Apache License, Version 2.0 ([LICENSE][] or
 <http://www.apache.org/licenses/LICENSE-2.0>).
 
-  [LICENSE]: https://github.com/unitaryfoundation/jeff/blob/main/LICENSE
+  [LICENSE]: https://github.com/unitaryfoundation/jeff/blob/main/LICENCE
   [CHANGELOG]: https://github.com/unitaryfoundation/jeff/blob/main/impl/py/CHANGELOG.md
   [DEVELOPMENT]: https://github.com/unitaryfoundation/jeff/blob/main/DEVELOPMENT.md

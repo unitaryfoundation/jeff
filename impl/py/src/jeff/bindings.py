@@ -1010,12 +1010,12 @@ class FunctionDecl(JeffFunc):
         _inputs = self.inputs
         inputs = declaration.init("inputs", len(_inputs))
         for i, input in enumerate(_inputs):
-            input._refresh(inputs[i])
+            input._refresh(inputs[i].type)
 
         _outputs = self.outputs
         outputs = declaration.init("outputs", len(_outputs))
         for i, output in enumerate(_outputs):
-            output._refresh(outputs[i])
+            output._refresh(outputs[i].type)
 
         # strings are stored as indices in the encoded format
         new_data.name = string_table.index(self.name)
@@ -1210,7 +1210,8 @@ class JeffModule:
 
         for func in self._functions:
             strings.add(func.name)
-            regions.append(func.body)
+            if isinstance(func, FunctionDef):
+                regions.append(func.body)
 
         while regions:
             current_region = regions.pop(0)

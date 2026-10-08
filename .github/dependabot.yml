@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "cargo" # See documentation for possible values
-    directory: "/impl/" # Location of package manifests
+    directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
     commit-message:
@@ -24,7 +24,6 @@ updates:
 
   - package-ecosystem: "pip"
     directories: # Location of package manifests
-      - "/impl/"
       - "/impl/py/"
     schedule:
       interval: "weekly"

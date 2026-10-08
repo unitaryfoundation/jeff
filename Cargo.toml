@@ -22,9 +22,9 @@ capnp = "0.27.0"
 cool_asserts = "2.0.3"
 criterion = "0.5.1"
 derive_more = "2.0.1"
-iai-callgrind = "0.14.2"
-itertools = "0.14.0"
-rstest = "0.24.0"
+iai-callgrind = "0.16.1"
+itertools = "0.15.0"
+rstest = "0.27.0"
 semver = "1.0.27"
 
 [profile.dev.package]

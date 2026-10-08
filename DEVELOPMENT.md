@@ -158,7 +158,7 @@ just fix-py
 ## 🌐 Contributing to `jeff`
 
 We welcome contributions to `jeff`! Please open
-[an issue](https://github.com/unitaryfoundation/jeff/new) or
+[an issue](https://github.com/unitaryfoundation/jeff/issues/new) or
 [pull request](https://github.com/unitaryfoundation/jeff/compare) if you have
 any questions or suggestions.
 
