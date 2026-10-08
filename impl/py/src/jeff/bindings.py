@@ -1740,8 +1740,8 @@ class SwitchSCF(JeffSCF):
         if self._default is not _Empty:
             return self._default
 
-        if region := self._raw_data.switch.default:
-            return JeffRegion.from_encoding(region, self)
+        if self._raw_data.switch._has("default"):
+            return JeffRegion.from_encoding(self._raw_data.switch.default, self)
 
     @default.setter
     def default(self, default: JeffRegion):

@@ -19,6 +19,7 @@ from jeff import (
     load_module,
     pauli_rotation,
     quantum_gate,
+    switch_case,
 )
 
 
@@ -118,3 +119,16 @@ def test_function_decl_reads_back(tmp_path: Path) -> None:
     assert isinstance(func, FunctionDecl)
     assert func.name == "external"
     assert func.function_type == ([QubitType()], [QubitType()])
+
+
+def test_switch_without_default_reads_back() -> None:
+    index = JeffValue(IntType(8))
+    switch = switch_case(index, [], [JeffRegion(sources=[], targets=[], operations=[])])
+    body = JeffRegion(sources=[index], targets=[], operations=[switch])
+    module = JeffModule([FunctionDef(name="main", body=body)])
+    module.refresh()
+
+    loaded = JeffModule.from_encoding(module._raw_data)
+    scf = loaded.functions[0].body.operations[0].instruction_data
+    assert len(scf.branches) == 1
+    assert scf.default is None
