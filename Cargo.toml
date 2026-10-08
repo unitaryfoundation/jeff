@@ -6,7 +6,7 @@ resolver = "2"
 members = ["impl/rs", "tools/verifier"]
 
 [workspace.package]
-rust-version = "1.85"
+rust-version = "1.86"
 edition = "2021"
 homepage = "https://github.com/unitaryfoundation/jeff"
 repository = "https://github.com/unitaryfoundation/jeff"
