@@ -29,3 +29,8 @@ python: &python
 markdown: &markdown
   - ".github/workflows/ci-markdown.yml"
   - "*.md"
+
+qiskitc: &qiskitc
+  - *schema-def
+  - ".github/workflows/ci-qiskitc.yml"
+  - "tools/jeff-qiskitc/**"

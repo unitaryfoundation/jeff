@@ -1,0 +1,84 @@
+#pragma once
+
+#include "capnp/jeff.capnp.h"
+
+#include <capnp/serialize.h>
+#include <kj/array.h>
+#include <qiskit.h>
+
+#include <string>
+
+/**
+ * @brief Convert the entrypoint function of a jeff module into a Qiskit circuit.
+ * @param mod The jeff module to convert.
+ * @return An owned circuit, which the caller must release with `qk_circuit_free`.
+ *
+ * @details
+ * The function selected for conversion is the one named by the module's `entrypoint`; any
+ * other functions in the module are ignored.
+ *
+ * jeff has no classical bits, so the circuit's clbits are the function's `int(1)` outputs, in
+ * order. A measurement whose result is not returned is written to a clbit that a later
+ * measurement overwrites (preferring one on the same qubit), or otherwise to an extra clbit
+ * after the returned ones.
+ *
+ * Qiskit keeps a circuit's global phase as an attribute, so an uncontrolled `gphase` is added
+ * to the circuit's global phase rather than emitted as an instruction.
+ *
+ * Known limitations:
+ *
+ * - Only straight-line programs are supported: qubit allocations, non-destructive
+ *   measurements, well-known gates and Pauli product rotations, 32/64-bit float constants,
+ *   and 1-bit integer constants. Control flow, function calls, qubit frees and custom gates
+ *   are not.
+ * - A returned clbit must be a measurement result or the constant 0, and may be returned only
+ *   once.
+ * - Gates with a `power` other than 1 are not supported, since Qiskit has no equivalent
+ *   and expanding them would change the structure of the program. An unset `power` (0)
+ *   counts as 1.
+ * - Unsupported operations are reported on stderr and terminate the process.
+ */
+QkCircuit* jeff_to_qiskitc(jeff::Module::Reader mod);
+
+/**
+ * @brief Convert a Qiskit circuit into a serialized jeff module.
+ * @param circuit The circuit to convert.
+ * @return An owned memory buffer containing the serialized jeff module.
+ *
+ * @details
+ * The resulting module holds a single function, whose body allocates one qubit per circuit
+ * qubit and then mirrors the circuit's instructions in order. The one exception is `cu` with
+ * a non-zero γ, which becomes a controlled `u` followed by an `r1(γ)` on the control qubit,
+ * since jeff's controlled `u` has no γ parameter. A non-zero global phase becomes a `gphase`
+ * op, since jeff has no global phase attribute.
+ *
+ * Known limitations:
+ *
+ * - Only gates, Pauli product rotations and measurements are supported, and each gate must
+ *   have a jeff well-known equivalent, possibly as an adjoint (e.g. `sdg` is an adjoint `s`).
+ * - Symbolic (unbound) parameters are not supported.
+ * - Unsupported instructions are reported on stderr and terminate the process.
+ */
+kj::Array<capnp::word> qiskitc_to_jeff(const QkCircuit* circuit);
+
+/**
+ * @brief Convert the entrypoint function of a .jeff file into a Qiskit circuit.
+ * @param path The path to the .jeff file.
+ * @return An owned circuit, which the caller must release with `qk_circuit_free`.
+ *
+ * @details
+ * Shares the conversion limitations of `jeff_to_qiskitc`. A file that cannot be opened is
+ * reported on stderr and terminates the process.
+ */
+QkCircuit* jeff_file_to_qiskitc(const std::string& path);
+
+/**
+ * @brief Convert a Qiskit circuit into a jeff module and write it to a .jeff file.
+ * @param circuit The circuit to convert.
+ * @param path The path to the .jeff file, which is created or truncated.
+ *
+ * @details
+ * Shares the conversion limitations of `qiskitc_to_jeff`. A file that cannot be opened is
+ * reported on stderr and terminates the process.
+ */
+void qiskitc_to_jeff_file(const QkCircuit* circuit, const std::string& path);
