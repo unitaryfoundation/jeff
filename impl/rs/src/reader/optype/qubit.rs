@@ -116,9 +116,11 @@ impl GateOp<'_> {
         };
         let name = name.to_ascii_lowercase();
 
-        // We recognize a few special cases for controlled gates.
+        // We recognize a few special cases for controlled gates, as long as there
+        // is room for one more control qubit.
+        let can_add_control = self.control_qubits < u8::MAX;
         match (name.as_str(), num_qubits, num_params) {
-            ("cx", 2, 0) | ("cnot", 2, 0) => {
+            ("cx", 2, 0) | ("cnot", 2, 0) if can_add_control => {
                 return Self {
                     gate_type: GateOpType::WellKnown(WellKnownGate::X),
                     control_qubits: self.control_qubits + 1,
@@ -126,7 +128,7 @@ impl GateOp<'_> {
                     power: self.power,
                 }
             }
-            ("cy", 2, 0) => {
+            ("cy", 2, 0) if can_add_control => {
                 return Self {
                     gate_type: GateOpType::WellKnown(WellKnownGate::Y),
                     control_qubits: self.control_qubits + 1,
@@ -134,7 +136,7 @@ impl GateOp<'_> {
                     power: self.power,
                 }
             }
-            ("cz", 2, 0) => {
+            ("cz", 2, 0) if can_add_control => {
                 return Self {
                     gate_type: GateOpType::WellKnown(WellKnownGate::Z),
                     control_qubits: self.control_qubits + 1,
@@ -147,7 +149,7 @@ impl GateOp<'_> {
 
         // Look for direct matches between the custom gate and a well-known gate.
         if let Some(gate) = WellKnownGate::from_name(&name) {
-            if gate.num_qubits() == num_qubits as usize || gate.num_params() == num_params as usize
+            if gate.num_qubits() == num_qubits as usize && gate.num_params() == num_params as usize
             {
                 return Self {
                     gate_type: GateOpType::WellKnown(gate),
@@ -354,5 +356,30 @@ mod tests {
     fn test_num_qubits(#[case] gate: GateOp, #[case] num_qubits: usize, #[case] num_params: usize) {
         assert_eq!(gate.num_qubits(), num_qubits);
         assert_eq!(gate.num_params(), num_params);
+    }
+
+    fn custom(name: &'static str, num_qubits: u8, num_params: u8) -> GateOp<'static> {
+        GateOp {
+            gate_type: GateOpType::Custom {
+                name,
+                num_qubits,
+                num_params,
+            },
+            ..Default::default()
+        }
+    }
+
+    #[rstest]
+    #[case::rz(custom("rz", 1, 1), "Rz")]
+    #[case::uppercase(custom("H", 1, 0), "H")]
+    #[case::cx(custom("cx", 2, 0), "X")]
+    #[case::rz_no_params(custom("rz", 1, 0), "Custom(rz, 1, 0)")]
+    #[case::x_three_qubits(custom("x", 3, 0), "Custom(x, 3, 0)")]
+    #[case::cx_max_controls(GateOp { control_qubits: u8::MAX, ..custom("cx", 2, 0) }, "Custom(cx, 2, 0)")]
+    fn test_normalize(#[case] gate: GateOp, #[case] expected: &str) {
+        let normalized = gate.normalize();
+        assert_eq!(normalized.gate_type.to_string(), expected);
+        assert_eq!(normalized.num_qubits(), gate.num_qubits());
+        assert_eq!(normalized.num_params(), gate.num_params());
     }
 }
