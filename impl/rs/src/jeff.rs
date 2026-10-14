@@ -4,8 +4,8 @@
 //! interface to load and store jeff files, converting old versions to the
 //! current one as needed.
 
-use capnp::message::TypedReader;
-use capnp::serialize::{BufferSegments, OwnedSegments};
+use capnp::message::{Reader, ReaderOptions, ReaderSegments, TypedReader};
+use capnp::serialize::{BufferSegments, OwnedSegments, SegmentLengthsBuilder};
 
 use crate::capnp::jeff_capnp;
 use crate::reader::{Module, ReadJeff};
@@ -133,8 +133,34 @@ impl JeffCow<'_> {
 }
 
 impl Clone for JeffCow<'_> {
+    /// Copies each segment directly into independent, aligned owned storage.
     fn clone(&self) -> Self {
-        todo!()
+        let segments: &dyn ReaderSegments = match self {
+            Self::Borrowed(module) => module.get_segments(),
+            Self::Owned(module) => module.get_segments(),
+        };
+        let mut lengths = SegmentLengthsBuilder::with_capacity(segments.len());
+        for id in 0..segments.len() {
+            let segment = segments
+                .get_segment(id as u32)
+                .expect("Segment should exist");
+            lengths
+                .try_push_segment(segment.len() / std::mem::size_of::<capnp::Word>())
+                .expect("Existing message segment lengths should not overflow");
+        }
+
+        let mut owned = lengths.into_owned_segments();
+        let mut offset = 0;
+        for id in 0..segments.len() {
+            let segment = segments
+                .get_segment(id as u32)
+                .expect("Segment should exist");
+            let end = offset + segment.len();
+            owned[offset..end].copy_from_slice(segment);
+            offset = end;
+        }
+
+        Self::Owned(Reader::new(owned, ReaderOptions::new()).into_typed())
     }
 }
 
@@ -150,11 +176,85 @@ impl std::fmt::Debug for JeffCow<'_> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::test::entangled_qs;
+    use crate::test::{entangled_calls, entangled_qs};
     use rstest::rstest;
 
     #[rstest]
     fn simple_jeff(entangled_qs: Jeff<'static>) {
         entangled_qs.check_version().unwrap();
+    }
+
+    /// Function names and operation counts, used to compare two programs.
+    fn summary(jeff: &Jeff<'_>) -> Vec<(String, usize)> {
+        jeff.module()
+            .functions()
+            .map(|f| {
+                let ops = match f {
+                    crate::reader::Function::Definition(def) => def.body().operation_count(),
+                    crate::reader::Function::Declaration(_) => 0,
+                };
+                (f.name().to_string(), ops)
+            })
+            .collect()
+    }
+
+    #[rstest]
+    #[case::owned(false, false, false)]
+    #[case::borrowed(true, false, false)]
+    #[case::owned_multiple_segments(false, true, false)]
+    #[case::borrowed_multiple_segments(true, true, false)]
+    #[case::owned_empty_segment(false, true, true)]
+    #[case::borrowed_empty_segment(true, true, true)]
+    fn clone_program(
+        entangled_calls: Jeff<'static>,
+        #[case] borrowed: bool,
+        #[case] multiple_segments: bool,
+        #[case] empty_segment: bool,
+    ) {
+        let allocator = capnp::message::HeapAllocator::new()
+            .first_segment_words(if multiple_segments { 1 } else { 1024 });
+        let mut message = capnp::message::Builder::new(allocator);
+        message.set_root(entangled_calls.module.module()).unwrap();
+        assert_eq!(
+            message.get_segments_for_output().len() > 1,
+            multiple_segments
+        );
+        let segments = message.get_segments_for_output();
+        let mut slices: Vec<&[u8]> = (0..segments.len())
+            .map(|id| segments.get_segment(id as u32).unwrap())
+            .collect();
+        if empty_segment {
+            slices.push(&[]);
+        }
+        let bytes = capnp::serialize::write_message_segments_to_words(&slices.as_slice());
+        let original = if borrowed {
+            Jeff::read_slice(&mut bytes.as_slice()).unwrap()
+        } else {
+            Jeff::read(bytes.as_slice()).unwrap()
+        };
+        let cloned = original.clone();
+        let JeffCow::Owned(cloned_reader) = &cloned.module else {
+            panic!("A clone should own its storage");
+        };
+        let original_segments: &dyn ReaderSegments = match &original.module {
+            JeffCow::Borrowed(reader) => reader.get_segments(),
+            JeffCow::Owned(reader) => reader.get_segments(),
+        };
+        let cloned_segments = cloned_reader.get_segments();
+        assert_eq!(original_segments.len(), cloned_segments.len());
+        for id in 0..original_segments.len() {
+            let source = original_segments.get_segment(id as u32).unwrap();
+            let copy = cloned_segments.get_segment(id as u32).unwrap();
+            assert_eq!(source, copy);
+            if !source.is_empty() {
+                assert_ne!(source.as_ptr(), copy.as_ptr());
+            }
+            assert_eq!(
+                copy.as_ptr() as usize % std::mem::align_of::<capnp::Word>(),
+                0
+            );
+        }
+        drop(original);
+        assert_eq!(summary(&cloned), summary(&entangled_calls));
     }
 }
