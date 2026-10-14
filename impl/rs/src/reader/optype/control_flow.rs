@@ -115,9 +115,11 @@ impl<'a> SwitchOp<'a> {
     ) -> Self {
         let branches = switch.get_branches().expect("Branches should be present");
 
+        // A missing default reads as an empty region, so check that it is set.
         let default = switch
             .get_default()
             .ok()
+            .filter(|_| switch.has_default())
             .map(|r| reader::Region::read_capnp(r, strings, values));
 
         Self {

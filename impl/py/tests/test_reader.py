@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from jeff import (
     CustomGate,
     FloatArrayType,
     FloatType,
+    FunctionDecl,
     FunctionDef,
     IntArrayType,
     IntType,
@@ -13,8 +16,10 @@ from jeff import (
     QubitType,
     QuregType,
     WellKnowGate,
+    load_module,
     pauli_rotation,
     quantum_gate,
+    switch_case,
 )
 
 
@@ -92,3 +97,38 @@ def test_gates_read_back() -> None:
     assert isinstance(gate, PPRGate)
     assert gate.pauli_string == ["x", "z"]
     assert ops[2].inputs[-1].type == FloatType(64)
+
+
+def test_function_decl_reads_back(tmp_path: Path) -> None:
+    qubit = JeffValue(QubitType())
+    result = JeffValue(QubitType())
+    call = JeffOp("func", "funcCall", [qubit], [result], 1)
+    main = FunctionDef(
+        name="main",
+        body=JeffRegion(sources=[qubit], targets=[result], operations=[call]),
+    )
+    external = FunctionDecl(
+        name="external", inputs=[QubitType()], outputs=[QubitType()]
+    )
+    module = JeffModule([main, external])
+    path = tmp_path / "module.jeff"
+    module.write_out(str(path))
+
+    loaded = load_module(path)
+    func = loaded.functions[1]
+    assert isinstance(func, FunctionDecl)
+    assert func.name == "external"
+    assert func.function_type == ([QubitType()], [QubitType()])
+
+
+def test_switch_without_default_reads_back() -> None:
+    index = JeffValue(IntType(8))
+    switch = switch_case(index, [], [JeffRegion(sources=[], targets=[], operations=[])])
+    body = JeffRegion(sources=[index], targets=[], operations=[switch])
+    module = JeffModule([FunctionDef(name="main", body=body)])
+    module.refresh()
+
+    loaded = JeffModule.from_encoding(module._raw_data)
+    scf = loaded.functions[0].body.operations[0].instruction_data
+    assert len(scf.branches) == 1
+    assert scf.default is None
