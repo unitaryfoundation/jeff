@@ -120,8 +120,8 @@ OpenQASM2, however has not yet seen adoption or tooling maturity in the
 ecosystem to the extent as OpenQASM2. In addition, we see two disadvantages
 using OpenQASM3 with compilation tooling:
 
-- OpenQASM3 maintains a focus on
-human readability (requiring string generation and parsing), and
+- OpenQASM3 maintains a focus on human readability (requiring string generation
+  and parsing), and
 
 - it is not designed first and foremost for quantum optimization, representing
   instructions as a linear arrangement of gates rather than an arrangement in a
