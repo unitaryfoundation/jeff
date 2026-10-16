@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.2](https://github.com/unitaryfoundation/jeff/compare/jeff-format-rs-v0.2.1...jeff-format-rs-v0.2.2) - 2026-10-16
+
+### Bug Fixes
+
+- *(rs)* return no default branch for a switch without one ([#122](https://github.com/unitaryfoundation/jeff/pull/122))
+- *(rs)* implement `HasMetadata` for types with metadata ([#125](https://github.com/unitaryfoundation/jeff/pull/125))
+- *(rs)* only normalize custom gates whose arity matches ([#129](https://github.com/unitaryfoundation/jeff/pull/129))
+- *(rs)* implement `Clone` for `Jeff` ([#124](https://github.com/unitaryfoundation/jeff/pull/124))
+
+### Documentation
+
+- fix broken links in the READMEs and development guide ([#123](https://github.com/unitaryfoundation/jeff/pull/123))
+
 ## [0.2.1](https://github.com/unitaryfoundation/jeff/compare/jeff-format-rs-v0.2.0...jeff-format-rs-v0.2.1) - 2026-09-11
 
 ### New Features
