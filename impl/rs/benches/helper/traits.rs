@@ -48,7 +48,7 @@ pub trait SizedBenchmark: Sized {
         for &size in Self::sizes() {
             let benchmark = Self::setup(size);
             g.bench_function(criterion::BenchmarkId::new(Self::name(), size), |b| {
-                b.iter(|| criterion::black_box(benchmark.run()))
+                b.iter(|| std::hint::black_box(benchmark.run()))
             });
         }
     }
@@ -118,7 +118,7 @@ pub trait SizedBenchmarkWithInput: Sized {
             g.bench_function(criterion::BenchmarkId::new(Self::name(), size), |b| {
                 b.iter_batched(
                     || benchmark.prepare_run(),
-                    |state| criterion::black_box(benchmark.run(state)),
+                    |state| std::hint::black_box(benchmark.run(state)),
                     criterion::BatchSize::SmallInput,
                 )
             });
@@ -145,7 +145,7 @@ macro_rules! sized_iai_benchmark {
         #[bench::small($sized_benchmark::small())]
         #[bench::big($sized_benchmark::big())]
         fn $namespace(benchmark: impl crate::helper::traits::SizedBenchmark) {
-            criterion::black_box(benchmark.run());
+            std::hint::black_box(benchmark.run());
         }
     };
 }
@@ -173,7 +173,7 @@ macro_rules! sized_iai_benchmark_with_input {
             benchmark: (Bench, Bench::State),
         ) {
             let (benchmark, state) = benchmark;
-            criterion::black_box(benchmark.run(state));
+            std::hint::black_box(benchmark.run(state));
         }
     };
 }

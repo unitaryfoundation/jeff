@@ -76,7 +76,7 @@ you.
 To setup the environment manually you will need:
 
 - Just: <https://just.systems/>
-- Rust `>=1.85.0`: <https://www.rust-lang.org/tools/install>
+- Rust `>=1.86.0`: <https://www.rust-lang.org/tools/install>
 - uv `>=1`: <https://docs.astral.sh/uv/getting-started/installation>
 - capnproto `1.5.0`: <https://capnproto.org/install.html>
 
