@@ -12,6 +12,7 @@ function simply calls the main one.
 def main():
     sample()
 
+
 def sample() -> int:
     qs = [qubit() for _ in range(5)]
     h(qs[0])

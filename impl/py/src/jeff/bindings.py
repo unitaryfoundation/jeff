@@ -17,10 +17,12 @@ All classes come with pretty-print string representation. Note that parsing is a
 
 from __future__ import annotations
 
-from pathlib import Path
 import textwrap
 from abc import ABC, abstractmethod
-from typing import Any, Iterable
+from collections.abc import Iterable
+from pathlib import Path
+from typing import Any
+
 import semver
 
 from .capnp import load_schema
@@ -143,10 +145,7 @@ class QuregType(JeffType):
         if not isinstance(other, QuregType):
             return False
 
-        if self.length != other.length:
-            return False
-
-        return True
+        return self.length == other.length
 
 
 class IntType(JeffType):
@@ -180,10 +179,7 @@ class IntType(JeffType):
         if not isinstance(other, IntType):
             return False
 
-        if self.bitwidth != other.bitwidth:
-            return False
-
-        return True
+        return self.bitwidth == other.bitwidth
 
 
 class IntArrayType(JeffType):
@@ -237,10 +233,7 @@ class IntArrayType(JeffType):
         if self.bitwidth != other.bitwidth:
             return False
 
-        if self.length != other.length:
-            return False
-
-        return True
+        return self.length == other.length
 
 
 class FloatType(JeffType):
@@ -275,10 +268,7 @@ class FloatType(JeffType):
         if not isinstance(other, FloatType):
             return False
 
-        if self.bitwidth != other.bitwidth:
-            return False
-
-        return True
+        return self.bitwidth == other.bitwidth
 
 
 class FloatArrayType(JeffType):
@@ -335,10 +325,7 @@ class FloatArrayType(JeffType):
         if self.bitwidth != other.bitwidth:
             return False
 
-        if self.length != other.length:
-            return False
-
-        return True
+        return self.length == other.length
 
 
 class JeffValue:
@@ -939,17 +926,14 @@ class FunctionDef(JeffFunc):
         while regions:
             current_region = regions.pop(0)
 
-            for val in current_region.sources:
-                values.append(val)
+            values.extend(current_region.sources)
 
             for op in current_region:
-                for val in op.outputs:
-                    values.append(val)
+                values.extend(op.outputs)
 
                 data = op.instruction_data
                 if isinstance(data, SwitchSCF):
-                    for branch in data.branches:
-                        regions.append(branch)
+                    regions.extend(data.branches)
                     if data.default:
                         regions.append(data.default)
                 elif isinstance(data, ForSCF):
@@ -1163,7 +1147,7 @@ class JeffModule:
         self._raw_data = new_data.as_reader()
         self._mark_clean()
 
-    def write_out(self, path: str = None):
+    def write_out(self, path: str | None = None):
         """Write out the program to file. Only available on the module object as the root node.
         Automatically calls `refresh` before writing.
         """
@@ -1222,8 +1206,7 @@ class JeffModule:
                     strings.add(data.name)
 
                 if isinstance(data, SwitchSCF):
-                    for branch in data.branches:
-                        regions.append(branch)
+                    regions.extend(data.branches)
                     if data.default:
                         regions.append(data.default)
                 elif isinstance(data, ForSCF):
@@ -1946,8 +1929,8 @@ def qubit_free(qubit: JeffValue):
 def quantum_gate(
     name: str,
     qubits: JeffValue | list[JeffValue],
-    params: list[float] = None,
-    control_qubits: list[JeffValue] = None,
+    params: list[float] | None = None,
+    control_qubits: list[JeffValue] | None = None,
     adjoint: bool = False,
     power: int = 1,
 ):
@@ -1972,7 +1955,7 @@ def pauli_rotation(
     angle: JeffValue,
     pauli_string: str | list[str],
     qubits: JeffValue | list[JeffValue],
-    control_qubits: list[JeffValue] = None,
+    control_qubits: list[JeffValue] | None = None,
     adjoint: bool = False,
     power: int = 1,
 ):
