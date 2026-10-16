@@ -13,7 +13,7 @@ lint = [
 test = [
     "ipykernel~=6.29",
     "pytest~=8.4",
-    "pytest-cov~=6.2",
+    "pytest-cov~=7.1",
     "pytest-notebook~=0.11.0",
     "mypy~=1.17",
 ]
