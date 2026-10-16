@@ -1,0 +1,72 @@
+name: Continuous integration ⚛️
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**"
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch: {}
+
+env:
+  # The Qiskit C API isn't part of this repo; pin the ref used to build it
+  # here rather than relying on a moving branch, so this workflow's inputs
+  # stay reproducible. Bump deliberately.
+  QISKIT_REF: "2.5.2"
+
+jobs:
+  # Check if changes were made to the relevant files.
+  # Always returns true if running on the default branch, to ensure all changes are thoroughly checked.
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      qiskitc: ${{ steps.filter.outputs.qiskitc }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/check-changes
+        id: filter
+
+  qiskitc-test:
+    name: Build and test jeff-qiskitc
+    needs: changes
+    if: ${{ needs.changes.outputs.qiskitc == 'true' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout jeff
+        uses: actions/checkout@v7
+
+      - name: Checkout Qiskit ${{ env.QISKIT_REF }}
+        uses: actions/checkout@v7
+        with:
+          repository: Qiskit/qiskit
+          ref: ${{ env.QISKIT_REF }}
+          path: qiskit
+
+      # Qiskit pins its own Rust toolchain via qiskit/rust-toolchain.toml.
+      # rustup (preinstalled on GitHub's ubuntu runners) auto-detects that
+      # file and fetches the matching toolchain the first time cargo/rustc
+      # run inside the qiskit/ directory below -- no explicit version here.
+      - name: Build Qiskit C API
+        working-directory: qiskit
+        run: make c
+
+      - name: Configure jeff-qiskitc
+        working-directory: tools/jeff-qiskitc
+        run: |
+          cmake -B build \
+            -DQISKIT_C_DIR="${{ github.workspace }}/qiskit/dist/c" \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build jeff-qiskitc
+        working-directory: tools/jeff-qiskitc
+        run: cmake --build build -j"$(nproc)"
+
+      - name: Run tests
+        working-directory: tools/jeff-qiskitc/build
+        run: ctest --output-on-failure

@@ -24,6 +24,9 @@ outputs:
   markdown:
     description: "Markdown files have changed"
     value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.markdown == 'true' }}
+  qiskitc:
+    description: "jeff-qiskitc files have changed"
+    value: ${{ steps.override.outputs.out == 'true' || steps.change-filters.outputs.qiskitc == 'true' }}
 
 runs:
   using: composite
