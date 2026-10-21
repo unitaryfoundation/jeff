@@ -1443,7 +1443,7 @@ class WellKnowGate(JeffGate):
     @property
     def num_params(self):
         match self.kind:
-            case "i" | "x" | "y" | "z" | "s" | "t" | "h":
+            case "i" | "x" | "y" | "z" | "s" | "t" | "h" | "swap":
                 return 0
             case "gphase" | "r1" | "rx" | "ry" | "rz":
                 return 1
