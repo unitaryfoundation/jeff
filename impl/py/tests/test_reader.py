@@ -132,3 +132,9 @@ def test_switch_without_default_reads_back() -> None:
     scf = loaded.functions[0].body.operations[0].instruction_data
     assert len(scf.branches) == 1
     assert scf.default is None
+
+
+def test_swap_gate_has_no_params() -> None:
+    gate = WellKnowGate("swap", 0, False, 1)
+    assert gate.num_qubits == 2
+    assert gate.num_params == 0
