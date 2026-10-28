@@ -5,7 +5,7 @@ members = ["impl/py"]
 dev = [{ include-group = "lint" }, { include-group = "test" }]
 lint = [
     "pre-commit~=4.3",
-    "ruff~=0.17.1",
+    "ruff~=0.17.2",
     "mypy~=2.4",
     "nb-clean~=4.0.1",
     "rumdl==0.2.78",
