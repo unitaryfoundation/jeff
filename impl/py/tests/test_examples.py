@@ -1,7 +1,8 @@
 """Tests validating the files in the repo's `examples` directory."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
 notebook_files = list((REPO_ROOT / "examples").glob("**/*.ipynb"))

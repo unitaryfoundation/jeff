@@ -5,23 +5,26 @@ members = ["impl/py"]
 dev = [{ include-group = "lint" }, { include-group = "test" }]
 lint = [
     "pre-commit~=4.3",
-    "ruff~=0.12.10",
-    "mypy~=1.17",
+    "ruff~=0.17.0",
+    "mypy~=2.4",
     "nb-clean~=4.0.1",
-    "rumdl~=0.2.32",
+    "rumdl==0.2.78",
 ]
 test = [
     "ipykernel~=6.29",
-    "pytest~=8.4",
-    "pytest-cov~=6.2",
-    "pytest-notebook~=0.10.0",
-    "mypy~=1.17",
+    "pytest~=9.1",
+    "pytest-cov~=7.1",
+    "pytest-notebook~=0.11.0",
+    "mypy~=2.4",
 ]
 
 
 [tool.mypy]
 strict = true
 
+[tool.rumdl]
+# Changelog files are auto-generated
+exclude = ["**/CHANGELOG.md"]
 
 [tool.rumdl.per-file-ignores]
 # The RFCs deliberatively have a non-compliant format

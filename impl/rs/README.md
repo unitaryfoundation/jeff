@@ -27,9 +27,9 @@ This project is licensed under Apache License, Version 2.0 ([LICENSE][] or
 <http://www.apache.org/licenses/LICENSE-2.0>).
 
   [API documentation]: https://docs.rs/jeff-format
-  [build_status]: https://github.com/unitaryfoundation/jeff/actions/workflows/ci.yml/badge.svg?branch=main
+  [build_status]: https://github.com/unitaryfoundation/jeff/actions/workflows/ci-rs.yml/badge.svg?branch=main
   [crates]: https://img.shields.io/crates/v/jeff-format
-  [LICENSE]: https://github.com/unitaryfoundation/jeff/blob/main/LICENSE
+  [LICENSE]: https://github.com/unitaryfoundation/jeff/blob/main/LICENCE
   [msrv]: https://img.shields.io/crates/msrv/jeff-format
   [CHANGELOG]: https://github.com/unitaryfoundation/jeff/blob/main/impl/rs/CHANGELOG.md
   [DEVELOPMENT]: https://github.com/unitaryfoundation/jeff/blob/main/DEVELOPMENT.md

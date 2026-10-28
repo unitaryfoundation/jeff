@@ -66,6 +66,18 @@ pub enum IntOp {
     Shl,
     /// Logical shift right.
     Shr,
+    /// Select between two integers based on a condition mask.
+    Select,
+    /// Sign-extend an integer to a wider integer type.
+    ExtS,
+    /// Zero-extend an integer to a wider integer type.
+    ExtU,
+    /// Truncate an integer to a narrower integer type.
+    Trunc,
+    /// Convert a signed integer to a float.
+    ToFloatS,
+    /// Convert an unsigned integer to a float.
+    ToFloatU,
 }
 
 /// An operation over integer arrays.
@@ -130,6 +142,12 @@ impl IntOp {
             jeff_capnp::int_op::Which::RemU(()) => Self::RemU,
             jeff_capnp::int_op::Which::Shl(()) => Self::Shl,
             jeff_capnp::int_op::Which::Shr(()) => Self::Shr,
+            jeff_capnp::int_op::Which::Select(()) => Self::Select,
+            jeff_capnp::int_op::Which::ExtS(()) => Self::ExtS,
+            jeff_capnp::int_op::Which::ExtU(()) => Self::ExtU,
+            jeff_capnp::int_op::Which::Trunc(()) => Self::Trunc,
+            jeff_capnp::int_op::Which::ToFloatS(()) => Self::ToFloatS,
+            jeff_capnp::int_op::Which::ToFloatU(()) => Self::ToFloatU,
         }
     }
 }

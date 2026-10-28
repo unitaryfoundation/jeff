@@ -33,7 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: rvben/rumdl@v0.2.37
+      - uses: rvben/rumdl@v0.2.78
+        with:
+          version: 0.2.78
 
   # This is a meta job to mark successful completion of the required checks,
   # even if they are skipped due to no changes in the relevant files.

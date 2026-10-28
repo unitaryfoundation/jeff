@@ -18,6 +18,8 @@ pub enum FloatOp {
     Sub,
     /// Multiply two floats.
     Mul,
+    /// Divide two floats.
+    Div,
     /// Calculate one float raised to the power of another.
     Pow,
     /// Test two floats for equality.
@@ -72,6 +74,16 @@ pub enum FloatOp {
     Max,
     /// Minimum of two floats.
     Min,
+    /// Select between two floats based on a condition mask.
+    Select,
+    /// Extend floating-point precision to a wider float type.
+    Ext,
+    /// Truncate floating-point precision to a narrower float type.
+    Trunc,
+    /// Convert a float to a signed integer.
+    ToSInt,
+    /// Convert a float to an unsigned integer.
+    ToUInt,
 }
 
 /// An operation over floating point arrays.
@@ -106,6 +118,7 @@ impl FloatOp {
             jeff_capnp::float_op::Which::Add(()) => Self::Add,
             jeff_capnp::float_op::Which::Sub(()) => Self::Sub,
             jeff_capnp::float_op::Which::Mul(()) => Self::Mul,
+            jeff_capnp::float_op::Which::Div(()) => Self::Div,
             jeff_capnp::float_op::Which::Pow(()) => Self::Pow,
             jeff_capnp::float_op::Which::Eq(()) => Self::Eq,
             jeff_capnp::float_op::Which::Lt(()) => Self::Lt,
@@ -133,6 +146,11 @@ impl FloatOp {
             jeff_capnp::float_op::Which::Atanh(()) => Self::Atanh,
             jeff_capnp::float_op::Which::Max(()) => Self::Max,
             jeff_capnp::float_op::Which::Min(()) => Self::Min,
+            jeff_capnp::float_op::Which::Select(()) => Self::Select,
+            jeff_capnp::float_op::Which::Ext(()) => Self::Ext,
+            jeff_capnp::float_op::Which::Trunc(()) => Self::Trunc,
+            jeff_capnp::float_op::Which::ToSInt(()) => Self::ToSInt,
+            jeff_capnp::float_op::Which::ToUInt(()) => Self::ToUInt,
         }
     }
 }

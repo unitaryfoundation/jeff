@@ -39,12 +39,6 @@ pub fn verify_file(path: impl AsRef<std::path::Path>) -> Vec<VerificationError> 
         Err(e) => panic!("failed to parse read file: {e}"),
     };
 
-    let v = module.module().version();
-    let s = &jeff::SCHEMA_VERSION;
-    if v.major != s.major || v.minor != s.minor || v.patch != s.patch {
-        return vec![VerificationError::IncompatibleVersion];
-    }
-
     verify_module(module.module())
 }
 

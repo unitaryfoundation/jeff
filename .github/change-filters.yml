@@ -27,6 +27,7 @@ python: &python
   - "examples/**/*.ipynb"
 
 markdown: &markdown
+  - ".github/workflows/ci-markdown.yml"
   - "*.md"
 
 qiskitc: &qiskitc
