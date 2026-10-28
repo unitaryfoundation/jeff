@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.24...4.4)
-project(
-    jeff_qiskitc
-    VERSION 0.1.0
-    LANGUAGES CXX
-)
+project(jeff_qiskitc VERSION 0.1.0 LANGUAGES CXX)
 
 set(JEFF_QISKITC_TOOL_NAME "jeff-qiskitc")
 
@@ -16,29 +12,23 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(FetchContent)
 
 set(FETCH_PACKAGES capnproto)
-FetchContent_Declare(
+fetchcontent_declare(
     capnproto
     GIT_REPOSITORY https://github.com/capnproto/capnproto.git
     GIT_TAG v1.5.0
 )
 
 if(BUILD_JEFF_QISKITC_TESTS)
-    set(GTEST_VERSION
-        1.17.0
-        CACHE STRING "Google Test version"
-    )
-    set(INSTALL_GTEST
-        OFF
-        CACHE BOOL "" FORCE
-    )
-    FetchContent_Declare(
+    set(GTEST_VERSION 1.17.0 CACHE STRING "Google Test version")
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+    fetchcontent_declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/tags/v${GTEST_VERSION}.tar.gz
     )
     list(APPEND FETCH_PACKAGES googletest)
 endif()
 
-FetchContent_MakeAvailable(${FETCH_PACKAGES})
+fetchcontent_makeavailable(${FETCH_PACKAGES})
 
 # The Qiskit C API isn't part of this repo and isn't find_package()-able; point QISKIT_C_DIR at a
 # directory containing include/qiskit.h and lib/libqiskit.so, either as a CMake cache variable
@@ -58,8 +48,10 @@ endif()
 
 add_library(qiskit_c SHARED IMPORTED)
 set_target_properties(
-    qiskit_c PROPERTIES IMPORTED_LOCATION "${QISKIT_C_DIR}/lib/libqiskit.so"
-                        INTERFACE_INCLUDE_DIRECTORIES "${QISKIT_C_DIR}/include"
+    qiskit_c
+    PROPERTIES
+        IMPORTED_LOCATION "${QISKIT_C_DIR}/lib/libqiskit.so" INTERFACE_INCLUDE_DIRECTORIES
+        "${QISKIT_C_DIR}/include"
 )
 
 # jeff.capnp's generated C++ bindings, regenerated from impl/capnp/jeff.capnp by `just
@@ -76,7 +68,8 @@ target_link_libraries(jeff_qiskitc PUBLIC CapnProto::capnp qiskit_c)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/include/jeff_qiskitc_version.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/include/jeff_qiskitc_version.h" @ONLY
+    "${CMAKE_CURRENT_BINARY_DIR}/include/jeff_qiskitc_version.h"
+    @ONLY
 )
 target_include_directories(jeff_qiskitc PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 

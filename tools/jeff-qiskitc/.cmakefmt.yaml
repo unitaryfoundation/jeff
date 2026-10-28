@@ -3,7 +3,6 @@ format:
   tab_size: 4
   dangle_parens: true
   keyword_case: "upper"
-  autosort: true
 
 markup:
   first_comment_is_literal: true
