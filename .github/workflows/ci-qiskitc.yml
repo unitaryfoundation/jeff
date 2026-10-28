@@ -22,7 +22,7 @@ jobs:
   # Always returns true if running on the default branch, to ensure all changes are thoroughly checked.
   changes:
     name: Check for changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       pull-requests: read
     outputs:
@@ -36,7 +36,7 @@ jobs:
     name: Build and test jeff-qiskitc
     needs: changes
     if: ${{ needs.changes.outputs.qiskitc == 'true' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout jeff
         uses: actions/checkout@v7
