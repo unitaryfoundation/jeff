@@ -24,7 +24,7 @@ criterion = "0.8.2"
 derive_more = "2.0.1"
 iai-callgrind = "0.16.1"
 itertools = "0.15.0"
-rstest = "0.27.0"
+rstest = "0.28.0"
 semver = "1.0.27"
 
 [profile.dev.package]
