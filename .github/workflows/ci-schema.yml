@@ -26,7 +26,7 @@ jobs:
     outputs:
       schema: ${{ steps.filter.outputs.schema }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: ./.github/actions/check-changes
         id: filter
 
@@ -39,10 +39,12 @@ jobs:
     name: Keep the capnp generated code up-to-date with the schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: mozilla-actions/sccache-action@v0.0.11
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
       - name: Install stable toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: stable
       - name: Install CapnProto
         run: |
           curl -O https://capnproto.org/capnproto-c++-${CAPNPROTO_VERSION}.tar.gz
@@ -52,8 +54,8 @@ jobs:
           make -j6 check
           sudo make install
       - name: Get cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-      - uses: extractions/setup-just@v4
+        uses: cargo-bins/cargo-binstall@5885714d0a40a14b2535c6ffc051fd8e49aa9665 # main
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
 
       - name: Regenerate the capnp bindings
         run: |

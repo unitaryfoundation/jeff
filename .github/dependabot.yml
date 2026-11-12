@@ -44,7 +44,19 @@ updates:
       # Major updates still generate individual PRs
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/check-changes"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      # Use a conventional commit tag
+      prefix: "ci(deps)"
+
+  - package-ecosystem: "pre-commit"
+    directories:
+      - "/"
+      - "/tools/jeff-qiskitc"
     schedule:
       interval: "weekly"
     commit-message:
