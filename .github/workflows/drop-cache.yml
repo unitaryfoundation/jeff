@@ -6,4 +6,4 @@ on:
 
 jobs:
   drop-cache:
-    uses: Quantinuum/hugrverse-actions/.github/workflows/drop-cache.yml@main
+    uses: Quantinuum/hugrverse-actions/.github/workflows/drop-cache.yml@1ef381ac14e62cd5a75e09398f21cb5e20bedd0f # main
